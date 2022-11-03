@@ -2,14 +2,14 @@
   "name": "backend",
   "version": "1.0.0",
   "description": "",
-  "main": "build/index.js",
+  "main": "build/main.js",
   "dependencies": {},
   "devDependencies": {
     "typescript": "^4.8.4"
   },
   "scripts": {
     "test": "echo \"Warning: no test specified\"",
-    "start": "npm run build/index.js",
+    "start": "node build/main.js",
     "build": "npx tsc"
   },
   "author": "",
