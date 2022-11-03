@@ -1,0 +1,17 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "build/index.js",
+  "dependencies": {},
+  "devDependencies": {
+    "typescript": "^4.8.4"
+  },
+  "scripts": {
+    "test": "echo \"Warning: no test specified\"",
+    "start": "npm run build/index.js",
+    "build": "npx tsc"
+  },
+  "author": "",
+  "license": "ISC"
+}
