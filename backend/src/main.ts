@@ -1,2 +1,6 @@
+import app from "./core/api";
+import "./api/ping";
 
-console.log("It Works (on my machine) TM");
+app.listen(8080, () => {
+	console.log('Server started');
+})
