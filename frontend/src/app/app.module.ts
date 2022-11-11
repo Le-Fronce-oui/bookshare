@@ -13,6 +13,7 @@ import { OrganisationSearchPageComponent } from './components/pages/organisation
 import { OrganisationDetailsPageComponent } from './components/pages/organisation-details-page/organisation-details-page.component';
 import { OrganisationMembersPageComponent } from './components/pages/organisation-members-page/organisation-members-page.component';
 import { OrganisationEditPageComponent } from './components/pages/organisation-edit-page/organisation-edit-page.component';
+import { HeaderFooterTemplateComponent } from './components/templates/header-footer-template/header-footer-template.component';
 
 @NgModule({
   declarations: [
@@ -26,7 +27,8 @@ import { OrganisationEditPageComponent } from './components/pages/organisation-e
     OrganisationSearchPageComponent,
     OrganisationDetailsPageComponent,
     OrganisationMembersPageComponent,
-    OrganisationEditPageComponent
+    OrganisationEditPageComponent,
+    HeaderFooterTemplateComponent
   ],
   imports: [
     BrowserModule,

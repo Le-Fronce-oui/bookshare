@@ -1,0 +1,13 @@
+
+#page-container {
+	min-height: 100vh;
+	display: flex;
+	flex-flow: column nowrap;
+}
+
+footer {
+	width: 100%;
+	text-align: center;
+	font-size: var(--text-small);
+}
+
