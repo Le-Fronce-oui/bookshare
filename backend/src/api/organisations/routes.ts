@@ -11,3 +11,33 @@ router.get('/org/:orgId/prints', (req, res) => {
 	res.json('todo');
 });
 
+router.get('/org/:orgId/users', (req, res) => {
+	// TODO
+	// For each user : username, number of books
+	// Join date ?
+	res.json('todo');
+});
+
+router.post('/org/:orgId/join/:userId', (req, res) => {
+	// TODO
+	// Only for the targetted user
+	res.json('todo');
+});
+
+router.post('/org/:orgId/leave/:userId', (req, res) => {
+	// TODO
+	// Only for the targetted user
+	res.json('todo');
+});
+
+router.post('/org/:orgId/visibility', (req, res) => {
+	// TODO
+	// Only for site admis and org admins
+	res.json('todo');
+});
+
+router.post('/org/:orgId/ban/:userId', (req, res) => {
+	// TODO
+	// Only for site admis and org admins
+	res.json('todo');
+});
