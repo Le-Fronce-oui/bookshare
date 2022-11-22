@@ -1,6 +1,7 @@
-import app from "../core/api";
+import router from "../core/router";
 
 
-app.get('/ping', (req, res) => {
-	res.send('ping');
+router.get('/ping', (_req, res) => {
+	res.type('text/plain');
+	res.send('pong');
 });
