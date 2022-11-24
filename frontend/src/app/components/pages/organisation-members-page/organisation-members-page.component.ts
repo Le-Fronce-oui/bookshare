@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-organisation-members-page',
@@ -7,9 +8,17 @@ import { Component, OnInit } from '@angular/core';
 })
 export class OrganisationMembersPageComponent implements OnInit {
 
-  constructor() { }
+  public org_id!: string;
+
+  constructor(private route: ActivatedRoute) { }
 
   ngOnInit(): void {
+    const uuid = this.route.snapshot.paramMap.get('uuid');
+    if(uuid == null) {
+      // TODO probably redirect or something ?
+      return;
+    }
+    this.org_id = uuid;
   }
 
 }
