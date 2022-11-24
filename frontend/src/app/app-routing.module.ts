@@ -10,6 +10,7 @@ import { OrganisationSearchPageComponent } from './components/pages/organisation
 import { SigninPageComponent } from './components/pages/signin-page/signin-page.component';
 import { UserDetailsPageComponent } from './components/pages/user-details-page/user-details-page.component';
 import { UserEditPageComponent } from './components/pages/user-edit-page/user-edit-page.component';
+import { UserListPageComponent } from './components/pages/user-list-page/user-list-page.component';
 
 const routes: Routes = [
   { path: 'signin', component: SigninPageComponent },
@@ -17,7 +18,7 @@ const routes: Routes = [
   { path: 'index', component: IndexPageComponent },
   { path: 'books', component: BookSearchPageComponent },
   { path: 'book/:uuid', component: BookDetailsPageComponent },
-  { path: 'users', component: UserDetailsPageComponent },
+  { path: 'users', component: UserListPageComponent },
   { path: 'user/:uuid', component: UserDetailsPageComponent },
   { path: 'user/:uuid/edit', component: UserEditPageComponent },
   { path: 'organisations', component: OrganisationSearchPageComponent },

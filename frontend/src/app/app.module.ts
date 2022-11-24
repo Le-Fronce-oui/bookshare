@@ -14,6 +14,7 @@ import { OrganisationMembersPageComponent } from './components/pages/organisatio
 import { HeaderFooterTemplateComponent } from './components/templates/header-footer-template/header-footer-template.component';
 import { SigninPageComponent } from './components/pages/signin-page/signin-page.component';
 import { LoginPageComponent } from './components/pages/login-page/login-page.component';
+import { UserListPageComponent } from './components/pages/user-list-page/user-list-page.component';
 
 @NgModule({
   declarations: [
@@ -28,7 +29,8 @@ import { LoginPageComponent } from './components/pages/login-page/login-page.com
     OrganisationMembersPageComponent,
     HeaderFooterTemplateComponent,
     SigninPageComponent,
-    LoginPageComponent
+    LoginPageComponent,
+    UserListPageComponent
   ],
   imports: [
     BrowserModule,
