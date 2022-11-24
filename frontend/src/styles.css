@@ -4,17 +4,24 @@
 
 :root {
 	/* Colours */
+	--col-primary: #18ab55;
+	--col-canvas: #f7f7f7;
+	--col-bg: #d0d0d0;
+	--col-border: #aeaeae;
+	--col-text: #101010;
 	--col-link: #3276E3;
 	
 	/* Fonts */
 	--text-font: 'Noto sans';
 
 	/* Font sizes */
+	--text-big: 28px;
 	--text-regular: 14px;
 	--text-small: 10px;
 	--text-mini: 8px;
 
 	/* Spacings */
+	--spacing-large: 20px;
 	--spacing-medium: 8px;
 	--spacing-small: 4px;
 }
@@ -22,6 +29,8 @@
 body {
 	font-family: var(--text-font), sans-serif;
 	font-size: var(--text-regular);
+	background-color: var(--col-bg);
+	color: var(--col-text);
 	margin: 0px;
 }
 

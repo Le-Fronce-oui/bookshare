@@ -5,9 +5,37 @@
 	flex-flow: column nowrap;
 }
 
+#page-content {
+	display: flex;
+	flex-flow: column nowrap;
+	flex-grow: 1;
+	padding: 20px;
+}
+
+#app-title {
+	font-size: var(--text-big);
+	font-weight: bold;
+	color: var(--col-primary);
+	margin-left: 0px;
+	margin-right: 4vw;
+}
+
+header {
+	background-color: var(--col-canvas);
+	padding: 10px;
+	border-bottom: 2px solid var(--col-border);
+}
+
+header > a {
+	margin-left: var(--spacing-large);
+	color: var(--col-text);
+}
+
 footer {
 	width: 100%;
 	text-align: center;
 	font-size: var(--text-small);
+	background-color: var(--col-canvas);
+	border-top: 1px solid var(--col-border);
 }
 

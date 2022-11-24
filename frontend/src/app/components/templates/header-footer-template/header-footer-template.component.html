@@ -1,10 +1,24 @@
 
 <div id="page-container">
 	<header>
-		Header goes here
+		<a id="app-title" [routerLink]="['/index']">BookShare</a> 
+		<a [routerLink]="['/books']">Books</a>
+		<a [routerLink]="['/organisations']">Organisations</a>
+		<ng-template *ngIf="userService.isConnected(); else elseBlock">
+			<a [routerLink]="['/user/'+userService.getUuid()]">My profile ({{userService.getUsername()}})</a>
+			<ng-template *ngIf="userService.isAdmin()">
+				<a [routerLink]="['/user/'+userService.getUuid()]">All users</a>
+			</ng-template>
+		</ng-template>
+		<ng-template #elseBlock>
+			<a [routerLink]="['/login']">Log in</a>
+			<a [routerLink]="['/signin']">Sign in</a>
+		</ng-template>
 	</header>
 
-	<ng-content></ng-content>
+	<div id="page-content">
+		<ng-content></ng-content>
+	</div>
 
 	<footer>
 		BookShare @ <a href="{{getUrl()}}">{{getUrl()}}</a>
