@@ -6,14 +6,14 @@ import { AppComponent } from './app.component';
 import { IndexPageComponent } from './components/pages/index-page/index-page.component';
 import { BookSearchPageComponent } from './components/pages/book-search-page/book-search-page.component';
 import { BookDetailsPageComponent } from './components/pages/book-details-page/book-details-page.component';
-import { BookEditPageComponent } from './components/pages/book-edit-page/book-edit-page.component';
 import { UserDetailsPageComponent } from './components/pages/user-details-page/user-details-page.component';
 import { UserEditPageComponent } from './components/pages/user-edit-page/user-edit-page.component';
 import { OrganisationSearchPageComponent } from './components/pages/organisation-search-page/organisation-search-page.component';
 import { OrganisationDetailsPageComponent } from './components/pages/organisation-details-page/organisation-details-page.component';
 import { OrganisationMembersPageComponent } from './components/pages/organisation-members-page/organisation-members-page.component';
-import { OrganisationEditPageComponent } from './components/pages/organisation-edit-page/organisation-edit-page.component';
 import { HeaderFooterTemplateComponent } from './components/templates/header-footer-template/header-footer-template.component';
+import { SigninPageComponent } from './components/pages/signin-page/signin-page.component';
+import { LoginPageComponent } from './components/pages/login-page/login-page.component';
 
 @NgModule({
   declarations: [
@@ -21,14 +21,14 @@ import { HeaderFooterTemplateComponent } from './components/templates/header-foo
     IndexPageComponent,
     BookSearchPageComponent,
     BookDetailsPageComponent,
-    BookEditPageComponent,
     UserDetailsPageComponent,
     UserEditPageComponent,
     OrganisationSearchPageComponent,
     OrganisationDetailsPageComponent,
     OrganisationMembersPageComponent,
-    OrganisationEditPageComponent,
-    HeaderFooterTemplateComponent
+    HeaderFooterTemplateComponent,
+    SigninPageComponent,
+    LoginPageComponent
   ],
   imports: [
     BrowserModule,
