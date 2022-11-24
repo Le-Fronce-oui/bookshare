@@ -24,11 +24,16 @@ header {
 	background-color: var(--col-canvas);
 	padding: 10px;
 	border-bottom: 2px solid var(--col-border);
+	user-select: none;
 }
 
-header > a {
+header > .menuitem {
 	margin-left: var(--spacing-large);
 	color: var(--col-text);
+}
+
+span.menuitem {
+	cursor: pointer;
 }
 
 footer {

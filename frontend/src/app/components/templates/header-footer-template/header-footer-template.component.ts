@@ -10,13 +10,12 @@ export class HeaderFooterTemplateComponent implements OnInit {
 
   static readonly REPO_URL = 'https://github.com/Le-Fronce-oui/bookshare';
 
+  public readonly url = HeaderFooterTemplateComponent.REPO_URL;
+
   constructor(public readonly userService: UserService) { }
 
   public ngOnInit(): void {
   }
 
-  public getUrl(): string {
-    return HeaderFooterTemplateComponent.REPO_URL;
-  }
 
 }

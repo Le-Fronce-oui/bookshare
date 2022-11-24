@@ -2,17 +2,16 @@
 <div id="page-container">
 	<header>
 		<a id="app-title" [routerLink]="['/index']">BookShare</a> 
-		<a [routerLink]="['/books']">Books</a>
-		<a [routerLink]="['/organisations']">Organisations</a>
-		<ng-template *ngIf="userService.isConnected(); else elseBlock">
-			<a [routerLink]="['/user/'+userService.getUuid()]">My profile ({{userService.getUsername()}})</a>
-			<ng-template *ngIf="userService.isAdmin()">
-				<a [routerLink]="['/user/'+userService.getUuid()]">All users</a>
-			</ng-template>
+		<a class="menuitem" [routerLink]="['/books']">Books</a>
+		<a class="menuitem" [routerLink]="['/organisations']">Organisations</a>
+		<ng-template [ngIf]="userService.isConnected()" [ngIfElse]="elseBlock">
+			<a class="menuitem" *ngIf="userService.isAdmin()" [routerLink]="['/users']">All users</a>
+			<a class="menuitem" [routerLink]="['/user/'+userService.getUuid()]">My profile ({{userService.getUsername()}})</a>
+			<span class="menuitem" (click)=userService.logout()>Log out</span>
 		</ng-template>
 		<ng-template #elseBlock>
-			<a [routerLink]="['/login']">Log in</a>
-			<a [routerLink]="['/signin']">Sign in</a>
+			<a class="menuitem" [routerLink]="['/login']">Log in</a>
+			<a class="menuitem" [routerLink]="['/signin']">Sign in</a>
 		</ng-template>
 	</header>
 
@@ -21,6 +20,6 @@
 	</div>
 
 	<footer>
-		BookShare @ <a href="{{getUrl()}}">{{getUrl()}}</a>
+		BookShare @ <a href="{{url}}">{{url}}</a>
 	</footer>
 </div>
