@@ -13,7 +13,7 @@ function getEnv(name: BsEnvKey): string {
 
 const JWT_KEY = getEnv('BS_JWT_KEY');
 
-if(JWT_KEY === '') {
+if (JWT_KEY === '') {
 	console.error('No JWT key provided');
 	process.exit(1);
 }

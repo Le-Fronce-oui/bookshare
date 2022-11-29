@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { checkToken, AUTH_COOKIE } from "../../core/auth/authentication";
 
+/*
 function getAuthentifiedUser(req: Request) {
 	const token = req.cookies[AUTH_COOKIE];
 	if(token === undefined) {
@@ -42,3 +43,4 @@ function isAdmin(else_code: number) {
 }
 
 export { auth, authenticated };
+*/

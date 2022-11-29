@@ -27,7 +27,9 @@
         "test": "echo \"Warning: no test specified\"",
         "start": "node build/main.js",
         "build": "npx tsc",
-        "dev": "nodemon"
+        "dev": "nodemon",
+        "seed": "ts-node prisma/seed.ts"
+
     },
     "author": "",
     "license": "ISC"
