@@ -22,6 +22,7 @@
 
 	/* Spacings */
 	--spacing-large: 20px;
+	--spacing-normal: 12px;
 	--spacing-medium: 8px;
 	--spacing-small: 4px;
 }
@@ -40,4 +41,23 @@ a {
 
 a, a:hover, a:visited {
 	color: var(--col-link);
+}
+
+h1, h2, h3, h4, h5, h6, p {
+	margin: 0px;
+}
+
+h1 {
+	margin-bottom: var(--spacing-large);
+}
+
+p {
+	margin-bottom: var(--spacing-medium);
+}
+
+.canvas {
+	background-color: var(--col-canvas);
+	padding: var(--spacing-normal);
+	border: var(--col-border) solid 1px;
+	border-radius: 3px;
 }
