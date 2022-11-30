@@ -1,15 +1,11 @@
 import { Pool } from "pg";
-require('dotenv').config()
+import { DATABASE_HOST, DATABASE_NAME, DATABASE_PASS, DATABASE_PORT, DATABASE_USER } from "../utils/env"
 
-function connect() {
-    var pool = new Pool({
-        user: process.env.DATABASE_USER,
-        host: process.env.DATABASE_HOST,
-        database: process.env.DATABASE_NAME,
-        password: String(process.env.DATABASE_PASSWORD),
-        port: 5432,
-    });
-    return pool;
-}
 
-export { connect };
+export const pool = new Pool({
+    user: DATABASE_USER,
+    host: DATABASE_HOST,
+    database: DATABASE_NAME,
+    password: DATABASE_PASS,
+    port: DATABASE_PORT,
+});

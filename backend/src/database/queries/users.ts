@@ -1,6 +1,7 @@
-import { connect } from "../connect";
+import { pool } from "../connect";
+import { Consumer } from 'src/types/functions';
+import DatabaseUser from '../models/user';
 
-var pool = connect();
 
 export function getUsers(request: any, response: any) {
     pool.query('SELECT * FROM "User";', (error: any, results: any) => {
