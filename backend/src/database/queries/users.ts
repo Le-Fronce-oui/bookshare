@@ -1,13 +1,6 @@
+import { connect } from "../connect";
 
-import { Pool } from 'pg';
-
-const pool = new Pool({
-    user: 'postgres',
-    host: 'localhost',
-    database: 'postgres',
-    password: 'postgres',
-    port: 5432,
-});
+var pool = connect();
 
 export function getUsers(request: any, response: any) {
     pool.query('SELECT * FROM "User";', (error: any, results: any) => {
