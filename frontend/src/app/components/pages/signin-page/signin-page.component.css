@@ -1,0 +1,56 @@
+
+#center {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translateX(-50%) translateY(-50%);
+	border-style: solid;
+	border-color: var(--col-primary) var(--col-border);
+	border-radius: 3px;
+	border-width: 3px 2px;
+	text-align: center;
+	background-color: var(--col-canvas);
+	padding: var(--spacing-normal);
+}
+
+#grid-form {
+	display: grid;
+	align-items: start;
+	justify-items: center;
+	grid-gap: 24px var(--spacing-medium);
+	margin-top: 24px;
+}
+
+#grid-form > span {
+	justify-self: stretch;
+}
+
+#grid-form > span:nth-child(1) {
+	grid-area: 1 / 1 / 1 / 1;
+}
+
+#grid-form > span:nth-child(2) {
+	grid-area: 1 / 2 / 1 / 2;
+}
+
+#grid-form > span:nth-child(3) {
+	grid-area: 2 / 1 / 2 / 1;
+}
+
+#grid-form > span:nth-child(4) {
+	grid-area: 2 / 2 / 2 / 2;
+}
+
+#grid-form > p-button {
+	grid-area: 3 / 1 / 3 / 3;
+}
+
+input {
+	width: 210px;
+}
+
+p.footnote {
+	font-size: var(--text-small);
+	margin-top: var(--spacing-normal);
+	margin-bottom: 0px;
+}
