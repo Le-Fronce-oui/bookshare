@@ -11,7 +11,7 @@ export class SigninPageComponent implements OnInit {
   public username: string;
   public email: string;
   public password: string;
-  public confirm_password: string;
+  public confirm: string;
 
   // Used to check if the fields are valid
   private username_ok: boolean;
@@ -22,15 +22,15 @@ export class SigninPageComponent implements OnInit {
 
   // Used for displaying the errors in the fields
   public username_dirty: boolean;
-  public email_dirty: boolean;
+  public email_dirty:    boolean;
   public password_dirty: boolean;
-  public confirm_dirty: boolean;
+  public confirm_dirty:  boolean;
 
   constructor() {
     this.username = '';
     this.email = '';
     this.password = '';
-    this.confirm_password = '';
+    this.confirm = '';
     this.username_ok = false;
     this.email_ok    = false;
     this.password_ok = false;
@@ -42,48 +42,56 @@ export class SigninPageComponent implements OnInit {
     this.confirm_dirty  = false;
   }
 
-  ngOnInit(): void {
-  }
+  ngOnInit(): void { }
 
-  public checkUsername() {
+  public checkUsername(): void {
     this.username = this.username.trim();
     this.username_ok = (this.username.length > 0);
     this.username_dirty = !this.username_ok;
     this.updateValidity();
   }
 
-  public checkEmail() {
+  public checkEmail(): void {
     this.email = this.email.trim();
     this.email_ok = EMAIL_REGEX.test(this.email + " ");
     this.email_dirty = !this.email_ok;
     this.updateValidity();
   }
 
-  public checkPassword() {
+  public checkPassword(): void {
     this.password_ok = (this.password.length >= 6);
     this.password_dirty = !this.password_ok;
     this.updateValidity();
   }
 
-  public peekConfirm() {
-    this.confirm_ok = (this.password == this.confirm_password);
+  public clearConfirm(): void {
+
+    console.log("Clear confirm");
+    this.confirm = '';
+    this.checkConfirm();
+    console.log(this.confirm);
+  }
+
+  public peekConfirm(): void {
+    this.confirm_ok = (this.password == this.confirm);
     if(this.confirm_ok) {
       this.confirm_dirty = false;
     }
     this.updateValidity();
   }
 
-  public checkConfirm() {
+  public checkConfirm(): void {
     this.peekConfirm();
     this.confirm_dirty = !this.confirm_ok;
   }
 
-  private updateValidity() {
+  private updateValidity(): void {
     this.ok = this.email_ok && this.username_ok && this.password_ok && this.confirm_ok;
   }
 
   public onSigninButton(): void {
     alert("signin");
+    // TODO api call + alert if problems
   }
 
 }

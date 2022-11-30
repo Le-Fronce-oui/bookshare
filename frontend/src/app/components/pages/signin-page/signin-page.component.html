@@ -19,11 +19,14 @@
 			<input pInputText id="password-input" type="password" name="password" class="p-inputtext-sm" [(ngModel)]="password" (focusout)="checkPassword()" [ngClass]="{'ng-invalid ng-dirty': password_dirty}">
 			<label for="password-input">Password</label>
 		</span>
-
-		<span class="p-float-label">
-			<input pInputText id="confirm-input" type="password" name="confirm" class="p-inputtext-sm" [(ngModel)]="confirm_password" (ngModelChange)="peekConfirm()" (focusout)="checkConfirm()" [ngClass]="{'ng-invalid ng-dirty': confirm_dirty}">
-			<label for="confirm-input">Confirm password</label>
-		</span>
+		
+		<div class="p-inputgroup">
+			<span class="p-float-label">
+				<input pInputText id="confirm-input" type="password" name="confirm" class="p-inputtext-sm" [(ngModel)]="confirm" (ngModelChange)="peekConfirm()" (focusout)="checkConfirm()" [ngClass]="{'ng-invalid ng-dirty': confirm_dirty}">
+				<label for="confirm-input">Confirm password</label>
+			</span>
+			<button type="button" pButton icon="pi pi-times" class="p-button-danger p-button-sm p-button-outlined" [disabled]="!confirm_dirty" (click)="clearConfirm()"></button>     
+		</div>
 
 		<p-button label="Submit" [disabled]="!this.ok" (onClick)="onSigninButton()"></p-button>
 	</form>
