@@ -1,0 +1,32 @@
+
+#center {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translateX(-50%) translateY(-80%);
+	border-style: solid;
+	border-color: var(--col-primary) var(--col-border);
+	border-radius: 3px;
+	border-width: 3px 2px;
+	text-align: center;
+	background-color: var(--col-canvas);
+	padding: var(--spacing-normal);
+}
+
+#flex-form {
+	display: flex;
+	flex-flow: row nowrap;
+	align-items: center;
+	gap: 24px var(--spacing-medium);
+	margin-top: 24px;
+}
+
+input {
+	width: 210px;
+}
+
+p.footnote {
+	font-size: var(--text-small);
+	margin-top: var(--spacing-normal);
+	margin-bottom: 0px;
+}
