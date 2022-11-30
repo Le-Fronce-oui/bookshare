@@ -1,8 +1,10 @@
+import AuthenticatedUser from "../internal/authenticated_user";
 
 declare global {
   namespace Express {
     export interface Request {
-      user?: string;
+      user?: AuthenticatedUser;
+      earlyReject: boolean = false;
     }
   }
 }
