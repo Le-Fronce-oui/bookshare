@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { validateEmail } from 'src/app/globals';
+import { NotificationService } from 'src/app/services/notification.service';
 import { UserService } from 'src/app/services/user.service';
 
 @Component({
@@ -22,7 +23,7 @@ export class LoginPageComponent implements OnInit {
   public email_dirty:    boolean = false;
   public password_dirty: boolean = false;
 
-  constructor(private route: ActivatedRoute, private router: Router, private userService: UserService) {
+  constructor(private route: ActivatedRoute, private router: Router, private userService: UserService, private notificationService: NotificationService) {
     this.nextPath = null;
     this.email    = '';
     this.password = '';
@@ -41,6 +42,7 @@ export class LoginPageComponent implements OnInit {
         this.nextPath = "/user/" + this.userService.getUuid();
       }
       if(this.userService.isConnected()) {
+        this.notificationService.success("Logged in as " + this.userService.getUsername());
         this.router.navigate([this.nextPath], {replaceUrl: true});
       }
     });
@@ -72,7 +74,7 @@ export class LoginPageComponent implements OnInit {
   }
 
   public onLoginButton(): void {
-    alert("login");
+    this.notificationService.info("TODO: login")
     // TODO api call + alert if problems
     if(this.nextPath === null) {
       this.nextPath = "/user/" + "TODO";

@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { validateEmail } from 'src/app/globals';
+import { NotificationService } from 'src/app/services/notification.service';
 import { UserService } from 'src/app/services/user.service';
 
 @Component({
@@ -30,7 +31,7 @@ export class SigninPageComponent implements OnInit {
   public password_dirty: boolean;
   public confirm_dirty:  boolean;
 
-  constructor(private route: ActivatedRoute, private router: Router, private userService: UserService) {
+  constructor(private route: ActivatedRoute, private router: Router, private userService: UserService, private notificationService: NotificationService) {
     this.nextPath = null;
     this.username = '';
     this.email    = '';
@@ -55,6 +56,7 @@ export class SigninPageComponent implements OnInit {
         this.nextPath = "/user/" + this.userService.getUuid();
       }
       if(this.userService.isConnected()) {
+        this.notificationService.success("Created account " + this.userService.getUsername());
         this.router.navigate([this.nextPath], {replaceUrl: true});
       }
     });
@@ -77,11 +79,13 @@ export class SigninPageComponent implements OnInit {
   public checkPassword(): void {
     this.password_ok = (this.password.length >= 6);
     this.password_dirty = !this.password_ok;
+    if(this.password_dirty) {
+      this.notificationService.warning('Password must be at least 6 characters long');
+    }
     this.updateValidity();
   }
 
   public clearConfirm(): void {
-
     console.log("Clear confirm");
     this.confirm = '';
     this.checkConfirm();
@@ -106,7 +110,7 @@ export class SigninPageComponent implements OnInit {
   }
 
   public onSigninButton(): void {
-    alert("signin");
+    this.notificationService.info("TODO: signin");
     // TODO api call + alert if problems
     if(this.nextPath === null) {
       this.nextPath = "/user/" + "TODO";

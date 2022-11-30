@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule } from '@angular/forms';
 
 import { InputTextModule } from 'primeng/inputtext';
@@ -23,6 +24,7 @@ import { HeaderFooterTemplateComponent } from './components/templates/header-foo
 import { SigninPageComponent } from './components/pages/signin-page/signin-page.component';
 import { LoginPageComponent } from './components/pages/login-page/login-page.component';
 import { UserListPageComponent } from './components/pages/user-list-page/user-list-page.component';
+import { MessageService } from 'primeng/api';
 
 @NgModule({
   declarations: [
@@ -42,6 +44,7 @@ import { UserListPageComponent } from './components/pages/user-list-page/user-li
   ],
   imports: [
     BrowserModule,
+    BrowserAnimationsModule,
     AppRoutingModule,
     FormsModule,
     InputTextModule,
@@ -51,7 +54,7 @@ import { UserListPageComponent } from './components/pages/user-list-page/user-li
     DialogModule,
     ButtonModule
   ],
-  providers: [],
+  providers: [MessageService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
