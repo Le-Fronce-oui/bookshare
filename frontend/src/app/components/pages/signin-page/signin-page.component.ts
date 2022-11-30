@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { EMAIL_REGEX } from 'src/app/globals';
+import { ActivatedRoute, Router } from '@angular/router';
+import { validateEmail } from 'src/app/globals';
+import { UserService } from 'src/app/services/user.service';
 
 @Component({
   selector: 'app-signin-page',
@@ -8,10 +10,12 @@ import { EMAIL_REGEX } from 'src/app/globals';
 })
 export class SigninPageComponent implements OnInit {
 
+  public nextPath: string | null;
+
   public username: string;
-  public email: string;
+  public email:    string;
   public password: string;
-  public confirm: string;
+  public confirm:  string;
 
   // Used to check if the fields are valid
   private username_ok: boolean;
@@ -26,11 +30,12 @@ export class SigninPageComponent implements OnInit {
   public password_dirty: boolean;
   public confirm_dirty:  boolean;
 
-  constructor() {
+  constructor(private route: ActivatedRoute, private router: Router, private userService: UserService) {
+    this.nextPath = null;
     this.username = '';
-    this.email = '';
+    this.email    = '';
     this.password = '';
-    this.confirm = '';
+    this.confirm  = '';
     this.username_ok = false;
     this.email_ok    = false;
     this.password_ok = false;
@@ -42,7 +47,18 @@ export class SigninPageComponent implements OnInit {
     this.confirm_dirty  = false;
   }
 
-  ngOnInit(): void { }
+  public ngOnInit(): void {
+    this.route.queryParams.subscribe(p => {
+      if('next' in p) {
+        this.nextPath = p.next;
+      } else if(this.userService.isConnected()) {
+        this.nextPath = "/user/" + this.userService.getUuid();
+      }
+      if(this.userService.isConnected()) {
+        this.router.navigate([this.nextPath], {replaceUrl: true});
+      }
+    });
+  }
 
   public checkUsername(): void {
     this.username = this.username.trim();
@@ -53,7 +69,7 @@ export class SigninPageComponent implements OnInit {
 
   public checkEmail(): void {
     this.email = this.email.trim();
-    this.email_ok = EMAIL_REGEX.test(this.email + " ");
+    this.email_ok = validateEmail(this.email);
     this.email_dirty = !this.email_ok;
     this.updateValidity();
   }
@@ -92,6 +108,15 @@ export class SigninPageComponent implements OnInit {
   public onSigninButton(): void {
     alert("signin");
     // TODO api call + alert if problems
+    if(this.nextPath === null) {
+      this.nextPath = "/user/" + "TODO";
+    }
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: {next: this.nextPath}, 
+      queryParamsHandling: 'merge'
+    });
+    window.location.reload();
   }
 
 }
