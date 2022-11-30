@@ -5,7 +5,7 @@ import { generateToken, AUTH_COOKIE } from "../../core/auth/authentication";
 import { Response } from "express";
 import UserCreationDTO from "src/dto/user_creation_request";
 import UserLoginDTO from "src/dto/user_login";
-import { EMAIL_REGEX } from "../../globals";
+import { validateEmail } from "../../globals";
 
 function setAuthCookie(user_id: string, res: Response) {
 	const token = generateToken(user_id);
@@ -15,7 +15,8 @@ function setAuthCookie(user_id: string, res: Response) {
 
 router.post('/signin', (req, res) => {
 	const dto: UserCreationDTO = req.body;
-	if(dto.password.length < 8 || !EMAIL_REGEX.test(dto.email)) {
+	const email = dto.email.trim();
+	if(dto.password.length < 8 || !validateEmail(email)) {
 		res.sendStatus(400);
 		return;
 	}
