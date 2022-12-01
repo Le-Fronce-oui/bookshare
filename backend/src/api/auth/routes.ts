@@ -27,14 +27,14 @@ router.post('/signin', async (req, res) => {
 	};
 	if(!error_body.name) {
 		await delay();
-		res.json(error_body).status(400).end();
+		res.status(400).json(error_body).end();
 		return;
 	}
 	checkUserUniqueness(dto.email, dto.username, async name_ok => {
-		error_body.name = name_ok;
 		if(!error_body.password || !name_ok) {
 			await delay();
-			res.json(error_body).status(400).end();
+			error_body.name = name_ok;
+			res.status(400).json(error_body).end();
 			return;
 		}
 		const [hash, salt] = newHash(dto.password);
@@ -54,7 +54,7 @@ router.post('/login', (req, res) => {
 	getUserByEmail(dto.email, async db_user => {
 		if(db_user !== null && checkHash(dto.password, db_user.password, db_user.salt)) {
 			setAuthCookie(db_user.id, res);
-			res.send();
+			res.send({ user_id: db_user.id });
 			return;
 		}
 		delay();
