@@ -25,7 +25,7 @@ router.get('/user/:userId/prints', (req, res) => {
 router.put('/user/:userId/print', (req, res) => {
 	// TODO
 	// Only for the user themselves
-	let dto: BookDTO = req.body;
+	//let dto: BookDTO = req.body;
 	res.json('todo');
 });
 

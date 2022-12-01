@@ -1,7 +1,6 @@
 
 interface UserCreationErrorDTO {
-	username: boolean,
-	email: boolean,
+	name: boolean,
 	password: boolean
 }
 

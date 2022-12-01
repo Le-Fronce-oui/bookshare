@@ -6,13 +6,19 @@ import { Injectable } from '@angular/core';
 export class UserService {
 
   private admin: boolean;
+  private connected: boolean;
+  private username: string;
+  private uuid: string;
 
   constructor() {
-    this.admin = false;
+    this.connected = false;
+    this.admin = true;
+    this.username = 'Username';
+    this.uuid = 'lol'
   }
 
   public isConnected(): boolean {
-    return false;
+    return this.connected;
   }
 
   public isAdmin(): boolean {
@@ -20,11 +26,19 @@ export class UserService {
   }
 
   public getUuid(): string {
-    return "";
+    return this.uuid;
   }
 
   public getUsername(): string {
-    return "";
+    return this.username;
+  }
+
+  public logout(): void {
+    this.connected = false;
+    this.admin = false;
+    this.username = '';
+    this.uuid = '';
+    window.location.reload();
   }
   
 }

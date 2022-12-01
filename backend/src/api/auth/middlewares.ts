@@ -1,24 +1,44 @@
 import { Request, Response, NextFunction } from 'express';
+import { getUserById } from '../../database/queries/users';
 import { checkToken, AUTH_COOKIE } from "../../core/auth/authentication";
+import { clearAuthCookie } from './cookies';
 
-function getAuthentifiedUser(req: Request) {
+
+function getAuthentifiedUser(req: Request, res: Response) {
 	const token = req.cookies[AUTH_COOKIE];
-	if(token === undefined) {
-		console.log('No token');
+	if(token === undefined || token.length == 0) {
 		return;
 	}
 	const user_id = checkToken(token);
 	if(user_id !== null) {
-		req.user = user_id; // TODO get user from database
+		getUserById(user_id, db_user => {
+			if(db_user === null) {
+				clearAuthCookie(res);
+				return;
+			}
+			if(db_user.banned) {
+				req.earlyReject = true;
+				res.sendStatus(403);
+				return;
+			}
+			req.user = {
+				uuid: db_user.id,
+				role: db_user.role,
+				visibility: db_user.visibility
+			}
+		});
+	} else {
+		clearAuthCookie(res);
 	}
-	console.log(user_id !== null ? 'authentified' : 'not authentified');
 }
 
 
 
-function auth(req: Request, _res: Response, next: NextFunction) {
-	getAuthentifiedUser(req);
-	next();
+function auth(req: Request, res: Response, next: NextFunction) {
+	getAuthentifiedUser(req, res);
+	if(!req.earlyReject) {
+		next();
+	}
 }
 
 function authenticated(else_code: number = 401) {
@@ -33,7 +53,7 @@ function authenticated(else_code: number = 401) {
 
 function isAdmin(else_code: number) {
 	return function(req: Request, res: Response, next: NextFunction) {
-		if(req.user === undefined) { // TODO !res.user.admin
+		if(req.user?.role === 'ADMIN') {
 			res.sendStatus(else_code);
 			return;
 		}
@@ -41,4 +61,4 @@ function isAdmin(else_code: number) {
 	}
 }
 
-export { auth, authenticated };
+export { auth, authenticated, isAdmin };

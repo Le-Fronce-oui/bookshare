@@ -1,44 +1,119 @@
 import router from "../../core/router";
-import bcrypt from "bcrypt";
-import { v4 as uuidv4 } from 'uuid';
-import { generateToken, AUTH_COOKIE } from "../../core/auth/authentication";
-import { Response } from "express";
-import UserCreationDTO from "src/dto/user_creation_request";
-import UserLoginDTO from "src/dto/user_login";
 import { validateEmail } from "../../globals";
+import { deleteToken, AUTH_COOKIE, deleteAllTokens } from "../../core/auth/authentication";
+import UserCreationDTO from "../../dto/user_creation_request";
+import UserLoginDTO from "../../dto/user_login";
+import { checkUserUniqueness, createUser, deleteUser, getUserByEmail, updateUserPassword } from "../../database/queries/users";
+import UserCreationErrorDTO from "../../dto/user_creation_error";
+import { checkHash, newHash } from "./hashing";
+import { setAuthCookie, clearAuthCookie } from "./cookies";
+import ChangePasswordDTO from "src/dto/change_password";
 
-function setAuthCookie(user_id: string, res: Response) {
-	const token = generateToken(user_id);
-	res.cookie(AUTH_COOKIE, token, {httpOnly: true, sameSite: 'strict'});
+// Waits for a random delay when a bad request occurs to avoid spamming
+function delay(): Promise<void> {
+	const duration_ms = Math.floor(Math.random() * 1000) + 1000;
+	return new Promise(resolve => setTimeout(resolve, duration_ms));
 }
 
-
-router.post('/signin', (req, res) => {
+/**
+ * Sign in route
+ */
+router.post('/signin', async (req, res) => {
 	const dto: UserCreationDTO = req.body;
 	const email = dto.email.trim();
-	if(dto.password.length < 8 || !validateEmail(email)) {
-		res.sendStatus(400);
+	let error_body: UserCreationErrorDTO = {
+		name: validateEmail(email),
+		password: dto.password.length >= 8
+	};
+	if(!error_body.name) {
+		await delay();
+		res.json(error_body).status(400).end();
 		return;
 	}
-	// TODO Check uniqueness constraints on username and email
-	const user_id = uuidv4();
-	const salt = bcrypt.genSaltSync(10)
-	const hash = bcrypt.hashSync(dto.password, salt);
-	// TODO Entry to database
-	const user = {
-
-	}
-	setAuthCookie(user_id, res);
-	res.json({user_id: user_id});
+	checkUserUniqueness(dto.email, dto.username, async name_ok => {
+		error_body.name = name_ok;
+		if(!error_body.password || !name_ok) {
+			await delay();
+			res.json(error_body).status(400).end();
+			return;
+		}
+		const [hash, salt] = newHash(dto.password);
+		createUser(email, dto.username, hash, salt, uuid => {
+			setAuthCookie(uuid, res);
+			res.json({ user_id: uuid }).end();
+		}, _ => res.sendStatus(500));
+	}, _ => res.sendStatus(500));
 });
 
+
+/**
+ * Log in route
+ */
 router.post('/login', (req, res) => {
 	const dto: UserLoginDTO = req.body;
-	if(false) { // ! user.exists
+	getUserByEmail(dto.email, async db_user => {
+		if(db_user !== null && checkHash(dto.password, db_user.password, db_user.salt)) {
+			setAuthCookie(db_user.id, res);
+			res.send();
+			return;
+		}
+		delay();
 		res.sendStatus(400);
 		return;
+	}, _ => res.sendStatus(500));
+});
+
+
+/**
+ * Log out route
+ */
+router.post('/logout', (req, res) => {
+	const token: string | undefined = req.cookies[AUTH_COOKIE];
+	if(token !== undefined) {
+		deleteToken(token);
 	}
-	setAuthCookie('todo: user_id from database', res);
+	clearAuthCookie(res);
 	res.send();
 });
 
+
+/**
+ * Change password route
+ */
+router.post('/password', (req, res) => {
+	const dto: ChangePasswordDTO = req.body;
+	getUserByEmail(dto.email, async db_user => {
+		if(db_user !== null && checkHash(dto.old_password, db_user.password, db_user.salt)) {
+			const [hash, salt] = newHash(dto.new_password);
+			updateUserPassword(db_user.id, hash, salt,
+				() => res.send(), 
+				_  => res.sendStatus(500)
+			);
+			return;
+		}
+		delay();
+		res.sendStatus(400);
+		return;
+	}, _ => res.sendStatus(500));
+});
+
+
+/**
+ * Delete user route
+ */
+router.post('/signout', (req, res) => {
+	const dto: UserLoginDTO = req.body;
+	getUserByEmail(dto.email, async db_user => {
+		if(db_user !== null && checkHash(dto.password, db_user.password, db_user.salt)) {
+			deleteAllTokens(db_user.id);
+			deleteUser(db_user.id,
+				() => res.send(), 
+				_  => res.sendStatus(500)
+			);
+			return;
+		}
+		delay();
+		res.sendStatus(400);
+		return;
+	}, _ => res.sendStatus(500));
+});
