@@ -35,10 +35,9 @@ export function createUser(email: string, username: string, hash: string, salt: 
 
 export function updateUserPassword(user_id: string, hash: string, salt: string, callback: Callable, onError?: ErrorHandler) {
     pool.query(
-        'UPDATE users SET password = $1, salt = $2 WHERE id = $3;', 
+        'UPDATE users SET password = $1, salt = $2, "updatedAt" = CURRENT_TIMESTAMP WHERE id = $3;', 
         [hash, salt, user_id]
-    ).then(qres => {
-        console.log(qres);
+    ).then(_ => {
         callback();
     }).catch(e => manageError(e, onError));
 }
