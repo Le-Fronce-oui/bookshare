@@ -1,7 +1,8 @@
-import { NgModule } from '@angular/core';
+import { ErrorHandler, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule } from '@angular/forms';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 
 import { InputTextModule } from 'primeng/inputtext';
 import { PasswordModule } from 'primeng/password';
@@ -26,6 +27,7 @@ import { LoginPageComponent } from './components/pages/login-page/login-page.com
 import { UserListPageComponent } from './components/pages/user-list-page/user-list-page.component';
 import { MessageService } from 'primeng/api';
 import { SimpleDialogTemplateComponent } from './components/templates/simple-dialog-template/simple-dialog-template.component';
+import { ErrorHandlingService } from './services/error-handling.service';
 
 @NgModule({
   declarations: [
@@ -49,6 +51,7 @@ import { SimpleDialogTemplateComponent } from './components/templates/simple-dia
     BrowserAnimationsModule,
     AppRoutingModule,
     FormsModule,
+    HttpClientModule,
     InputTextModule,
     PasswordModule,
     PanelModule,
@@ -56,7 +59,10 @@ import { SimpleDialogTemplateComponent } from './components/templates/simple-dia
     DialogModule,
     ButtonModule
   ],
-  providers: [MessageService],
+  providers: [
+    MessageService,
+    { provide: ErrorHandler, useClass: ErrorHandlingService }
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
