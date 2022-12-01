@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { validateEmail } from 'src/app/globals';
+import { ApiService } from 'src/app/services/api/api.service';
 import { NotificationService } from 'src/app/services/notification.service';
 import { UserService } from 'src/app/services/user.service';
 
@@ -31,7 +32,7 @@ export class SigninPageComponent implements OnInit {
   public password_dirty: boolean;
   public confirm_dirty:  boolean;
 
-  constructor(private route: ActivatedRoute, private router: Router, private userService: UserService, private notificationService: NotificationService) {
+  constructor(private route: ActivatedRoute, private router: Router, private api: ApiService, private userService: UserService, private notificationService: NotificationService) {
     this.nextPath = null;
     this.username = '';
     this.email    = '';
@@ -77,10 +78,10 @@ export class SigninPageComponent implements OnInit {
   }
 
   public checkPassword(): void {
-    this.password_ok = (this.password.length >= 6);
+    this.password_ok = (this.password.length >= 8);
     this.password_dirty = !this.password_ok;
     if(this.password_dirty) {
-      this.notificationService.warning('Password must be at least 6 characters long');
+      this.notificationService.warning('Password must be at least 8 characters long');
     }
     this.updateValidity();
   }
@@ -110,17 +111,30 @@ export class SigninPageComponent implements OnInit {
   }
 
   public onSigninButton(): void {
-    this.notificationService.info("TODO: signin");
-    // TODO api call + alert if problems
-    if(this.nextPath === null) {
-      this.nextPath = "/user/" + "TODO";
-    }
-    this.router.navigate([], {
-      relativeTo: this.route,
-      queryParams: {next: this.nextPath}, 
-      queryParamsHandling: 'merge'
-    });
-    window.location.reload();
+    this.api.auth.signin(this.username, this.email, this.password, 
+      res => {
+        if(this.nextPath === null) {
+          this.nextPath = "/user/" + res.user_id;
+        }
+        this.router.navigate([], {
+          relativeTo: this.route,
+          queryParams: {next: this.nextPath}, 
+          queryParamsHandling: 'merge'
+        }).then(_ => window.location.reload());
+      },
+      err => {
+        if(!err.name) {
+          this.notificationService.error("Username or email already taken");
+        }
+        if(!err.password) {
+          this.password_dirty = true;
+          this.password_ok = false;
+          this.confirm_dirty = true;
+          this.confirm_ok = false;
+          this.notificationService.error("Bad password");
+        }
+      }
+    );
   }
 
 }
