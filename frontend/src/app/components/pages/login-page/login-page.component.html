@@ -1,7 +1,5 @@
 
-<div id="center">
-
-	<h1>Log in to BookShare</h1>
+<app-simple-dialog-template [title]="'Log in to BookShare'">
 	
 	<form id="flex-form">
 		<span class="p-input-icon-left p-float-label">
@@ -19,6 +17,6 @@
 		<p-button label="Login" [disabled]="!this.ok" (onClick)="onLoginButton()"></p-button>
 	</form>
 
-	<p class="footnote">Don't have an account yet ? <a class="menuitem" [routerLink]="['/signin']" [queryParams]="{next: nextPath}">Sign in</a></p>
+	<ng-container footnote>Don't have an account yet ? <a class="menuitem" [routerLink]="['/signin']" [queryParams]="{next: nextPath}">Sign in</a></ng-container>
 
-</div>
+</app-simple-dialog-template>

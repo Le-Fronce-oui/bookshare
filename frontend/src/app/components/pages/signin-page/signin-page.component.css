@@ -1,18 +1,4 @@
 
-#center {
-	position: absolute;
-	top: 50%;
-	left: 50%;
-	transform: translateX(-50%) translateY(-60%);
-	border-style: solid;
-	border-color: var(--col-primary) var(--col-border);
-	border-radius: 3px;
-	border-width: 3px 2px;
-	text-align: center;
-	background-color: var(--col-canvas);
-	padding: var(--spacing-normal);
-}
-
 #grid-form {
 	display: grid;
 	align-items: start;
@@ -51,10 +37,4 @@ input, div.p-inputgroup {
 
 div.p-inputgroup > button {
 	background-color: white;
-}
-
-p.footnote {
-	font-size: var(--text-small);
-	margin-top: var(--spacing-normal);
-	margin-bottom: 0px;
 }

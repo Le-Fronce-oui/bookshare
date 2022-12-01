@@ -25,6 +25,7 @@ import { SigninPageComponent } from './components/pages/signin-page/signin-page.
 import { LoginPageComponent } from './components/pages/login-page/login-page.component';
 import { UserListPageComponent } from './components/pages/user-list-page/user-list-page.component';
 import { MessageService } from 'primeng/api';
+import { SimpleDialogTemplateComponent } from './components/templates/simple-dialog-template/simple-dialog-template.component';
 
 @NgModule({
   declarations: [
@@ -40,7 +41,8 @@ import { MessageService } from 'primeng/api';
     HeaderFooterTemplateComponent,
     SigninPageComponent,
     LoginPageComponent,
-    UserListPageComponent
+    UserListPageComponent,
+    SimpleDialogTemplateComponent
   ],
   imports: [
     BrowserModule,

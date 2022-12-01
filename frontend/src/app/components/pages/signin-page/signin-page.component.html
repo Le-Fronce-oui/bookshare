@@ -1,6 +1,4 @@
-<div id="center">
-
-	<h1>Sign in to BookShare</h1>
+<app-simple-dialog-template [title]="'Sign in to BookShare'">
 
 	<form id="grid-form">
 		<span class="p-input-icon-left p-float-label">
@@ -31,6 +29,6 @@
 		<p-button label="Submit" [disabled]="!this.ok" (onClick)="onSigninButton()"></p-button>
 	</form>
 
-	<p class="footnote">Already have an account ? <a class="menuitem" [routerLink]="['/login']" [queryParams]="{next: nextPath}">Log in</a></p>
+	<ng-container footnote>Already have an account ? <a class="menuitem" [routerLink]="['/login']" [queryParams]="{next: nextPath}">Log in</a></ng-container>
 	
-</div>
+</app-simple-dialog-template>
