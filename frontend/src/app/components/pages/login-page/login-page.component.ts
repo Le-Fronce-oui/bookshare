@@ -1,8 +1,12 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import UserLoginDTO from 'src/app/classes/dto/user_login';
+import UserIdResponseDTO from 'src/app/classes/dto/user_id_response';
 import { validateEmail } from 'src/app/globals';
 import { NotificationService } from 'src/app/services/notification.service';
 import { UserService } from 'src/app/services/user.service';
+import { ApiService } from 'src/app/services/api/api.service';
 
 @Component({
   selector: 'app-login-page',
@@ -23,7 +27,7 @@ export class LoginPageComponent implements OnInit {
   public email_dirty:    boolean = false;
   public password_dirty: boolean = false;
 
-  constructor(private route: ActivatedRoute, private router: Router, private userService: UserService, private notificationService: NotificationService) {
+  constructor(private route: ActivatedRoute, private router: Router, private api: ApiService, private userService: UserService, private notificationService: NotificationService) {
     this.nextPath = null;
     this.email    = '';
     this.password = '';
@@ -74,17 +78,17 @@ export class LoginPageComponent implements OnInit {
   }
 
   public onLoginButton(): void {
-    this.notificationService.info("TODO: login")
-    // TODO api call + alert if problems
-    if(this.nextPath === null) {
-      this.nextPath = "/user/" + "TODO";
-    }
-    this.router.navigate([], {
-      relativeTo: this.route,
-      queryParams: {next: this.nextPath}, 
-      queryParamsHandling: 'merge'
+    this.ok = false;
+    this.api.auth.login(this.email, this.password, res => {
+      if(this.nextPath === null) {
+        this.nextPath = "/user/" + res.user_id;
+      }
+      this.router.navigate([], {
+        relativeTo: this.route,
+        queryParams: {next: this.nextPath}, 
+        queryParamsHandling: 'merge'
+      }).then(_ => window.location.reload());
     });
-    window.location.reload();
   }
   
 
