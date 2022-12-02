@@ -9,12 +9,24 @@ export class ErrorHandlingService implements ErrorHandler {
 
   constructor() { }
 
+  private notify(message: string) {
+    document.body.dispatchEvent(new UncaughtErrorEvent(message));
+  }
+
   public handleError(error: any): void {
     if(error instanceof HttpErrorResponse) {
       if(error.status === 0) {
-        document.body.dispatchEvent(new UncaughtErrorEvent(error.message));
+        this.notify(error.message);
       } else {
-        document.body.dispatchEvent(new UncaughtErrorEvent(error.status + " " + error.statusText + " on " + error.url));
+        let message = error.status + " " + error.statusText;
+        let location = error.url;
+        if(location !== null) {
+          if(location.startsWith(window.location.origin)) {
+            location = location.substring(window.location.origin.length);
+          }
+          message += " on " + location;
+        }
+        this.notify(message);
       }
     }
   }
