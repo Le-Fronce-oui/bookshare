@@ -3,6 +3,7 @@ import Visibility from "src/database/models/visibility";
 
 interface AuthenticatedUser {
 	uuid: string,
+	username: string,
 	role: Role,
 	visibility: Visibility
 }
