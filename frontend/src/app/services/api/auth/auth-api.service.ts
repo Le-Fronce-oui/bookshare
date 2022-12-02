@@ -38,5 +38,11 @@ export class AuthApiService {
       }
     );
   }
+
+
+  public logout(callback: () => void): void {
+    this.http.post<UserIdResponseDTO>('/api/logout', {observe: 'body'})
+      .subscribe(_ => callback());
+  }
   
 }
