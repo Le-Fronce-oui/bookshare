@@ -1,5 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 import { validateEmail } from 'src/app/globals';
 import { ApiService } from 'src/app/services/api/api.service';
 import { NotificationService } from 'src/app/services/notification.service';
@@ -10,7 +11,7 @@ import { UserService } from 'src/app/services/user.service';
   templateUrl: './signin-page.component.html',
   styleUrls: ['./signin-page.component.css']
 })
-export class SigninPageComponent implements OnInit {
+export class SigninPageComponent implements OnInit, OnDestroy {
 
   public nextPath: string | null;
 
@@ -32,6 +33,8 @@ export class SigninPageComponent implements OnInit {
   public password_dirty: boolean;
   public confirm_dirty:  boolean;
 
+  private connectionSubscription!: Subscription;
+
   constructor(private route: ActivatedRoute, private router: Router, private api: ApiService, private userService: UserService, private notificationService: NotificationService) {
     this.nextPath = null;
     this.username = '';
@@ -49,16 +52,19 @@ export class SigninPageComponent implements OnInit {
     this.confirm_dirty  = false;
   }
 
-  public ngOnInit(): void {
+  public ngOnInit(): void { // TODO this could go in the template
+    this.connectionSubscription = this.userService.observeConnected(connected => {
+      if(connected) {
+        if(this.nextPath === null) {
+          this.nextPath = "/user/" + this.userService.getUuid();
+        }
+        this.notificationService.success("Logged in as " + this.userService.getUsername());
+        this.router.navigate([this.nextPath], {replaceUrl: true});
+      }
+    });
     this.route.queryParams.subscribe(p => {
       if('next' in p) {
         this.nextPath = p.next;
-      } else if(this.userService.isConnected()) {
-        this.nextPath = "/user/" + this.userService.getUuid();
-      }
-      if(this.userService.isConnected()) {
-        this.notificationService.success("Created account " + this.userService.getUsername());
-        this.router.navigate([this.nextPath], {replaceUrl: true});
       }
     });
   }
@@ -116,11 +122,7 @@ export class SigninPageComponent implements OnInit {
         if(this.nextPath === null) {
           this.nextPath = "/user/" + res.user_id;
         }
-        this.router.navigate([], {
-          relativeTo: this.route,
-          queryParams: {next: this.nextPath}, 
-          queryParamsHandling: 'merge'
-        }).then(_ => window.location.reload());
+        this.userService.refreshLogin();
       },
       err => {
         if(!err.name) {
@@ -135,6 +137,10 @@ export class SigninPageComponent implements OnInit {
         }
       }
     );
+  }
+
+  public ngOnDestroy(): void {
+    this.connectionSubscription.unsubscribe();
   }
 
 }

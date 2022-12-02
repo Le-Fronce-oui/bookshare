@@ -1,5 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import UserLoginDTO from 'src/app/classes/dto/user_login';
 import UserIdResponseDTO from 'src/app/classes/dto/user_id_response';
@@ -7,13 +7,14 @@ import { validateEmail } from 'src/app/globals';
 import { NotificationService } from 'src/app/services/notification.service';
 import { UserService } from 'src/app/services/user.service';
 import { ApiService } from 'src/app/services/api/api.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-login-page',
   templateUrl: './login-page.component.html',
   styleUrls: ['./login-page.component.css']
 })
-export class LoginPageComponent implements OnInit {
+export class LoginPageComponent implements OnInit, OnDestroy {
 
   public nextPath: string | null;
 
@@ -27,6 +28,8 @@ export class LoginPageComponent implements OnInit {
   public email_dirty:    boolean = false;
   public password_dirty: boolean = false;
 
+  private connectionSubscription!: Subscription;
+
   constructor(private route: ActivatedRoute, private router: Router, private api: ApiService, private userService: UserService, private notificationService: NotificationService) {
     this.nextPath = null;
     this.email    = '';
@@ -38,16 +41,19 @@ export class LoginPageComponent implements OnInit {
     this.password_dirty = false;
   }
 
-  public ngOnInit(): void {
+  public ngOnInit(): void { // TODO this could go in the template
+    this.connectionSubscription = this.userService.observeConnected(connected => {
+      if(connected) {
+        if(this.nextPath === null) {
+          this.nextPath = "/user/" + this.userService.getUuid();
+        }
+        this.notificationService.success("Logged in as " + this.userService.getUsername());
+        this.router.navigate([this.nextPath], {replaceUrl: true});
+      }
+    });
     this.route.queryParams.subscribe(p => {
       if('next' in p) {
         this.nextPath = p.next;
-      } else if(this.userService.isConnected()) {
-        this.nextPath = "/user/" + this.userService.getUuid();
-      }
-      if(this.userService.isConnected()) {
-        this.notificationService.success("Logged in as " + this.userService.getUsername());
-        this.router.navigate([this.nextPath], {replaceUrl: true});
       }
     });
   }
@@ -83,13 +89,12 @@ export class LoginPageComponent implements OnInit {
       if(this.nextPath === null) {
         this.nextPath = "/user/" + res.user_id;
       }
-      this.router.navigate([], {
-        relativeTo: this.route,
-        queryParams: {next: this.nextPath}, 
-        queryParamsHandling: 'merge'
-      }).then(_ => window.location.reload());
+      this.userService.refreshLogin();
     });
   }
   
+  public ngOnDestroy(): void {
+    this.connectionSubscription.unsubscribe();
+  }
 
 }
