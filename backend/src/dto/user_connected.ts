@@ -1,14 +1,15 @@
+import { Role } from "./enums";
 
 interface UserOrganisationDTO {
 	id: string,
-	role: string,
+	role: Role,
 	owned: boolean
 }
 
 interface UserConnectedDTO {
 	id: string,
 	username: string,
-	role: string,
+	role: Role,
 	organisations: UserOrganisationDTO[]
 }
 
