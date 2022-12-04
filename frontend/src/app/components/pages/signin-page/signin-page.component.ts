@@ -1,4 +1,7 @@
 import { Component, OnInit } from '@angular/core';
+import { CorrectedValidatedField } from 'src/app/classes/validated/corrected/corrected-validated-field';
+import { ValidatedField } from 'src/app/classes/validated/validated-field';
+import { ValidationGroup } from 'src/app/classes/validated/validation-group';
 import { validateEmail } from 'src/app/globals';
 import { ApiService } from 'src/app/services/api/api.service';
 import { NotificationService } from 'src/app/services/notification.service';
@@ -13,92 +16,41 @@ export class SigninPageComponent implements OnInit {
 
   public nextPath: string | null;
 
-  public username: string;
-  public email:    string;
-  public password: string;
-  public confirm:  string;
+  public checkGroup: ValidationGroup<string>;
 
-  // Used to check if the fields are valid
-  private username_ok: boolean;
-  private email_ok:    boolean;
-  private password_ok: boolean;
-  private confirm_ok:  boolean;
-  public  ok:          boolean;
-
-  // Used for displaying the errors in the fields
-  public username_dirty: boolean;
-  public email_dirty:    boolean;
-  public password_dirty: boolean;
-  public confirm_dirty:  boolean;
+  public username: ValidatedField<string>;
+  public email:    ValidatedField<string>;
+  public password: ValidatedField<string>;
+  public confirm:  ValidatedField<string>;
 
   constructor(private api: ApiService, private userService: UserService, private notificationService: NotificationService) {
     this.nextPath = null;
-    this.username = '';
-    this.email    = '';
-    this.password = '';
-    this.confirm  = '';
-    this.username_ok = false;
-    this.email_ok    = false;
-    this.password_ok = false;
-    this.confirm_ok  = false;
-    this.ok          = false;
-    this.username_dirty = false;
-    this.email_dirty    = false;
-    this.password_dirty = false;
-    this.confirm_dirty  = false;
+    this.checkGroup = new ValidationGroup();
+    this.username = new CorrectedValidatedField<string>('', v => v.length > 0, v => v.trim());
+    this.email    = new CorrectedValidatedField<string>('', validateEmail, v => v.trim());
+    this.password = new ValidatedField<string>('', v => v.length >= 8);
+    this.password.setOnDirtyChanged(dirty => {
+      if(dirty) {
+        this.notificationService.warning('Password must be at least 8 characters long');
+      }
+    });
+    this.confirm  = new ValidatedField<string>('', v => v.length > 0 && v === this.password.value);
+    this.checkGroup.addField(this.username);
+    this.checkGroup.addField(this.email);
+    this.checkGroup.addField(this.password);
+    this.checkGroup.addField(this.confirm);
   }
 
   public ngOnInit(): void { }
 
-  public checkUsername(): void {
-    this.username = this.username.trim();
-    this.username_ok = (this.username.length > 0);
-    this.username_dirty = !this.username_ok;
-    this.updateValidity();
-  }
-
-  public checkEmail(): void {
-    this.email = this.email.trim();
-    this.email_ok = validateEmail(this.email);
-    this.email_dirty = !this.email_ok;
-    this.updateValidity();
-  }
-
-  public checkPassword(): void {
-    this.password_ok = (this.password.length >= 8);
-    this.password_dirty = !this.password_ok;
-    if(this.password_dirty) {
-      this.notificationService.warning('Password must be at least 8 characters long');
-    }
-    this.updateValidity();
-  }
-
   public clearConfirm(): void {
-    console.log("Clear confirm");
-    this.confirm = '';
-    this.checkConfirm();
-    console.log(this.confirm);
-  }
-
-  public peekConfirm(): void {
-    this.confirm_ok = (this.password == this.confirm);
-    if(this.confirm_ok) {
-      this.confirm_dirty = false;
-    }
-    this.updateValidity();
-  }
-
-  public checkConfirm(): void {
-    this.peekConfirm();
-    this.confirm_dirty = !this.confirm_ok;
-  }
-
-  private updateValidity(): void {
-    this.ok = this.email_ok && this.username_ok && this.password_ok && this.confirm_ok;
+    this.confirm.value = '';
+    this.confirm.check();
   }
 
   public onSigninButton(): void {
-    this.api.auth.signin(this.username, this.email, this.password, 
+    this.checkGroup.ok = false;
+    this.api.auth.signin(this.username.value, this.email.value, this.password.value, 
       res => {
         if(this.nextPath === null) {
           this.nextPath = "/user/" + res.user_id;
@@ -110,10 +62,8 @@ export class SigninPageComponent implements OnInit {
           this.notificationService.error("Username or email already taken");
         }
         if(!err.password) {
-          this.password_dirty = true;
-          this.password_ok = false;
-          this.confirm_dirty = true;
-          this.confirm_ok = false;
+          this.password.makeDirty();
+          this.confirm.makeDirty();
           this.notificationService.error("Bad password");
         }
       }
