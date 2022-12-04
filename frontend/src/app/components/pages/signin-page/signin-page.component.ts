@@ -1,6 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { Subscription } from 'rxjs';
+import { Component, OnInit } from '@angular/core';
 import { validateEmail } from 'src/app/globals';
 import { ApiService } from 'src/app/services/api/api.service';
 import { NotificationService } from 'src/app/services/notification.service';
@@ -11,7 +9,7 @@ import { UserService } from 'src/app/services/user.service';
   templateUrl: './signin-page.component.html',
   styleUrls: ['./signin-page.component.css']
 })
-export class SigninPageComponent implements OnInit, OnDestroy {
+export class SigninPageComponent implements OnInit {
 
   public nextPath: string | null;
 
@@ -33,9 +31,7 @@ export class SigninPageComponent implements OnInit, OnDestroy {
   public password_dirty: boolean;
   public confirm_dirty:  boolean;
 
-  private connectionSubscription!: Subscription;
-
-  constructor(private route: ActivatedRoute, private router: Router, private api: ApiService, private userService: UserService, private notificationService: NotificationService) {
+  constructor(private api: ApiService, private userService: UserService, private notificationService: NotificationService) {
     this.nextPath = null;
     this.username = '';
     this.email    = '';
@@ -52,22 +48,7 @@ export class SigninPageComponent implements OnInit, OnDestroy {
     this.confirm_dirty  = false;
   }
 
-  public ngOnInit(): void { // TODO this could go in the template
-    this.connectionSubscription = this.userService.observeConnected(connected => {
-      if(connected) {
-        if(this.nextPath === null) {
-          this.nextPath = "/user/" + this.userService.getUuid();
-        }
-        this.notificationService.success("Logged in as " + this.userService.getUsername());
-        this.router.navigate([this.nextPath], {replaceUrl: true});
-      }
-    });
-    this.route.queryParams.subscribe(p => {
-      if('next' in p) {
-        this.nextPath = p.next;
-      }
-    });
-  }
+  public ngOnInit(): void { }
 
   public checkUsername(): void {
     this.username = this.username.trim();
@@ -137,10 +118,6 @@ export class SigninPageComponent implements OnInit, OnDestroy {
         }
       }
     );
-  }
-
-  public ngOnDestroy(): void {
-    this.connectionSubscription.unsubscribe();
   }
 
 }
