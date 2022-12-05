@@ -1,0 +1,16 @@
+
+.canvas {
+	text-align: center;
+	width: 800px;
+}
+
+h1 {
+	font-weight: bold;
+	color: var(--col-primary);
+}
+
+video {
+	width: 690px; /* nice */
+	margin-top: var(--spacing-medium);
+	border: var(--col-border) solid 1px;
+}

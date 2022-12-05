@@ -1,4 +1,19 @@
+import UserConnectedDTO from "src/dto/user_connected";
+import AuthenticatedUser from "src/types/internal/authenticated_user";
 import router from "../../core/router";
+import { authenticated } from "../auth/middlewares";
+
+
+router.get('/user/connected', authenticated(401), (req, res) => {
+	const user: AuthenticatedUser = req.user!;
+	let body: UserConnectedDTO = {
+		id: user.uuid,
+		username: user.username,
+		role: user.role,
+		organisations: [] // TODO get from database
+	}
+	res.json(body);
+});
 
 
 router.get('/user/:userId/info', (req, res) => {
@@ -25,7 +40,7 @@ router.get('/user/:userId/prints', (req, res) => {
 router.put('/user/:userId/print', (req, res) => {
 	// TODO
 	// Only for the user themselves
-	let dto: BookDTO = req.body;
+	//let dto: BookDTO = req.body;
 	res.json('todo');
 });
 

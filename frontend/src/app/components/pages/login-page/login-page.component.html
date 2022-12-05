@@ -1,1 +1,22 @@
-<p>login-page works!</p>
+
+<app-simple-dialog-template [title]="'Log in to BookShare'" [(nextPath)]="nextPath">
+	
+	<form id="flex-form">
+		<span class="p-input-icon-left p-float-label">
+			<i class="pi pi-at"></i>
+			<input pInputText id="email-input" type="text" name="email" class="p-inputtext-sm" [(ngModel)]="email.value" (focusout)="email.check()" [ngClass]="{'ng-invalid ng-dirty': email.dirty}">
+			<label for="email-input">Email address</label>
+		</span>
+
+		<span class="p-input-icon-left p-float-label">
+			<i class="pi pi-lock"></i>
+			<input pInputText id="password-input" type="password" name="password" class="p-inputtext-sm" [(ngModel)]="password.value" (ngModelChange)="password.peek()" (focusout)="password.check()" [ngClass]="{'ng-invalid ng-dirty': password.dirty}">
+			<label for="password-input">Password</label>
+		</span>
+		
+		<p-button label="Login" [disabled]="!checkGroup.ok" (onClick)="onLoginButton()"></p-button>
+	</form>
+
+	<ng-container footnote>Don't have an account yet ? <a class="menuitem" [routerLink]="['/signin']" [queryParams]="{next: nextPath}">Sign in</a></ng-container>
+
+</app-simple-dialog-template>
