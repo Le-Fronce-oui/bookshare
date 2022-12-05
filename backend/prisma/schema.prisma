@@ -10,17 +10,21 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model users {
-  id         String     @id
-  email      String     @unique
-  username   String     @unique
-  password   String
-  salt       String
-  visibility Visibility @default(PRIVATE)
-  role       Role       @default(USER)
-  banned     Boolean    @default(false)
-  createdAt  DateTime   @default(now())
-  updatedAt  DateTime   @updatedAt @default(now())
+model Users {
+  id            String          @id @unique
+  email         String          @unique
+  username      String          @unique
+  password      String
+  salt          String
+  visibility    Visibility      @default(PRIVATE)
+  role          Role            @default(USER)
+  banned        Boolean         @default(false)
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @default(now()) @updatedAt
+  Organisations Organisations[]
+  Loans         Loans[]
+  Collections   Collections[]
+  Members       Members[]
 }
 
 enum Visibility {
@@ -32,4 +36,64 @@ enum Visibility {
 enum Role {
   USER
   ADMIN
+}
+
+model Books {
+  id          String        @id @unique
+  name        String
+  desc        String
+  type        String
+  iban        String
+  author      String
+  cover       String
+  Loans       Loans[]
+  Collections Collections[]
+}
+
+model Organisations {
+  id         String     @id @unique
+  name       String
+  ownerId    String
+  owner      Users      @relation(fields: [ownerId], references: [id])
+  desc       String
+  visibility Visibility @default(PRIVATE)
+  blocked    Boolean    @default(false)
+  Loans      Loans[]
+  Members    Members[]
+}
+
+model Loans {
+  id         String        @id @unique
+  orgaId     String
+  orga       Organisations @relation(fields: [orgaId], references: [id])
+  bookId     String
+  book       Books         @relation(fields: [bookId], references: [id])
+  borrowerId String
+  borrower   Users         @relation(fields: [borrowerId], references: [id])
+  createdAt  DateTime      @default(now())
+  acceptedAt DateTime?
+  declinedAt DateTime?
+  borrowedAt DateTime?
+  returnedAt DateTime?
+}
+
+model Collections {
+  id         String @id @unique
+  userId     String
+  user       Users  @relation(fields: [userId], references: [id])
+  bookId     String
+  book       Books  @relation(fields: [bookId], references: [id])
+  num_owned  Int
+  num_loaned Int
+  num_shown  Int
+}
+
+model Members {
+  id     String        @id @unique
+  userId String
+  user   Users         @relation(fields: [userId], references: [id])
+  orgaId String
+  orga   Organisations @relation(fields: [orgaId], references: [id])
+  role   String
+  banned Boolean       @default(false)
 }
