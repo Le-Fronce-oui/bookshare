@@ -29,7 +29,7 @@ export const DATABASE_NAME = getEnv('BS_DATABASE_NAME');
 export const DATABASE_PASS = getEnv('BS_DATABASE_PASS');
 export const DATABASE_PORT = parseInt(getEnv('BS_DATABASE_PORT'));
 
-if (DATABASE_PORT === NaN) {
+if (Number.isNaN(DATABASE_PORT)) {
 	console.error('Bad database port');
 	process.exit(1);
 }
