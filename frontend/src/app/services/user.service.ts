@@ -1,24 +1,45 @@
 import { Injectable } from '@angular/core';
+import { BehaviorSubject, Subscription } from 'rxjs';
+import { ApiService } from './api/api.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UserService {
 
+  private connected: BehaviorSubject<boolean>;
+
   private admin: boolean;
-  private connected: boolean;
   private username: string;
   private uuid: string;
 
-  constructor() {
-    this.connected = false;
-    this.admin = true;
-    this.username = 'Username';
-    this.uuid = 'lol'
+  constructor(private api: ApiService) { // TODO organisations
+    this.connected = new BehaviorSubject<boolean>(false);
+    this.admin = false;
+    this.username = '';
+    this.uuid = ''
+    this.refreshLogin();
+  }
+
+  public refreshLogin() {
+    this.api.users.getConnectedUser(res => {
+      if(res !== null) {
+        this.uuid = res.id;
+        this.admin = (res.role === 'ADMIN');
+        this.username = res.username;
+        this.connected.next(true);
+      } else {
+        this.clearData();
+      }
+    })
   }
 
   public isConnected(): boolean {
-    return this.connected;
+    return this.connected.getValue();
+  }
+
+  public observeConnected(callback: (connected: boolean) => void): Subscription {
+    return this.connected.subscribe(callback);
   }
 
   public isAdmin(): boolean {
@@ -34,11 +55,17 @@ export class UserService {
   }
 
   public logout(): void {
-    this.connected = false;
+    this.api.auth.logout(() => {
+      this.clearData();
+      window.location.reload();
+    });
+  }
+
+  private clearData(): void {
+    this.connected.next(false);
     this.admin = false;
     this.username = '';
     this.uuid = '';
-    window.location.reload();
   }
   
 }

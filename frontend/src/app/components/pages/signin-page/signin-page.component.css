@@ -1,0 +1,40 @@
+
+#grid-form {
+	display: grid;
+	align-items: start;
+	justify-items: center;
+	grid-gap: 24px var(--spacing-medium);
+	margin-top: 24px;
+}
+
+#grid-form > span {
+	justify-self: stretch;
+}
+
+#grid-form > span:nth-child(1) {
+	grid-area: 1 / 1 / 1 / 1;
+}
+
+#grid-form > span:nth-child(2) {
+	grid-area: 1 / 2 / 1 / 2;
+}
+
+#grid-form > span:nth-child(3) {
+	grid-area: 2 / 1 / 2 / 1;
+}
+
+#grid-form > span:nth-child(4) {
+	grid-area: 2 / 2 / 2 / 2;
+}
+
+#grid-form > p-button {
+	grid-area: 3 / 1 / 3 / 3;
+}
+
+input, div.p-inputgroup {
+	width: 210px;
+}
+
+div.p-inputgroup > button {
+	background-color: white;
+}

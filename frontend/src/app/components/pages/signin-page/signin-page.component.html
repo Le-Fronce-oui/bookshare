@@ -1,1 +1,34 @@
-<p>signin-page works!</p>
+<app-simple-dialog-template [title]="'Sign in to BookShare'" [(nextPath)]="nextPath">
+
+	<form id="grid-form">
+		<span class="p-input-icon-left p-float-label">
+			<i class="pi pi-user"></i>
+			<input pInputText id="username-input" type="text" name="username" class="p-inputtext-sm" [(ngModel)]="username.value" (focusout)="username.check()" [ngClass]="{'ng-invalid ng-dirty': username.dirty}">
+			<label for="username-input">Username</label>
+		</span>
+
+		<span class="p-input-icon-left p-float-label">
+			<i class="pi pi-at"></i>
+			<input pInputText id="email-input" type="text" name="email" class="p-inputtext-sm" [(ngModel)]="email.value" (focusout)="email.check()" [ngClass]="{'ng-invalid ng-dirty': email.dirty}">
+			<label for="email-input">Email address</label>
+		</span>
+
+		<span class="p-float-label">
+			<input pInputText id="password-input" type="password" name="password" class="p-inputtext-sm" [(ngModel)]="password.value" (focusout)="password.check()" [ngClass]="{'ng-invalid ng-dirty': password.dirty}">
+			<label for="password-input">Password</label>
+		</span>
+		
+		<div class="p-inputgroup">
+			<span class="p-float-label">
+				<input pInputText id="confirm-input" type="password" name="confirm" class="p-inputtext-sm" [(ngModel)]="confirm.value" (ngModelChange)="confirm.peek()" (focusout)="confirm.check()" [ngClass]="{'ng-invalid ng-dirty': confirm.dirty}">
+				<label for="confirm-input">Confirm password</label>
+			</span>
+			<button type="button" pButton icon="pi pi-times" class="p-button-danger p-button-sm p-button-outlined" [disabled]="confirm.ok || confirm.value === ''" (click)="clearConfirm()"></button>     
+		</div>
+
+		<p-button label="Submit" [disabled]="!checkGroup.ok" (onClick)="onSigninButton()"></p-button>
+	</form>
+
+	<ng-container footnote>Already have an account ? <a class="menuitem" [routerLink]="['/login']" [queryParams]="{next: nextPath}">Log in</a></ng-container>
+	
+</app-simple-dialog-template>

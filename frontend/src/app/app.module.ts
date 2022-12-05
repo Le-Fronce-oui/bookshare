@@ -1,5 +1,15 @@
-import { NgModule } from '@angular/core';
+import { ErrorHandler, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { FormsModule } from '@angular/forms';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+
+import { InputTextModule } from 'primeng/inputtext';
+import { PasswordModule } from 'primeng/password';
+import { PanelModule } from 'primeng/panel';
+import { ToastModule } from 'primeng/toast';
+import { DialogModule } from 'primeng/dialog';
+import { ButtonModule } from 'primeng/button';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -15,6 +25,9 @@ import { HeaderFooterTemplateComponent } from './components/templates/header-foo
 import { SigninPageComponent } from './components/pages/signin-page/signin-page.component';
 import { LoginPageComponent } from './components/pages/login-page/login-page.component';
 import { UserListPageComponent } from './components/pages/user-list-page/user-list-page.component';
+import { MessageService } from 'primeng/api';
+import { SimpleDialogTemplateComponent } from './components/templates/simple-dialog-template/simple-dialog-template.component';
+import { ErrorHandlingService } from './services/error-handling.service';
 
 @NgModule({
   declarations: [
@@ -30,13 +43,26 @@ import { UserListPageComponent } from './components/pages/user-list-page/user-li
     HeaderFooterTemplateComponent,
     SigninPageComponent,
     LoginPageComponent,
-    UserListPageComponent
+    UserListPageComponent,
+    SimpleDialogTemplateComponent
   ],
   imports: [
     BrowserModule,
-    AppRoutingModule
+    BrowserAnimationsModule,
+    AppRoutingModule,
+    FormsModule,
+    HttpClientModule,
+    InputTextModule,
+    PasswordModule,
+    PanelModule,
+    ToastModule,
+    DialogModule,
+    ButtonModule
   ],
-  providers: [],
+  providers: [
+    MessageService,
+    { provide: ErrorHandler, useClass: ErrorHandlingService }
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
