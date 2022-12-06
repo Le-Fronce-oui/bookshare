@@ -1,0 +1,12 @@
+
+.p-inputgroup > input {
+	width: 350px;
+}
+
+#books {
+	margin-top: var(--spacing-medium);
+	display: grid;
+	grid-gap: var(--spacing-medium);
+	grid-template-columns: repeat(auto-fill, 190px);
+	grid-template-rows:    repeat(auto-fill, 280px);
+}

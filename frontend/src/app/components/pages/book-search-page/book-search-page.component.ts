@@ -1,4 +1,7 @@
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import ShortBookDTO from 'src/app/classes/dto/books/short';
+import { ApiService } from 'src/app/services/api/api.service';
 
 @Component({
   selector: 'app-book-search-page',
@@ -7,9 +10,17 @@ import { Component, OnInit } from '@angular/core';
 })
 export class BookSearchPageComponent implements OnInit {
 
-  constructor() { }
+  public books: ShortBookDTO[];
+
+  constructor(private api: ApiService) {
+    this.books = [];
+  }
 
   ngOnInit(): void {
+    this.api.books.getBooks(books => {
+      this.books = books;
+      console.log(this.books);
+    })
   }
 
 }

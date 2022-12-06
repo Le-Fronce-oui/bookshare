@@ -28,6 +28,7 @@ import { UserListPageComponent } from './components/pages/user-list-page/user-li
 import { MessageService } from 'primeng/api';
 import { SimpleDialogTemplateComponent } from './components/templates/simple-dialog-template/simple-dialog-template.component';
 import { ErrorHandlingService } from './services/error-handling.service';
+import { BookCardComponent } from './components/generic/cards/book-card/book-card.component';
 
 @NgModule({
   declarations: [
@@ -44,7 +45,8 @@ import { ErrorHandlingService } from './services/error-handling.service';
     SigninPageComponent,
     LoginPageComponent,
     UserListPageComponent,
-    SimpleDialogTemplateComponent
+    SimpleDialogTemplateComponent,
+    BookCardComponent
   ],
   imports: [
     BrowserModule,

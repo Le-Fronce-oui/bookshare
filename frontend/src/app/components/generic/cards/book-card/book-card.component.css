@@ -1,0 +1,25 @@
+
+.canvas {
+	display: flex;
+	flex-flow: column nowrap;
+	height: 100%;
+}
+
+.image-link {
+	display: block;
+	background-position: center;
+	background-repeat: no-repeat;
+	background-size: cover;
+	flex-grow: 1;
+}
+
+.book-title {
+	user-select: none;
+	margin-bottom: 0px;
+	margin-top: var(--spacing-medium);
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	font-weight: bold;
+	flex-grow: 0;
+}
