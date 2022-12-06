@@ -1,6 +1,6 @@
-import { getBookById, getBooks } from "src/database/queries/books";
-import BookDTO from "src/dto/books/full";
-import ShortBookDTO from "src/dto/books/short";
+import { getBookById, getBooks } from "../../database/queries/books";
+import BookDTO from "../../dto/books/full";
+import ShortBookDTO from "../../dto/books/short";
 import router from "../../core/router";
 
 
