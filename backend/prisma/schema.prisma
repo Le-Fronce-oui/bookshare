@@ -41,11 +41,11 @@ enum Role {
 model Books {
   id          String        @id @unique
   name        String
-  desc        String
+  desc        String?
   type        String
-  iban        String
+  iban        String?
   author      String
-  cover       String
+  cover       String?
   Loans       Loans[]
   Collections Collections[]
 }
@@ -55,7 +55,7 @@ model Organisations {
   name       String
   ownerId    String
   owner      Users      @relation(fields: [ownerId], references: [id])
-  desc       String
+  desc       String?
   visibility Visibility @default(PRIVATE)
   blocked    Boolean    @default(false)
   Loans      Loans[]
@@ -78,22 +78,22 @@ model Loans {
 }
 
 model Collections {
-  id         String @id @unique
   userId     String
   user       Users  @relation(fields: [userId], references: [id])
   bookId     String
   book       Books  @relation(fields: [bookId], references: [id])
   num_owned  Int
-  num_loaned Int
+  num_lent   Int
   num_shown  Int
+  @@id([userId, bookId])
 }
 
 model Members {
-  id     String        @id @unique
   userId String
   user   Users         @relation(fields: [userId], references: [id])
   orgaId String
   orga   Organisations @relation(fields: [orgaId], references: [id])
   role   String
   banned Boolean       @default(false)
+  @@id([userId, orgaId])
 }

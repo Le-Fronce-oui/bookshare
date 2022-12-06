@@ -27,11 +27,11 @@ CREATE TABLE "Users" (
 CREATE TABLE "Books" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
-    "desc" TEXT NOT NULL,
+    "desc" TEXT,
     "type" TEXT NOT NULL,
-    "iban" TEXT NOT NULL,
+    "iban" TEXT,
     "author" TEXT NOT NULL,
-    "cover" TEXT NOT NULL,
+    "cover" TEXT,
 
     CONSTRAINT "Books_pkey" PRIMARY KEY ("id")
 );
@@ -41,7 +41,7 @@ CREATE TABLE "Organisations" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "ownerId" TEXT NOT NULL,
-    "desc" TEXT NOT NULL,
+    "desc" TEXT,
     "visibility" "Visibility" NOT NULL DEFAULT 'PRIVATE',
     "blocked" BOOLEAN NOT NULL DEFAULT false,
 
@@ -65,25 +65,24 @@ CREATE TABLE "Loans" (
 
 -- CreateTable
 CREATE TABLE "Collections" (
-    "id" TEXT NOT NULL,
     "userId" TEXT NOT NULL,
     "bookId" TEXT NOT NULL,
     "num_owned" INTEGER NOT NULL,
-    "num_loaned" INTEGER NOT NULL,
-    "num_shown" INTEGER NOT NULL,
+    "num_lent" INTEGER NOT NULL CHECK (num_lent > 0),
+    "num_shown" INTEGER NOT NULL CHECK (num_shown > 0),
+    CHECK (num_owned >= num_shown),
 
-    CONSTRAINT "Collections_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "Collections_pkey" PRIMARY KEY ("userId", "bookId")
 );
 
 -- CreateTable
 CREATE TABLE "Members" (
-    "id" TEXT NOT NULL,
     "userId" TEXT NOT NULL,
     "orgaId" TEXT NOT NULL,
     "role" TEXT NOT NULL,
     "banned" BOOLEAN NOT NULL DEFAULT false,
 
-    CONSTRAINT "Members_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "Members_pkey" PRIMARY KEY ("userId", "orgaId")
 );
 
 -- CreateIndex
@@ -103,12 +102,6 @@ CREATE UNIQUE INDEX "Organisations_id_key" ON "Organisations"("id");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Loans_id_key" ON "Loans"("id");
-
--- CreateIndex
-CREATE UNIQUE INDEX "Collections_id_key" ON "Collections"("id");
-
--- CreateIndex
-CREATE UNIQUE INDEX "Members_id_key" ON "Members"("id");
 
 -- AddForeignKey
 ALTER TABLE "Organisations" ADD CONSTRAINT "Organisations_ownerId_fkey" FOREIGN KEY ("ownerId") REFERENCES "Users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
