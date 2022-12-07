@@ -13,6 +13,9 @@
 	padding: var(--spacing-large);
 }
 
+
+/* Header */
+
 #app-title {
 	font-size: var(--text-big);
 	font-weight: bold;
@@ -28,14 +31,57 @@ header {
 	user-select: none;
 }
 
-header > .menuitem {
-	margin-left: var(--spacing-large);
+header a, header span {
 	color: var(--col-text);
+}
+
+
+/* Sub-menu */
+
+.menuitem {
+	margin-left: var(--spacing-large);
+	position: relative;
 }
 
 span.menuitem {
 	cursor: pointer;
 }
+
+.menuitem > .submenu {
+	position: absolute;
+	top: 18px;
+	left: 0px;
+	display: none;
+}
+
+.menuitem:hover > .submenu {
+	display: block;
+}
+
+.submenu-arrow {
+	height: 12px;
+	width:  12px;
+	border-top:  var(--col-border) solid 1px;
+	border-left: var(--col-border) solid 1px;
+	background-color: var(--col-canvas);
+	position: relative;
+	transform: rotate(45deg);
+	top:  6px;
+	left: 15px;
+}
+
+.submenu > .canvas > a {
+	white-space: nowrap;
+	display: block;
+	margin-top: var(--spacing-medium);
+}
+
+.submenu > .canvas > a:nth-child(1) {
+	margin-top: 0px;
+}
+
+
+/* Footer */
 
 footer {
 	width: 100%;
