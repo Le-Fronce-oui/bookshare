@@ -2,14 +2,15 @@ import { ErrorHandler, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule } from '@angular/forms';
-import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { HttpClientModule } from '@angular/common/http';
 
 import { InputTextModule } from 'primeng/inputtext';
 import { PasswordModule } from 'primeng/password';
-import { PanelModule } from 'primeng/panel';
+import { FieldsetModule } from 'primeng/fieldset';
 import { ToastModule } from 'primeng/toast';
 import { DialogModule } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
+import { TableModule } from 'primeng/table';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -58,10 +59,11 @@ import { BookFilterPipePipe } from './pipes/book-filter-pipe.pipe';
     HttpClientModule,
     InputTextModule,
     PasswordModule,
-    PanelModule,
+    FieldsetModule,
     ToastModule,
     DialogModule,
-    ButtonModule
+    ButtonModule,
+    TableModule
   ],
   providers: [
     MessageService,
