@@ -40,7 +40,6 @@ export class BookDetailsPageComponent implements OnInit {
       this.router.navigate(['/books']);
     });
     this.route.queryParams.subscribe(params => {
-      console.log(params);
       this.org_id = ('from_org' in params) ? params.from_org : null
       // TODO some API call ...
     });

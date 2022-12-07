@@ -4,6 +4,7 @@ import DatabaseUser from '../models/user';
 import { v4 as uuidv4 } from 'uuid';
 import { manageError } from "../errors";
 import { Role } from "@prisma/client";
+import Visibility from "../models/visibility";
 
 let no_Users: boolean = false;
 
@@ -50,6 +51,15 @@ export function updateUserPassword(user_id: string, hash: string, salt: string, 
     pool.query(
         'UPDATE "Users" SET password = $1, salt = $2, "updatedAt" = CURRENT_TIMESTAMP WHERE id = $3;',
         [hash, salt, user_id]
+    ).then(_ => {
+        callback();
+    }).catch(e => manageError(e, onError));
+}
+
+export function updateUserVisibility(user_id: string, visibility: Visibility, callback: Callable, onError?: ErrorHandler) {
+    pool.query(
+        'UPDATE "Users" SET visibility = $1, "updatedAt" = CURRENT_TIMESTAMP WHERE id = $2;',
+        [visibility, user_id]
     ).then(_ => {
         callback();
     }).catch(e => manageError(e, onError));
