@@ -29,6 +29,7 @@ import { MessageService } from 'primeng/api';
 import { SimpleDialogTemplateComponent } from './components/templates/simple-dialog-template/simple-dialog-template.component';
 import { ErrorHandlingService } from './services/error-handling.service';
 import { BookCardComponent } from './components/generic/cards/book-card/book-card.component';
+import { BookFilterPipePipe } from './pipes/book-filter-pipe.pipe';
 
 @NgModule({
   declarations: [
@@ -46,7 +47,8 @@ import { BookCardComponent } from './components/generic/cards/book-card/book-car
     LoginPageComponent,
     UserListPageComponent,
     SimpleDialogTemplateComponent,
-    BookCardComponent
+    BookCardComponent,
+    BookFilterPipePipe
   ],
   imports: [
     BrowserModule,

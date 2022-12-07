@@ -12,13 +12,16 @@ export class BookSearchPageComponent implements OnInit {
 
   public books: ShortBookDTO[];
 
+  public filter: string;
+
   constructor(private api: ApiService) {
     this.books = [];
+    this.filter = '';
   }
 
-  ngOnInit(): void {
+  public ngOnInit(): void {
     this.api.books.getBooks(books => {
-      this.books = books;
+      this.books = books.sort((b1, b2) => b1.name.localeCompare(b2.name));
       console.log(this.books);
     })
   }

@@ -3,12 +3,12 @@
 	<div class="canvas">
 		<div class="p-inputgroup">
             <span class="p-inputgroup-addon"><i class="pi pi-book"></i></span>
-            <input type="text" pInputText placeholder="Book title">         
+            <input type="text" pInputText placeholder="Book title" [(ngModel)]="filter">         
         </div>
 	</div>
 
 	<div id="books">
-		<ng-container *ngFor="let book of books">
+		<ng-container *ngFor="let book of books | bookFilterPipe:filter">
 			<app-book-card [book_id]="book.id" [title]="book.name" [cover]="book.cover"></app-book-card>
 		</ng-container>
 	</div>
