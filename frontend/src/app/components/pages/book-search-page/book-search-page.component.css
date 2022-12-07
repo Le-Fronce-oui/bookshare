@@ -4,9 +4,9 @@
 }
 
 #books {
-	margin-top: var(--spacing-medium);
+	margin-top: var(--spacing-large);
 	display: grid;
 	grid-gap: var(--spacing-medium);
-	grid-template-columns: repeat(auto-fill, 190px);
-	grid-template-rows:    repeat(auto-fill, 280px);
+	grid-template-columns: repeat(5,          190px);
+	grid-template-rows:    repeat(auto-fill , 280px);
 }

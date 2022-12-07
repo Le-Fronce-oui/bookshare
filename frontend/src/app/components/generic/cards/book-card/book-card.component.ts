@@ -7,20 +7,20 @@ import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/cor
 })
 export class BookCardComponent implements OnInit, OnChanges {
 
-  private static readonly DEFAULT_COVER_URL = '/assets/covers/default.jpg';
-  private static readonly DEFAULT_COVER = "url(\"" + BookCardComponent.DEFAULT_COVER_URL + "\")";
+  private static readonly DEFAULT_COVER_GRADIENT = "linear-gradient(to bottom right, var(--col-primary-light), var(--col-tertiary-light))";
 
 
   @Input() public title!:   string;
   @Input() public book_id!: string;
-  @Input() public cover?:   string;
+  @Input() public cover:    string | null;
 
   public book_link:  string;
   public cover_path: string;
 
   constructor() {
+    this.cover = null;
     this.book_link = '/books';
-    this.cover_path = BookCardComponent.DEFAULT_COVER;
+    this.cover_path = BookCardComponent.DEFAULT_COVER_GRADIENT;
   }
 
   public ngOnInit(): void { }
@@ -29,8 +29,8 @@ export class BookCardComponent implements OnInit, OnChanges {
     const book_id = changes.book_id.currentValue;
     this.book_link = "/book/" + book_id;
     const cover = changes.cover.currentValue;
-    if(cover === undefined) {
-      this.cover_path = BookCardComponent.DEFAULT_COVER;
+    if(cover === null) {
+      this.cover_path = BookCardComponent.DEFAULT_COVER_GRADIENT;
     } else {
       this.cover_path = "url(\"/assets/covers/" + cover + "\")";
     }
