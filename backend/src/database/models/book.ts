@@ -2,9 +2,9 @@
 interface DatabaseBook {
 	id: string,
 	name: string,
-    desc?: string,
+    desc: string | null,
     type: string,
-    iban?: string,
+    iban: string | null,
     author: string,
-    cover?: string
+    cover: string | null
 }
