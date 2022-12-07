@@ -12,7 +12,8 @@
 			<p-fieldset *ngIf="this.book.desc" [toggleable]="true" [collapsed]="true" style="text-align: justify;">
 				<ng-template pTemplate="header">Summary</ng-template>
 				{{this.book.desc}}
-			</p-fieldset>			
+			</p-fieldset>
+			<p *ngIf="org_id !== null">TODO : get info for org {{org_id}}</p>
 		</div>
 	</div>
 </app-header-footer-template>

@@ -14,12 +14,13 @@ export class BookDetailsPageComponent implements OnInit {
 
   public book_id!: string;
   public book!: BookDTO;
+  public org_id: string | null;
 
   public cover_path: string;
 
   constructor(private route: ActivatedRoute, private router: Router, private api: ApiService, private notificationService: NotificationService) {
     this.cover_path = AppComponent.DEFAULT_COVER_GRADIENT;
-
+    this.org_id = null;
   }
 
   ngOnInit(): void {
@@ -37,6 +38,11 @@ export class BookDetailsPageComponent implements OnInit {
     }, () => {
       this.notificationService.error('Book not found', this.book_id);
       this.router.navigate(['/books']);
+    });
+    this.route.queryParams.subscribe(params => {
+      console.log(params);
+      this.org_id = ('from_org' in params) ? params.from_org : null
+      // TODO some API call ...
     });
   }
 
