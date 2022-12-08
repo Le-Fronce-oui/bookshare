@@ -1,24 +1,39 @@
-import { userInfo } from "os";
-import { getUserById } from "src/database/queries/users";
-import UserConnectedDTO from "src/dto/user_connected";
-import AuthenticatedUser from "src/types/internal/authenticated_user";
-import { DATABASE_USER } from "src/utils/env";
+import { getUserById } from "../../database/queries/users";
+import UserConnectedDTO from "../../dto/user_connected";
+import AuthenticatedUser from "../../types/internal/authenticated_user";
 import { updateUserVisibility } from "../../database/queries/users";
 import UserVisibilityDTO from "../../dto/users/visibility";
 import router from "../../core/router";
 import { authenticated } from "../auth/middlewares";
 import Visibility from "../../database/models/visibility";
+import { getBooksForUser } from "../../database/queries/books";
+import { getOrganisationsForUser } from "../../database/queries/organisations";
 
 
 router.get('/user/connected', authenticated(401), (req, res) => {
 	const user: AuthenticatedUser = req.user!;
-	let body: UserConnectedDTO = {
-		id: user.uuid,
-		username: user.username,
-		role: user.role,
-		organisations: [] // TODO get from database
-	}
-	res.json(body);
+	getBooksForUser(user.uuid, books => {
+		getOrganisationsForUser(user.uuid, organisations => {
+			let body: UserConnectedDTO = {
+				id: user.uuid,
+				username: user.username,
+				role: user.role,
+				organisations: organisations.map(o => ({
+					id: o.id,
+					name: o.name,
+					role: o.role,
+					owned: o.owner_id == user.uuid
+				})),
+				books: books.map(b => ({
+					id: b.id,
+					name: b.name,
+					cover: b.cover,
+					count: b.num_owned
+				}))
+			}
+			res.json(body);
+		}, _ => res.sendStatus(500));
+	}, _ => res.sendStatus(500));
 });
 
 
@@ -37,7 +52,8 @@ router.get('/user/:userId/info', (req, res) => {
 				id: db_user.id,
 				username: db_user.username,
 				role: db_user.role,
-				organisations: []
+				organisations: [],
+				books: []
 			}
 		}
 	})

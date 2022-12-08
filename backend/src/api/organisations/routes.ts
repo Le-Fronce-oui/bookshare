@@ -1,11 +1,10 @@
 import router from "../../core/router";
-import { pool } from "../../database/connect";
 
 router.get('/org/:orgId', (req, res) => {
 	req.params.orgId;
 	
 	res.json("todo")
-	});
+});
 
 	
 
