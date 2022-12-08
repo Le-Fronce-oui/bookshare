@@ -1,16 +1,11 @@
 import { Role } from "./enums";
-
-interface UserOrganisationDTO {
-	id: string,
-	role: Role,
-	owned: boolean
-}
+import ShortOrganisationDTO from "./organisations/short";
 
 interface UserConnectedDTO {
 	id: string,
 	username: string,
 	role: Role,
-	organisations: UserOrganisationDTO[]
+	organisations: ShortOrganisationDTO[]
 }
 
 export default UserConnectedDTO;

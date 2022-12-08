@@ -57,7 +57,7 @@ router.post('/login', (req, res) => {
 			res.send({ user_id: db_user.id });
 			return;
 		}
-		delay();
+		await delay();
 		res.sendStatus(400);
 		return;
 	}, _ => res.sendStatus(500));
@@ -91,7 +91,7 @@ router.post('/password', (req, res) => {
 			);
 			return;
 		}
-		delay();
+		await delay();
 		res.sendStatus(400);
 		return;
 	}, _ => res.sendStatus(500));
@@ -112,7 +112,7 @@ router.post('/signout', (req, res) => {
 			);
 			return;
 		}
-		delay();
+		await delay();
 		res.sendStatus(400);
 		return;
 	}, _ => res.sendStatus(500));

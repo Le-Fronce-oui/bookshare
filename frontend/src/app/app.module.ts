@@ -2,14 +2,15 @@ import { ErrorHandler, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule } from '@angular/forms';
-import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { HttpClientModule } from '@angular/common/http';
 
 import { InputTextModule } from 'primeng/inputtext';
 import { PasswordModule } from 'primeng/password';
-import { PanelModule } from 'primeng/panel';
+import { FieldsetModule } from 'primeng/fieldset';
 import { ToastModule } from 'primeng/toast';
 import { DialogModule } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
+import { TableModule } from 'primeng/table';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -28,6 +29,8 @@ import { UserListPageComponent } from './components/pages/user-list-page/user-li
 import { MessageService } from 'primeng/api';
 import { SimpleDialogTemplateComponent } from './components/templates/simple-dialog-template/simple-dialog-template.component';
 import { ErrorHandlingService } from './services/error-handling.service';
+import { BookCardComponent } from './components/generic/cards/book-card/book-card.component';
+import { BookFilterPipePipe } from './pipes/book-filter-pipe.pipe';
 
 @NgModule({
   declarations: [
@@ -44,7 +47,9 @@ import { ErrorHandlingService } from './services/error-handling.service';
     SigninPageComponent,
     LoginPageComponent,
     UserListPageComponent,
-    SimpleDialogTemplateComponent
+    SimpleDialogTemplateComponent,
+    BookCardComponent,
+    BookFilterPipePipe
   ],
   imports: [
     BrowserModule,
@@ -54,10 +59,11 @@ import { ErrorHandlingService } from './services/error-handling.service';
     HttpClientModule,
     InputTextModule,
     PasswordModule,
-    PanelModule,
+    FieldsetModule,
     ToastModule,
     DialogModule,
-    ButtonModule
+    ButtonModule,
+    TableModule
   ],
   providers: [
     MessageService,

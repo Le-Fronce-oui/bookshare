@@ -3,8 +3,13 @@ import { getUserById } from "src/database/queries/users";
 import UserConnectedDTO from "src/dto/user_connected";
 import AuthenticatedUser from "src/types/internal/authenticated_user";
 import { DATABASE_USER } from "src/utils/env";
+import { updateUserVisibility } from "../../database/queries/users";
+import UserVisibilityDTO from "../../dto/users/visibility";
+import UserConnectedDTO from "../../dto/user_connected";
+import AuthenticatedUser from "../../types/internal/authenticated_user";
 import router from "../../core/router";
 import { authenticated } from "../auth/middlewares";
+import Visibility from "../../database/models/visibility";
 
 
 router.get('/user/connected', authenticated(401), (req, res) => {
@@ -39,60 +44,26 @@ router.get('/user/:userId/info', (req, res) => {
 		}
 	})
 	res.json('todo');
+router.get('/user/:userId/visibility', authenticated(401), (req, res) => {
+	if(req.user?.uuid !== req.params.userId) {
+		res.sendStatus(403);
+	}
+	const body: UserVisibilityDTO = {
+		visibility: req.user?.visibility!
+	};
+	res.json(body);
 });
 
-router.get('/user/:userId/organisations', (req, res) => {
-	// TODO
-	res.json('todo');
+router.post('/user/:userId/visibility', authenticated(401), (req, res) => {
+	if(req.user?.uuid !== req.params.userId) {
+		res.sendStatus(403);
+	}
+	const visibility = req.query.visibility as Visibility;
+	if(visibility !== 'PUBLIC' && visibility !== 'RESTRICTED') {
+		res.sendStatus(400);
+	}
+	updateUserVisibility(req.user?.uuid!, visibility, () => { res.sendStatus(200) }, _ => { res.sendStatus(500) });
 });
 
-router.get('/user/:userId/loans', (req, res) => {
-	// TODO
-	res.json('todo');
-});
 
-router.get('/user/:userId/prints', (req, res) => {
-	// TODO
-	res.json('todo');
-});
-
-router.put('/user/:userId/print', (req, res) => {
-	// TODO
-	// Only for the user themselves
-	//let dto: BookDTO = req.body;
-	res.json('todo');
-});
-
-router.delete('/user/:userId/print/:bookId', (req, res) => {
-	// TODO
-	// Only for the user themselves
-	res.json('todo');
-});
-
-router.post('/user/:userId/print/:bookId/nb', (req, res) => {
-	// TODO
-	// Only for the user themselves
-	let count = req.query.count;
-	let shown = req.query.shown;
-	res.json('todo');
-});
-
-router.post('/user/:userId/visibility', (req, res) => {
-	// TODO
-	// Only for the user themselves
-	res.json('todo');
-});
-
-router.delete('/user/:userId', (req, res) => {
-	// TODO delete entry from the database (+ associated loans, prints, memberships, ...)
-	// Only for the user themselves
-	res.json('todo');
-});
-
-router.post('/user/:userId/ban', (req, res) => {
-	// TODO
-	// (no need to delete from database, just set the ban field)
-	// Only for site admins
-	res.json('todo');
-});
 
