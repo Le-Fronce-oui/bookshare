@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Subscription } from 'rxjs';
+import ShortBookDTO from '../classes/dto/books/short';
 import ShortOrganisationDTO from '../classes/dto/organisations/short';
 import { ApiService } from './api/api.service';
 
@@ -13,14 +14,16 @@ export class UserService {
   private admin: boolean;
   private username: string;
   private uuid: string;
-  private organisations: ShortOrganisationDTO[];
+  private organisations: Map<String,ShortOrganisationDTO>;
+  private books: Map<String,ShortBookDTO>;
 
-  constructor(private api: ApiService) { // TODO organisations
+  constructor(private api: ApiService) {
     this.connected = new BehaviorSubject<boolean>(false);
     this.admin = false;
     this.username = '';
     this.uuid = '';
-    this.organisations = [];
+    this.organisations = new Map();
+    this.books = new Map();
     this.refreshLogin();
   }
 
@@ -30,7 +33,8 @@ export class UserService {
         this.uuid = res.id;
         this.admin = (res.role === 'ADMIN');
         this.username = res.username;
-        this.organisations = res.organisations;
+        this.organisations = new Map(res.organisations.map(o => [o.id, o]));
+        this.books = new Map(res.books.map(b => [b.id, b]));
         this.connected.next(true);
       } else {
         this.clearData();
@@ -58,17 +62,41 @@ export class UserService {
     return this.username;
   }
 
+  // Organisations
+
   public hasOrganisations(): boolean {
-    return this.organisations.length > 0;
+    return this.organisations.size > 0;
   }
 
   public getOrganisations(): ShortOrganisationDTO[] {
-    return this.organisations;
+    return Array.from(this.organisations.values());
   }
 
   public inOrganisation(org_id: string): boolean {
-    return this.organisations.some(org => org.id === org_id);
+    return this.organisations.has(org_id);
   }
+
+  public isOrgAdmin(org_id: string): boolean {
+    let org = this.organisations.get(org_id);
+    return org !== undefined && org.role === 'ADMIN';
+  }
+
+  public isOrgOwner(org_id: string): boolean {
+    let org = this.organisations.get(org_id);
+    return org !== undefined && org.owned;
+  }
+
+  // Books
+
+  public getBooks(): ShortBookDTO[] {
+    return Array.from(this.books.values());
+  }
+
+  public hasBook(book_id: string): boolean {
+    return this.books.has(book_id);
+  }
+
+  // Log out
 
   public logout(): void {
     this.api.auth.logout(() => {
@@ -82,7 +110,8 @@ export class UserService {
     this.admin = false;
     this.username = '';
     this.uuid = '';
-    this.organisations = [];
+    this.organisations.clear();
+    this.books.clear();
   }
   
 }
