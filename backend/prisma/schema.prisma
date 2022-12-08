@@ -78,7 +78,6 @@ model Loans {
   declinedAt DateTime?
   borrowedAt DateTime?
   returnedAt DateTime?
-  usersId    String?
 }
 
 model Collections {

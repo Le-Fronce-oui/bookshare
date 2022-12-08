@@ -53,6 +53,7 @@ CREATE TABLE "Loans" (
     "id" TEXT NOT NULL,
     "orgaId" TEXT NOT NULL,
     "bookId" TEXT NOT NULL,
+    "ownerId" TEXT NOT NULL
     "borrowerId" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "acceptedAt" TIMESTAMP(3),
@@ -114,6 +115,9 @@ ALTER TABLE "Loans" ADD CONSTRAINT "Loans_bookId_fkey" FOREIGN KEY ("bookId") RE
 
 -- AddForeignKey
 ALTER TABLE "Loans" ADD CONSTRAINT "Loans_borrowerId_fkey" FOREIGN KEY ("borrowerId") REFERENCES "Users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Loans" ADD CONSTRAINT "Loans_ownerId_fkey" FOREIGN KEY ("ownerId") REFERENCES "Users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Collections" ADD CONSTRAINT "Collections_userId_fkey" FOREIGN KEY ("userId") REFERENCES "Users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
