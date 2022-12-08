@@ -1,6 +1,7 @@
 import { Consumer, ErrorHandler } from "src/types/functions";
 import { pool } from "../connect";
 import { manageError } from "../errors";
+import DatabaseLoan from "../models/loan";
 
 export function getLoans(consumer: Consumer<DatabaseLoan[]>, onError?: ErrorHandler) {
     pool.query('SELECT * FROM "Loans";').then(qres => {
