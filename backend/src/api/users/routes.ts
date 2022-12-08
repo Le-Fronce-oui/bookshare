@@ -42,24 +42,24 @@ router.get('/user/:userId/info', (req, res) => {
 		}
 	})
 	res.json('todo');
-router.get('/user/:userId/visibility', authenticated(401), (req, res) => {
-	if(req.user?.uuid !== req.params.userId) {
-		res.sendStatus(403);
-	}
-	const body: UserVisibilityDTO = {
-		visibility: req.user?.visibility!
-	};
-	res.json(body);
-});
+	router.get('/user/:userId/visibility', authenticated(401), (req, res) => {
+		if (req.user?.uuid !== req.params.userId) {
+			res.sendStatus(403);
+		}
+		const body: UserVisibilityDTO = {
+			visibility: req.user?.visibility!
+		};
+		res.json(body);
+	});
 
-router.post('/user/:userId/visibility', authenticated(401), (req, res) => {
-	if(req.user?.uuid !== req.params.userId) {
-		res.sendStatus(403);
-	}
-	const visibility = req.query.visibility as Visibility;
-	if(visibility !== 'PUBLIC' && visibility !== 'RESTRICTED') {
-		res.sendStatus(400);
-	}
-	updateUserVisibility(req.user?.uuid!, visibility, () => { res.sendStatus(200) }, _ => { res.sendStatus(500) });
+	router.post('/user/:userId/visibility', authenticated(401), (req, res) => {
+		if (req.user?.uuid !== req.params.userId) {
+			res.sendStatus(403);
+		}
+		const visibility = req.query.visibility as Visibility;
+		if (visibility !== 'PUBLIC' && visibility !== 'RESTRICTED') {
+			res.sendStatus(400);
+		}
+		updateUserVisibility(req.user?.uuid!, visibility, () => { res.sendStatus(200) }, _ => { res.sendStatus(500) });
+	});
 });
-
