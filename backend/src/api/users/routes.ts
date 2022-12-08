@@ -5,8 +5,6 @@ import AuthenticatedUser from "src/types/internal/authenticated_user";
 import { DATABASE_USER } from "src/utils/env";
 import { updateUserVisibility } from "../../database/queries/users";
 import UserVisibilityDTO from "../../dto/users/visibility";
-import UserConnectedDTO from "../../dto/user_connected";
-import AuthenticatedUser from "../../types/internal/authenticated_user";
 import router from "../../core/router";
 import { authenticated } from "../auth/middlewares";
 import Visibility from "../../database/models/visibility";
@@ -64,6 +62,4 @@ router.post('/user/:userId/visibility', authenticated(401), (req, res) => {
 	}
 	updateUserVisibility(req.user?.uuid!, visibility, () => { res.sendStatus(200) }, _ => { res.sendStatus(500) });
 });
-
-
 
