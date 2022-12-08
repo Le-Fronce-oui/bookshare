@@ -62,4 +62,12 @@ router.get('/user/:userId/info', (req, res) => {
 		}
 		updateUserVisibility(req.user?.uuid!, visibility, () => { res.sendStatus(200) }, _ => { res.sendStatus(500) });
 	});
+
+	router.get('/user/:userId/loans', authenticated(401), (req, res) => {
+		if (req.user?.uuid !== req.params.userId) {
+			res.sendStatus(403);
+		} else {
+			res.json('todo');
+		}
+	});
 });
