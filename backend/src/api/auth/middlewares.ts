@@ -49,7 +49,7 @@ function authenticated(else_code: number = 401) {
 
 function isAdmin(else_code: number) {
 	return function(req: Request, res: Response, next: NextFunction) {
-		if(req.user?.role === 'ADMIN') {
+		if(req.user?.role !== 'ADMIN') {
 			res.sendStatus(else_code);
 			return;
 		}

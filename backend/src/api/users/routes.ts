@@ -1,13 +1,14 @@
-import { addBookToCollection, getUserById } from "../../database/queries/users";
+import { addBookToCollection, getAllUsers, getUserById, setUserSiteBan, setUserSiteRole } from "../../database/queries/users";
 import UserConnectedDTO from "../../dto/user_connected";
 import AuthenticatedUser from "../../types/internal/authenticated_user";
-import { updateUserVisibility } from "../../database/queries/users";
+import { setUserVisibility } from "../../database/queries/users";
 import UserVisibilityDTO from "../../dto/users/visibility";
 import router from "../../core/router";
-import { authenticated } from "../auth/middlewares";
+import { authenticated, isAdmin } from "../auth/middlewares";
 import Visibility from "../../database/models/visibility";
 import { getBooksForUser } from "../../database/queries/books";
 import { getOrganisationsForUser } from "../../database/queries/organisations";
+import ShortUserDTO from "src/dto/users/short";
 
 
 router.get('/user/connected', authenticated(401), (req, res) => {
@@ -37,6 +38,19 @@ router.get('/user/connected', authenticated(401), (req, res) => {
 });
 
 
+router.get('/users/short', authenticated(401), isAdmin(403), (req, res) => {
+	getAllUsers(users => {
+		let body: ShortUserDTO[] = users.map(u => ({
+			id: u.id,
+			username: u.username,
+			admin: u.role === 'ADMIN',
+			banned: u.banned
+		}));
+		res.json(body);
+	}, _ => res.sendStatus(500));
+});
+
+
 router.get('/user/:userId/info', (req, res) => {
 	const id = req.params.userId
 	getUserById(id, db_user => {
@@ -58,7 +72,6 @@ router.get('/user/:userId/info', (req, res) => {
 		}
 	})
 	res.json('todo');
-	
 });
 
 
@@ -82,7 +95,24 @@ router.post('/user/:userId/visibility', authenticated(401), (req, res) => {
 	if (visibility !== 'PUBLIC' && visibility !== 'RESTRICTED') {
 		res.sendStatus(400);
 	}
-	updateUserVisibility(req.user?.uuid!, visibility, () => { res.sendStatus(200) }, _ => { res.sendStatus(500) });
+	setUserVisibility(req.user?.uuid!, visibility, () => { res.sendStatus(200) }, _ => { res.sendStatus(500) });
+});
+
+router.post('/user/:user_id/admin', authenticated(401), isAdmin(403), (req, res) => {
+	setUserSiteRole(req.params.user_id, 'ADMIN', ok => {
+		res.sendStatus(ok ? 200 : 400)
+	}, _ => res.sendStatus(500));
+});
+
+router.post('/user/:user_id/access', authenticated(401), isAdmin(403), (req, res) => {
+	let ban = req.query.ban;
+	if(ban !== 'true' && ban !== 'false') {
+		res.sendStatus(400);
+		return;
+	}
+	setUserSiteBan(req.params.user_id, ban === 'true', ok => {
+		res.sendStatus(ok ? 200 : 400)
+	}, _ => res.sendStatus(500));
 });
 
 

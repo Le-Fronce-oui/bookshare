@@ -53,7 +53,7 @@ CREATE TABLE "Loans" (
     "id" TEXT NOT NULL,
     "orgaId" TEXT NOT NULL,
     "bookId" TEXT NOT NULL,
-    "ownerId" TEXT NOT NULL
+    "ownerId" TEXT NOT NULL,
     "borrowerId" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "acceptedAt" TIMESTAMP(3),
@@ -82,6 +82,7 @@ CREATE TABLE "Members" (
     "orgaId" TEXT NOT NULL,
     "role" TEXT NOT NULL,
     "banned" BOOLEAN NOT NULL DEFAULT false,
+    CHECK (NOT banned OR "role" <> 'ADMIN')
 
     CONSTRAINT "Members_pkey" PRIMARY KEY ("userId", "orgaId")
 );
