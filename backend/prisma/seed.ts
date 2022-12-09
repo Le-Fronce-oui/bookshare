@@ -1,41 +1,29 @@
 import { PrismaClient } from '@prisma/client'
 const prisma = new PrismaClient()
-async function main() {
-    const user1 = await prisma.user.upsert({
-        where: { email: 'alice@prisma.io' },
-        update: {},
-        create: {
-            email: 'alice@prisma.io',
-            username: 'Alice',
-            password: 'password',
-            salt: 'salt',
-            role: 'USER',
-            visibility : 'PUBLIC',
-        },
-    })
-   
-    const admin = await prisma.user.upsert({
-        where: { email: 'admin@prisma.io' },
-        update: {},
-        create: {
-            email: 'admin@prisma.io',
-            username: 'admin',
-            password: 'admin',
-            salt: 'salt',
-            role: 'ADMIN',
-            visibility : 'PRIVATE',
-        },
-    })
 
-    const 
-    console.log({ user1, admin })
+async function run() {
+    const hobbit = await prisma.books.upsert({
+        where: { id: '1' },
+        update: {},
+        create: {
+
+            id: '1',
+            name: 'The Hobbit',
+            desc: 'A book about a hobbit',
+            type: 'BOOK',
+            iban: '1234567890',
+            author: 'J.R.R. Tolkien',
+            cover: 'https://m.media-amazon.com/images/I/413V3sIKSJL._AC_SY780_.jpg',
+        },
+    })
+    console.log({ hobbit })
 }
-main()
-    .then(async () => {
-        await prisma.$disconnect()
+run()
+    .catch(e => {
+        throw e
     })
-    .catch(async (e) => {
-        console.error(e)
+    .finally(async () => {
         await prisma.$disconnect()
-        process.exit(1)
-    })
+    }
+    )
+
