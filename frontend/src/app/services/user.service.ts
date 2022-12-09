@@ -10,6 +10,7 @@ import { ApiService } from './api/api.service';
 export class UserService {
 
   private connected: BehaviorSubject<boolean>;
+  private initialised: BehaviorSubject<boolean>;
 
   private admin: boolean;
   private username: string;
@@ -19,6 +20,7 @@ export class UserService {
 
   constructor(private api: ApiService) {
     this.connected = new BehaviorSubject<boolean>(false);
+    this.initialised = new BehaviorSubject<boolean>(false);
     this.admin = false;
     this.username = '';
     this.uuid = '';
@@ -36,8 +38,14 @@ export class UserService {
         this.organisations = new Map(res.organisations.map(o => [o.id, o]));
         this.books = new Map(res.books.map(b => [b.id, b]));
         this.connected.next(true);
+        if(!this.initialised.value) {
+          this.initialised.next(true);
+        }
       } else {
         this.clearData();
+        if(!this.initialised.value) {
+          this.initialised.next(true);
+        }
       }
     })
   }
@@ -49,6 +57,15 @@ export class UserService {
   public observeConnected(callback: (connected: boolean) => void): Subscription {
     return this.connected.subscribe(callback);
   }
+
+  public whenInitialised(callback: () => void): Subscription {
+    return this.initialised.subscribe(init => {
+      if(init) {
+        callback();
+      }
+    });
+  }
+
 
   public isAdmin(): boolean {
     return this.isConnected() && this.admin;
