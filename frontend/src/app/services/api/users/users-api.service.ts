@@ -33,4 +33,10 @@ export class UsersApiService {
       .subscribe(_ => callback());
   }
 
+  
+  public addBookToCollection(user_id: string, book_id: string, callback: () => void): void {
+    this.http.put("/api/user/" + user_id + "/book/" + book_id, null, { responseType: 'text' })
+      .subscribe(_ => callback());
+  }
+
 }

@@ -69,8 +69,8 @@ CREATE TABLE "Collections" (
     "userId" TEXT NOT NULL,
     "bookId" TEXT NOT NULL,
     "num_owned" INTEGER NOT NULL,
-    "num_lent" INTEGER NOT NULL CHECK (num_lent > 0),
-    "num_shown" INTEGER NOT NULL CHECK (num_shown > 0),
+    "num_lent" INTEGER NOT NULL CHECK (num_lent >= 0),
+    "num_shown" INTEGER NOT NULL CHECK (num_shown >= 0),
     CHECK (num_owned >= num_shown),
 
     CONSTRAINT "Collections_pkey" PRIMARY KEY ("userId", "bookId")

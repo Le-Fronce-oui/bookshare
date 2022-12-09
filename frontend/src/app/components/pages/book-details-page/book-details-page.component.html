@@ -7,13 +7,15 @@
 		</div>
 
 		<div class="canvas">
+			<i *ngIf="logged_in && !saved" class="pi pi-bookmark" (click)="saveToCollection()"></i>
+			<i *ngIf="logged_in && saved" class="pi pi-bookmark-fill"></i>
 			<h1>{{book.name}}</h1>
 			<h2>{{book.author}}</h2>
 			<p-fieldset *ngIf="this.book.desc" [toggleable]="true" [collapsed]="true" style="text-align: justify;">
 				<ng-template pTemplate="header">Summary</ng-template>
 				{{this.book.desc}}
 			</p-fieldset>
-			<p *ngIf="org_id !== null">TODO : get info for org {{org_id}}</p>
+			<p *ngIf="org_id !== null && org_users.length > 0">TODO : get info for org {{org_id}}</p>
 		</div>
 	</div>
 </app-header-footer-template>

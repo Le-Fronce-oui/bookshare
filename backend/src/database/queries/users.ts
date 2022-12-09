@@ -70,3 +70,11 @@ export function deleteUser(user_id: string, callback: Callable, onError?: ErrorH
         callback();
     }).catch(e => manageError(e, onError));
 }
+
+
+export function addBookToCollection(user_id: string, book_id: string, owned: number, shown: number, 
+            callback: Callable, onError?: ErrorHandler) {
+    pool.query('INSERT INTO "Collections" VALUES($1, $2, $3, 0, $4);', [user_id, book_id, owned, shown])
+        .then(callback)
+        .catch(e => manageError(e, onError));
+}

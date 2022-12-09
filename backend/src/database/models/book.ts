@@ -15,4 +15,11 @@ export interface UserDatabaseBook extends DatabaseBook {
     num_shown: number
 }
 
+export interface DatabaseUserBooksInOrg {
+    user_id: string,
+    username: string,
+    owned: number,
+    lent: number
+}
+
 export default DatabaseBook;

@@ -1,7 +1,7 @@
-import { Consumer, ErrorHandler } from "src/types/functions";
+import { Consumer, ErrorHandler } from "../../types/functions";
 import { pool } from "../connect";
 import { manageError } from "../errors";
-import { DatabaseBook, UserDatabaseBook } from "../models/book";
+import { DatabaseBook, UserDatabaseBook, DatabaseUserBooksInOrg } from "../models/book";
 
 
 export function getBooks(consumer: Consumer<DatabaseBook[]>, onError?: ErrorHandler) {
@@ -23,6 +23,37 @@ export function getBooksForUser(user_id: string, consumer: Consumer<UserDatabase
         FROM "Books", "Collections" 
         WHERE "Collections"."userId" = $1 AND "Collections"."bookId" = "Books".id;
     `, [user_id]).then(qres => {
+        consumer(qres.rows);
+    }).catch(e => manageError(e, onError));
+}
+
+
+export function getBookInOrganisation(org_id: string, book_id: string, loggedIn: boolean, 
+            consumer: Consumer<DatabaseUserBooksInOrg[]>, onError?: ErrorHandler) {
+    let query: string;
+    if(loggedIn) {
+        query = `
+            SELECT "Users".id as user_id, "Users".name as username, "Collections".shown as owned, "Collections".lent
+            FROM "Users", "Members", "Collections"
+            WHERE "Members"."userId" = "Users".id
+                AND "Collections"."userId" = "Users".id 
+                AND "Users".visibility = 'PUBLIC'
+                AND "Members"."orgaId" = $1
+                AND "Collections"."bookId" = $2
+                AND "Collections".shown > 0
+        `;
+    } else {
+        query = `
+            SELECT "Users".id as user_id, "Users".name as username, "Collections".shown as owned, "Collections".lent
+            FROM "Users", "Members", "Collections"
+            WHERE "Members"."userId" = "Users".id
+                AND "Collections"."userId" = "Users".id
+                AND "Members"."orgaId" = $1
+                AND "Collections"."bookId" = $2
+                AND "Collections".shown > 0
+        `;
+    }
+    pool.query(query, [org_id, book_id]).then(qres => {
         consumer(qres.rows);
     }).catch(e => manageError(e, onError));
 }
