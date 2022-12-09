@@ -2,15 +2,21 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import UserConnectedDTO from '../../../classes/dto/user_connected';
 import UserVisibilityDTO from '../../../classes/dto/users/visibility';
-import { NotificationService } from '../../notification.service';
 import { Visibility } from '../../../classes/dto/enums';
+import ShortUserDTO from 'src/app/classes/dto/users/short';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UsersApiService {
 
-  constructor(private http: HttpClient, private notificationService: NotificationService) { }
+  constructor(private http: HttpClient) { }
+
+
+  public getAllUsers(callback: (response: ShortUserDTO[]) => void): void {
+    this.http.get<ShortUserDTO[]>('/api/users/short', {observe: 'body'})
+      .subscribe(callback);
+  }
 
 
   public getConnectedUser(callback: (response: UserConnectedDTO | null) => void): void {
@@ -19,8 +25,7 @@ export class UsersApiService {
         if(error.status === 401) {
           callback(null);
         } else { throw error; }
-      }
-    );
+      });
   }
 
   public getUserVisibility(user_id: string, callback: (response: UserVisibilityDTO) => void): void {
@@ -30,6 +35,17 @@ export class UsersApiService {
 
   public setUserVisibility(user_id: string, visibility: Visibility, callback: () => void): void {
     this.http.post("/api/user/" + user_id + "/visibility?visibility=" + visibility, null, { responseType: 'text' })
+      .subscribe(_ => callback());
+  }
+
+
+  public setUserSiteBan(user_id: string, banned: boolean, callback: () => void): void {
+    this.http.post("/api/user/" + user_id + "/access?ban=" + banned, null, { responseType: 'text' })
+      .subscribe(_ => callback());
+  }
+
+  public grantUserSiteAdmin(user_id: string, callback: () => void): void {
+    this.http.post("/api/user/" + user_id + "/admin", null, { responseType: 'text' })
       .subscribe(_ => callback());
   }
 

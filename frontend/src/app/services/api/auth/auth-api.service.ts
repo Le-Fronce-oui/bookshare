@@ -34,6 +34,8 @@ export class AuthApiService {
       .subscribe(callback, (error: HttpErrorResponse) => {
         if(error.status === 400) {
           this.notificationService.error('Wrong username or password');
+        } else if(error.status === 403) {
+          this.notificationService.error('You have been banned form this site');
         } else { throw error; }
       }
     );
