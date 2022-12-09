@@ -10,6 +10,7 @@ import { FieldsetModule } from 'primeng/fieldset';
 import { ToastModule } from 'primeng/toast';
 import { DialogModule } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
+import { ToggleButtonModule } from 'primeng/togglebutton';
 import { TableModule } from 'primeng/table';
 
 import { AppRoutingModule } from './app-routing.module';
@@ -31,6 +32,7 @@ import { SimpleDialogTemplateComponent } from './components/templates/simple-dia
 import { ErrorHandlingService } from './services/error-handling.service';
 import { BookCardComponent } from './components/generic/cards/book-card/book-card.component';
 import { BookFilterPipePipe } from './pipes/book-filter-pipe.pipe';
+import { UserListPageRowComponent } from './components/pages/user-list-page/specific/user-list-page-row/user-list-page-row.component';
 
 @NgModule({
   declarations: [
@@ -49,7 +51,8 @@ import { BookFilterPipePipe } from './pipes/book-filter-pipe.pipe';
     UserListPageComponent,
     SimpleDialogTemplateComponent,
     BookCardComponent,
-    BookFilterPipePipe
+    BookFilterPipePipe,
+    UserListPageRowComponent
   ],
   imports: [
     BrowserModule,
@@ -63,6 +66,7 @@ import { BookFilterPipePipe } from './pipes/book-filter-pipe.pipe';
     ToastModule,
     DialogModule,
     ButtonModule,
+    ToggleButtonModule,
     TableModule
   ],
   providers: [

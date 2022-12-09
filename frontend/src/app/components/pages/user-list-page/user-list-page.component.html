@@ -1,4 +1,17 @@
 
 <app-header-footer-template>
-	This page should allow us to see a list of all users
+	<div class="canvas">
+		<p-table [value]="users" [tableStyle]="{'min-width': '900px'}">
+			<ng-template pTemplate="header">
+				<tr style="position: sticky;">
+					<th>Username</th>
+					<th>Name</th>
+					<th>Category</th>
+				</tr>
+			</ng-template>
+			<ng-template pTemplate="body" let-user>
+				<tr user-list-page-row [user]="user"></tr>
+			</ng-template>
+		</p-table>
+	</div>
 </app-header-footer-template>
