@@ -30,7 +30,7 @@ export class BookCardComponent implements OnInit, OnChanges {
     if(cover === null) {
       this.cover_path = AppComponent.DEFAULT_COVER_GRADIENT;
     } else {
-      this.cover_path = "url(\"" + cover + "\")";
+      this.cover_path = "url(\"/assets/covers/" + cover + "\")";
     }
   }
 
