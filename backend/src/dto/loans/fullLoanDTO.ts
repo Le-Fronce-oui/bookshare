@@ -1,12 +1,14 @@
 import BookDTO from "../books/short";
-import shortUserDTO from "../users/shortuserDTO";
 
-
+interface SuperShortUserDTO {
+    id: string,
+    username: string
+}
 
 interface FullLoanDTO {
     id: string,
-    owner: shortUserDTO,
-    borrower: shortUserDTO,
+    owner: SuperShortUserDTO,
+    borrower: SuperShortUserDTO,
     book: BookDTO,
     created: Date,
     accepted: Date | null,

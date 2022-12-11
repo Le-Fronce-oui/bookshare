@@ -1,13 +1,5 @@
-import { Role } from "./enums";
-import ShortOrganisationDTO from "./organisations/short";
-import ShortUserBookDTO from "./books/short_user";
+import UserDTO from "./users/full";
 
-interface UserConnectedDTO {
-	id: string,
-	username: string,
-	role: Role,
-	organisations: ShortOrganisationDTO[],
-	books: ShortUserBookDTO[]
-}
+interface UserConnectedDTO extends UserDTO { }
 
 export default UserConnectedDTO;

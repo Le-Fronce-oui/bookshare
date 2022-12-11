@@ -9,32 +9,41 @@ import Visibility from "../../database/models/visibility";
 import { getBooksForUser } from "../../database/queries/books";
 import { getOrganisationsForUser } from "../../database/queries/organisations";
 import ShortUserDTO from "src/dto/users/short";
+import { Consumer, Callable } from "src/types/functions";
+import UserDTO from "src/dto/users/full";
+
+
+function fillUserData(dto: UserDTO, req_user_id: string | null, onComplete: Consumer<UserDTO>, onError: Callable): void {
+	getBooksForUser(dto.id, books => {
+		getOrganisationsForUser(dto.id, req_user_id, organisations => {
+			dto.organisations = organisations.map(o => ({
+				id: o.id,
+				name: o.name,
+				role: o.role,
+				owned: o.owner_id == dto.id
+			})),
+			dto.books = books.map(b => ({
+				id: b.id,
+				name: b.name,
+				cover: b.cover,
+				count: b.num_owned
+			}))
+			onComplete(dto);
+		}, _ => onError());
+	}, _ => onError());
+}
 
 
 router.get('/user/connected', authenticated(401), (req, res) => {
 	const user: AuthenticatedUser = req.user!;
-	getBooksForUser(user.uuid, books => {
-		getOrganisationsForUser(user.uuid, organisations => {
-			let body: UserConnectedDTO = {
-				id: user.uuid,
-				username: user.username,
-				role: user.role,
-				organisations: organisations.map(o => ({
-					id: o.id,
-					name: o.name,
-					role: o.role,
-					owned: o.owner_id == user.uuid
-				})),
-				books: books.map(b => ({
-					id: b.id,
-					name: b.name,
-					cover: b.cover,
-					count: b.num_owned
-				}))
-			}
-			res.json(body);
-		}, _ => res.sendStatus(500));
-	}, _ => res.sendStatus(500));
+	let body: UserConnectedDTO = {
+		id: user.uuid,
+		username: user.username,
+		role: user.role,
+		organisations: [],
+		books: []
+	}
+	fillUserData(body, user.uuid, body => res.json(body), () => res.sendStatus(500));
 });
 
 
@@ -51,27 +60,27 @@ router.get('/users/short', authenticated(401), isAdmin(403), (req, res) => {
 });
 
 
-router.get('/user/:userId/info', (req, res) => {
-	const id = req.params.userId
-	getUserById(id, db_user => {
+router.get('/user/:user_id', (req, res) => {
+	const user_id = req.params.user_id;
+	const req_user_id = req.user !== undefined ? req.user.uuid : null;
+	getUserById(user_id, db_user => {
 		if (db_user == null) {
 			res.sendStatus(404);
 			return;
 		}
-		if (db_user.visibility != 'PUBLIC' && req.user === undefined) {
+		if ((db_user.visibility != 'PUBLIC' && req.user === undefined) || (db_user.banned && req.user !== undefined && req.user.role === 'ADMIN')) {
 			res.sendStatus(404);
 			return;
-		} else {
-			let body: UserConnectedDTO = {
-				id: db_user.id,
-				username: db_user.username,
-				role: db_user.role,
-				organisations: [],
-				books: []
-			}
 		}
-	})
-	res.json('todo');
+		let body: UserDTO = {
+			id: db_user.id,
+			username: db_user.username,
+			role: db_user.role,
+			organisations: [],
+			books: []
+		}
+		fillUserData(body, req_user_id, body => res.json(body), () => res.sendStatus(500));
+	}, _ => res.sendStatus(500));
 });
 
 

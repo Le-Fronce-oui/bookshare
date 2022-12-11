@@ -17,20 +17,37 @@ export function getOrganisationById(organisation_id: string, consumer: Consumer<
 }
 
 
-export function getOrganisationsForUser(user_id: string, consumer: Consumer<UserDatabaseOrganisation[]>, onError?: ErrorHandler) {
-    pool.query(`
-        SELECT "Organisations".*, role, banned 
-        FROM "Organisations", "Members" 
-        WHERE "Members"."userId" = $1 AND "Members"."orgaId" = "Organisations".id;
-    `, [user_id]).then(qres => {
+export function getOrganisationsForUser(user_id: string, req_user_id: string | null, consumer: Consumer<UserDatabaseOrganisation[]>, onError?: ErrorHandler) {
+    let query: string;
+    let params = [user_id];
+    if (req_user_id === null) {
+        query = `
+            SELECT "Organisations".*, role, banned 
+            FROM "Organisations", "Members" 
+            WHERE "Members"."userId" = $1 AND "Members"."orgaId" = "Organisations".id 
+                AND "Organisations".visibility = 'PUBLIC';
+        `;
+    } else {
+        query = `
+            SELECT "Organisations".*, role, banned 
+            FROM "Organisations", "Members" 
+            WHERE "Members"."userId" = $1 AND "Members"."orgaId" = "Organisations".id 
+                AND "Organisations".id NOT IN (
+                    SELECT "orgaId" AS id FROM "Members"
+                    WHERE "Members"."userId" = $2 AND "Members".banned
+                );
+        `;
+        params.push(req_user_id);
+    }
+    pool.query(query, params).then(qres => {
         consumer(qres.rows);
     }).catch(e => manageError(e, onError));
 }
 
-export function canSeeOrganisation(org_id: string, user_id: string | null, consumer: Consumer<boolean>, onError?: ErrorHandler) {
+export function canSeeOrganisation(org_id: string, req_user_id: string | null, consumer: Consumer<boolean>, onError?: ErrorHandler) {
     let query: string;
     let params = [org_id];
-    if(user_id === null) {
+    if(req_user_id === null) {
         query = `
             SELECT Count(*) 
             FROM "Organisations" 
@@ -44,7 +61,7 @@ export function canSeeOrganisation(org_id: string, user_id: string | null, consu
                 AND "Members"."userId" = $2;
                 AND "Members".banned = false;
         `;
-        params.push(user_id);
+        params.push(req_user_id);
     }
     pool.query(query, params).then(qres => {
         consumer(qres.rows[0].count == 1);
