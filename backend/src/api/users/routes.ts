@@ -69,7 +69,7 @@ router.get('/user/:user_id', (req, res) => {
 			res.sendStatus(404);
 			return;
 		}
-		if ((db_user.visibility != 'PUBLIC' && req.user === undefined) || (db_user.banned && req.user !== undefined && req.user.role === 'ADMIN')) {
+		if ((db_user.visibility !== 'PUBLIC' && req.user === undefined) || (db_user.banned && req.user?.role !== 'ADMIN')) {
 			res.sendStatus(404);
 			return;
 		}
