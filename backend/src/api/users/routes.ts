@@ -20,7 +20,7 @@ function fillUserData(dto: UserDTO, req_user_id: string | null, onComplete: Cons
 				id: o.id,
 				name: o.name,
 				role: o.role,
-				owned: o.owner_id == dto.id
+				owned: o.ownerId == dto.id
 			})),
 			dto.books = books.map(b => ({
 				id: b.id,

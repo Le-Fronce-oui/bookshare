@@ -3,7 +3,7 @@ import Role from "./role"
 export interface DatabaseOrganisation {
     id: string,
     name: string,
-    owner_id: string,
+    ownerId: string,
     desc: string | null,
     blocked: boolean,
     visibility: string,
