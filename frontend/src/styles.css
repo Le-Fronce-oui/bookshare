@@ -7,11 +7,14 @@
 	--col-primary: #18ab55;
 	--col-primary-light: #4fe88e;
 	--col-tertiary-light: #4fa1e8;
+	--col-golden: #e8cf4f;
 	--col-canvas: #f7f7f7;
 	--col-bg: #d0d0d0;
 	--col-border: #aeaeae;
 	--col-text: #101010;
 	--col-text-light: #535c54;
+	--col-label-bg: rgba(1, 1, 1, 0.7);
+	--col-label-text: #FFFFFF;
 	--col-link: #3276E3;
 	
 	/* Fonts */

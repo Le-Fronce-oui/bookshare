@@ -1,5 +1,7 @@
 
 <div class="canvas">
-	<a title="{{title}}" class="image-link" [routerLink]="[book_link]" [style.background-image]="cover_path"></a>
+	<a title="{{title}}" class="image-link" [routerLink]="[book_link]" [style.background-image]="cover_path">
+		<div *ngIf="count > 0" class="book-count">{{count}}</div>
+	</a>
 	<p class="book-title">{{title}}</p>
 </div>

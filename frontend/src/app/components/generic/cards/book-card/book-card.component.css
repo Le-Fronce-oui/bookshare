@@ -6,6 +6,7 @@
 }
 
 .image-link {
+	position: relative;
 	display: block;
 	background-position: center;
 	background-repeat: no-repeat;
@@ -23,4 +24,14 @@
 	text-overflow: ellipsis;
 	font-weight: bold;
 	flex-grow: 0;
+}
+
+.book-count {
+	position: absolute;
+	background-color: var(--col-label-bg);
+	color: var(--col-label-text);
+	top: -3px;
+	right: -2px;
+	padding: 2px 4px;
+	border-radius: 5px;
 }

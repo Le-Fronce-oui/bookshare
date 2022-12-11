@@ -1,0 +1,44 @@
+
+#orgs-container {
+	margin-bottom: var(--spacing-normal);
+	position: relative;
+}
+
+#orgs-container > a {
+	position: absolute;
+	top: var(--spacing-large);
+	right: var(--spacing-large);
+}
+
+#orgs-container > a > i {
+	font-size: 1.5rem;
+}
+
+.canvas {
+	width: 900px;
+}
+
+
+i.pi-key, i.pi-star-fill {
+	color: var(--col-golden);
+}
+
+h1 > i {
+	font-size: 22px;
+}
+
+
+#books-grid {
+	display: grid;
+	grid-gap: var(--spacing-medium);
+	grid-template-columns: repeat(5,          160px);
+	grid-template-rows:    repeat(auto-fill , 240px);
+}
+
+#books-grid > app-book-card {
+	height: 240px;
+}
+
+.infobox {
+	text-align: center;
+}

@@ -4,6 +4,7 @@ import UserConnectedDTO from '../../../classes/dto/user_connected';
 import UserVisibilityDTO from '../../../classes/dto/users/visibility';
 import { Visibility } from '../../../classes/dto/enums';
 import ShortUserDTO from 'src/app/classes/dto/users/short';
+import UserDTO from 'src/app/classes/dto/users/full';
 
 @Injectable({
   providedIn: 'root'
@@ -16,6 +17,15 @@ export class UsersApiService {
   public getAllUsers(callback: (response: ShortUserDTO[]) => void): void {
     this.http.get<ShortUserDTO[]>('/api/users/short', {observe: 'body'})
       .subscribe(callback);
+  }
+
+  public getUser(user_id: string, callback: (response: UserDTO | null) => void): void {
+    this.http.get<UserConnectedDTO>("/api/user/" + user_id, {observe: 'body'})
+      .subscribe(callback, (error: HttpErrorResponse) => {
+        if(error.status === 404) {
+          callback(null);
+        } else { throw error; }
+      });
   }
 
 

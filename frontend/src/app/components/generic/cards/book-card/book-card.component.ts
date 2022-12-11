@@ -11,6 +11,7 @@ export class BookCardComponent implements OnInit, OnChanges {
   @Input() public title!:   string;
   @Input() public book_id!: string;
   @Input() public cover:    string | null;
+  @Input() public count:    number;
 
   public book_link:  string;
   public cover_path: string;
@@ -19,6 +20,7 @@ export class BookCardComponent implements OnInit, OnChanges {
     this.cover = null;
     this.book_link = '/books';
     this.cover_path = AppComponent.DEFAULT_COVER_GRADIENT;
+    this.count = 0;
   }
 
   public ngOnInit(): void { }
