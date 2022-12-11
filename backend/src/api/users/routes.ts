@@ -11,9 +11,10 @@ import { getOrganisationsForUser } from "../../database/queries/organisations";
 import ShortUserDTO from "src/dto/users/short";
 import { Consumer, Callable } from "src/types/functions";
 import UserDTO from "src/dto/users/full";
+import { UserDatabaseBook } from "src/database/models/book";
 
 
-function fillUserData(dto: UserDTO, req_user_id: string | null, onComplete: Consumer<UserDTO>, onError: Callable): void {
+function fillUserData(dto: UserDTO, req_user_id: string | null, countMapper: (book: UserDatabaseBook) => number, callback: Consumer<UserDTO>, onError: Callable): void {
 	getBooksForUser(dto.id, books => {
 		getOrganisationsForUser(dto.id, req_user_id, organisations => {
 			dto.organisations = organisations.map(o => ({
@@ -21,14 +22,14 @@ function fillUserData(dto: UserDTO, req_user_id: string | null, onComplete: Cons
 				name: o.name,
 				role: o.role,
 				owned: o.ownerId == dto.id
-			})),
+			}));
 			dto.books = books.map(b => ({
 				id: b.id,
 				name: b.name,
 				cover: b.cover,
 				count: b.num_owned
-			}))
-			onComplete(dto);
+			})).filter(b => b.count > 0);
+			callback(dto);
 		}, _ => onError());
 	}, _ => onError());
 }
@@ -43,7 +44,7 @@ router.get('/user/connected', authenticated(401), (req, res) => {
 		organisations: [],
 		books: []
 	}
-	fillUserData(body, user.uuid, body => res.json(body), () => res.sendStatus(500));
+	fillUserData(body, user.uuid, b => b.num_owned, body => res.json(body), () => res.sendStatus(500));
 });
 
 
@@ -78,8 +79,12 @@ router.get('/user/:user_id', (req, res) => {
 			role: db_user.role,
 			organisations: [],
 			books: []
+		};
+		let countMapper: (book: UserDatabaseBook) => number = (b => b.num_shown);
+		if(req_user_id === user_id) {
+			countMapper = (b => b.num_owned);
 		}
-		fillUserData(body, req_user_id, body => res.json(body), () => res.sendStatus(500));
+		fillUserData(body, req_user_id, countMapper, body => res.json(body), () => res.sendStatus(500));
 	}, _ => res.sendStatus(500));
 });
 
