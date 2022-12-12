@@ -1,11 +1,41 @@
 import { Consumer, ErrorHandler } from "src/types/functions";
 import { pool } from "../connect";
 import { manageError } from "../errors";
-import { DatabaseOrganisation, UserDatabaseOrganisation } from "../models/organisations";
+import { DatabaseOrganisation, DatabaseOrganisationWithCount, UserDatabaseOrganisation } from "../models/organisations";
 
 
-export function getOrganisations(consumer: Consumer<DatabaseOrganisation[]>, onError?: ErrorHandler) {
-    pool.query('SELECT * FROM "Organisations";').then(qres => {
+export function getAllOrganisations(user_id: string | null, consumer: Consumer<DatabaseOrganisationWithCount[]>, onError: ErrorHandler) {
+    let params = [];
+    let query: string;
+    if(user_id == null) {
+        query = `
+            SELECT "Organisations".*, COUNT("Members"."userId") as user_count
+            FROM "Organisations", "Members", "Users"
+            WHERE "Organisations".id = "Members"."orgaId"
+                AND "Users".id = "Members"."userId"
+                AND "Organisations".visibility = 'PUBLIC'
+                AND "Users".visibility = 'PUBLIC'
+                AND NOT "Users".banned
+                AND NOT "Members".banned
+            GROUP BY "Organisations".id;
+        `;
+    } else {
+        query = `
+            SELECT "Organisations".*, COUNT("Members"."userId") as user_count
+            FROM "Organisations", "Members", "Users"
+            WHERE "Organisations".id = "Members"."orgaId"
+                AND "Users".id = "Members"."userId"
+                AND NOT "Users".banned
+                AND NOT "Members".banned
+                AND "Organisations".id NOT IN (
+                    SELECT "orgaId" AS id FROM "Members"
+                    WHERE "Members"."userId" = $1 AND "Members".banned
+                )
+            GROUP BY "Organisations".id;
+        `;
+        params.push(user_id);
+    }
+    pool.query(query, params).then(qres => {
         consumer(qres.rows);
     }).catch(e => manageError(e, onError));
 }
@@ -24,14 +54,16 @@ export function getOrganisationsForUser(user_id: string, req_user_id: string | n
         query = `
             SELECT "Organisations".*, role, banned 
             FROM "Organisations", "Members" 
-            WHERE "Members"."userId" = $1 AND "Members"."orgaId" = "Organisations".id 
+            WHERE "Members"."userId" = $1 
+                AND "Members"."orgaId" = "Organisations".id 
                 AND "Organisations".visibility = 'PUBLIC';
         `;
     } else {
         query = `
             SELECT "Organisations".*, role, banned 
             FROM "Organisations", "Members" 
-            WHERE "Members"."userId" = $1 AND "Members"."orgaId" = "Organisations".id 
+            WHERE "Members"."userId" = $1 
+                AND "Members"."orgaId" = "Organisations".id 
                 AND "Organisations".id NOT IN (
                     SELECT "orgaId" AS id FROM "Members"
                     WHERE "Members"."userId" = $2 AND "Members".banned
