@@ -33,6 +33,8 @@ import { ErrorHandlingService } from './services/error-handling.service';
 import { BookCardComponent } from './components/generic/cards/book-card/book-card.component';
 import { BookFilterPipePipe } from './pipes/book-filter-pipe.pipe';
 import { UserListPageRowComponent } from './components/pages/user-list-page/specific/user-list-page-row/user-list-page-row.component';
+import { OrgListPageRowComponent } from './components/pages/organisation-search-page/specific/org-list-page-row/org-list-page-row.component';
+import { FieldFilterPipe } from './pipes/field-filter.pipe';
 
 @NgModule({
   declarations: [
@@ -52,7 +54,9 @@ import { UserListPageRowComponent } from './components/pages/user-list-page/spec
     SimpleDialogTemplateComponent,
     BookCardComponent,
     BookFilterPipePipe,
-    UserListPageRowComponent
+    UserListPageRowComponent,
+    OrgListPageRowComponent,
+    FieldFilterPipe
   ],
   imports: [
     BrowserModule,
