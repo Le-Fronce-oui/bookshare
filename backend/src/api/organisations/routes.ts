@@ -1,9 +1,9 @@
 import { getBookInOrganisation } from "../../database/queries/books";
-import { canSeeOrganisation, getAllOrganisations } from "../../database/queries/organisations";
+import { canSeeOrganisation, getAllOrganisations, joinOrganisation } from "../../database/queries/organisations";
 import BookInOrgDTO from "../../dto/books/in_org";
 import router from "../../core/router";
 import ShortOrganisationDTO from "src/dto/organisations/short";
-
+import { authenticated } from "../auth/middlewares";
 
 
 router.get('/organisations/short', (req, res) => {
@@ -19,7 +19,17 @@ router.get('/organisations/short', (req, res) => {
 });
 
 
-
+router.post('/organisation/:org_id/join/:user_id', authenticated(401), (req, res) => {
+	const org_id = req.params.org_id;
+	const user_id = req.params.user_id;
+	if(user_id !== req.user?.uuid) {
+		res.sendStatus(403);
+		return;
+	}
+	joinOrganisation(org_id, user_id, joined => {
+		res.sendStatus(joined ? 200 : 400);
+	}, _ => res.sendStatus(500));
+});
 
 
 router.get('/organisation/:org_id/book/:book_id', (req, res) => {
