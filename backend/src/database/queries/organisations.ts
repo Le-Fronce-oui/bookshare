@@ -36,7 +36,9 @@ export function getAllOrganisations(user_id: string | null, consumer: Consumer<D
         params.push(user_id);
     }
     pool.query(query, params).then(qres => {
-        consumer(qres.rows);
+        let res = qres.rows;
+        res.forEach(row => row.user_count = parseInt(row.user_count));
+        consumer(res);
     }).catch(e => manageError(e, onError));
 }
 
@@ -97,5 +99,16 @@ export function canSeeOrganisation(org_id: string, req_user_id: string | null, c
     }
     pool.query(query, params).then(qres => {
         consumer(qres.rows[0].count == 1);
+    }).catch(e => manageError(e, onError));
+}
+
+
+export function joinOrganisation(org_id: string, user_id: string, callback: Consumer<boolean>, onError: ErrorHandler) {
+    pool.query(`
+        INSERT INTO "Members" 
+        VALUES ($1, $2, 'USER', false)
+        ON CONFLICT DO NOTHING;`, [user_id, org_id]
+    ).then(qres => {
+        callback(qres.rowCount == 1);
     }).catch(e => manageError(e, onError));
 }
