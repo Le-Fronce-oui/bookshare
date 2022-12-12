@@ -1,0 +1,44 @@
+
+#page-grid {
+	display: grid;
+	grid-gap: var(--spacing-medium);
+	grid-template-columns: 240px 800px;
+	grid-template-rows:    auto;
+	flex-grow: 1;
+}
+
+.image-link {
+	display: block;
+	background-position: center;
+	background-repeat: no-repeat;
+	background-size: cover;
+	background-color: var(--col-primary-light);
+	height: 290px;
+	border-radius: 3px;
+}
+
+#page-grid > .canvas:nth-child(2) {
+	position: relative;
+}
+
+#page-grid > .canvas:nth-child(2) > i {
+	position: absolute;
+	top: var(--spacing-large);
+	right: var(--spacing-large);
+	font-size: 1.5rem;
+}
+
+h1 {
+	margin-bottom: 0px;
+}
+
+h2 {
+	color: var(--col-text-light);
+	margin-bottom: var(--spacing-large);
+}
+
+#isbn {
+	margin-top: var(--spacing-medium);
+	margin-bottom: 0px;
+	color: var(--col-text-light);
+}

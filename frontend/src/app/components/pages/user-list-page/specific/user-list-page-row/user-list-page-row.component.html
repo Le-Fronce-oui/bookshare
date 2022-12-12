@@ -1,0 +1,13 @@
+
+<td>
+	{{username}}
+	<a [routerLink]="user_link">
+		<i class="pi pi-link"></i>
+	</a>
+</td>
+<td>
+	<p-toggleButton onLabel="Admin" offLabel="Promote" onIcon="pi pi-star-fill" offIcon="pi pi-angle-double-up" [disabled]="admin || !access" [(ngModel)]="admin" (onChange)="onAdmin($event)"></p-toggleButton>
+</td>
+<td>
+	<p-toggleButton onLabel="Ban" offLabel="Unban" onIcon="pi pi-ban" offIcon="pi pi-times" [disabled]="admin" [(ngModel)]="access" (onChange)="onAccess($event)"></p-toggleButton>
+</td>

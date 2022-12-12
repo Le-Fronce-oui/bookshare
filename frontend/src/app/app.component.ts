@@ -10,6 +10,8 @@ import { NotificationService } from './services/notification.service';
 export class AppComponent {
   title = 'frontend';
 
+  public static readonly DEFAULT_COVER_GRADIENT = "linear-gradient(to bottom right, var(--col-primary-light), var(--col-tertiary-light))";
+
   constructor(private notificationService: NotificationService) {
     document.body.addEventListener(UncaughtErrorEvent.EVENT_NAME, e => this.errorHandler(e as UncaughtErrorEvent));
   }

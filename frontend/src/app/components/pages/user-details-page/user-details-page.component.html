@@ -1,4 +1,44 @@
 
 <app-header-footer-template>
-	This page should allow us to see the details for user "{{user_id}}"
+	<div class="canvas" id="orgs-container">
+		<a [routerLink]="'/user/' + user_id + '/edit'"><i *ngIf="logged_in" class="pi pi-user-edit"></i></a>
+		<h1>
+			<i *ngIf="admin" class="pi pi-star-fill"></i>
+			{{username}}
+		</h1>
+		<p-table *ngIf="organisations.length > 0" [value]="organisations" [tableStyle]="{'width': '100%'}">
+			<ng-template pTemplate="header">
+				<tr style="position: sticky;">
+					<th>Organisation</th>
+					<th>Role</th>
+				</tr>
+			</ng-template>
+			<ng-template pTemplate="body" let-org>
+				<tr>
+					<td>
+						{{org.name}}
+						<a [routerLink]="'/organisation/' + org.id"><i class="pi pi-link"></i></a>
+					</td>
+					<td>
+						<i class="pi" [ngClass]="{'OWNER': 'pi-key', 'ADMIN': 'pi-star-fill', 'USER': 'pi-user'}[org.role]"></i>
+					</td>
+				</tr>
+			</ng-template>
+		</p-table>
+	</div>
+
+	<div id="books-grid" *ngIf="books.length > 0; else booksElse">
+		<ng-container *ngFor="let book of books">
+			<app-book-card [book_id]="book.id" [title]="book.name" [cover]="book.cover" [count]="book.count"></app-book-card>
+		</ng-container>
+	</div>
+
+	<ng-template #booksElse>
+		<div class="canvas infobox">
+			There are no books registered in this collection yet.
+			<ng-container *ngIf="logged_in">
+				Want to add some ? Try <a [routerLink]="'/books'">browsing books</a> !
+			</ng-container>
+		</div>
+	</ng-template>
 </app-header-footer-template>

@@ -1,14 +1,32 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import UserConnectedDTO from 'src/app/classes/dto/user_connected';
-import { NotificationService } from '../../notification.service';
+import UserConnectedDTO from '../../../classes/dto/user_connected';
+import UserVisibilityDTO from '../../../classes/dto/users/visibility';
+import { Visibility } from '../../../classes/dto/enums';
+import ShortUserDTO from 'src/app/classes/dto/users/short';
+import UserDTO from 'src/app/classes/dto/users/full';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UsersApiService {
 
-  constructor(private http: HttpClient, private notificationService: NotificationService) { }
+  constructor(private http: HttpClient) { }
+
+
+  public getAllUsers(callback: (response: ShortUserDTO[]) => void): void {
+    this.http.get<ShortUserDTO[]>('/api/users/short', {observe: 'body'})
+      .subscribe(callback);
+  }
+
+  public getUser(user_id: string, callback: (response: UserDTO | null) => void): void {
+    this.http.get<UserConnectedDTO>("/api/user/" + user_id, {observe: 'body'})
+      .subscribe(callback, (error: HttpErrorResponse) => {
+        if(error.status === 404) {
+          callback(null);
+        } else { throw error; }
+      });
+  }
 
 
   public getConnectedUser(callback: (response: UserConnectedDTO | null) => void): void {
@@ -17,7 +35,34 @@ export class UsersApiService {
         if(error.status === 401) {
           callback(null);
         } else { throw error; }
-      }
-    );
+      });
   }
+
+  public getUserVisibility(user_id: string, callback: (response: UserVisibilityDTO) => void): void {
+    this.http.get<UserVisibilityDTO>("/api/user/" + user_id + "/visibility" , {observe: 'body'})
+      .subscribe(callback);
+  }
+
+  public setUserVisibility(user_id: string, visibility: Visibility, callback: () => void): void {
+    this.http.post("/api/user/" + user_id + "/visibility?visibility=" + visibility, null, { responseType: 'text' })
+      .subscribe(_ => callback());
+  }
+
+
+  public setUserSiteBan(user_id: string, banned: boolean, callback: () => void): void {
+    this.http.post("/api/user/" + user_id + "/access?ban=" + banned, null, { responseType: 'text' })
+      .subscribe(_ => callback());
+  }
+
+  public grantUserSiteAdmin(user_id: string, callback: () => void): void {
+    this.http.post("/api/user/" + user_id + "/admin", null, { responseType: 'text' })
+      .subscribe(_ => callback());
+  }
+
+  
+  public addBookToCollection(user_id: string, book_id: string, callback: () => void): void {
+    this.http.put("/api/user/" + user_id + "/book/" + book_id, null, { responseType: 'text' })
+      .subscribe(_ => callback());
+  }
+
 }

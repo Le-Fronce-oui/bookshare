@@ -1,7 +1,7 @@
 import Role from "./role";
 import Visibility from "./visibility";
 
-interface DatabaseUser {
+export interface DatabaseUser {
 	id: string,
     email: string,
     username: string,

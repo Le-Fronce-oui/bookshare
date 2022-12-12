@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import ShortBookDTO from 'src/app/classes/dto/books/short';
+import { ApiService } from 'src/app/services/api/api.service';
 
 @Component({
   selector: 'app-book-search-page',
@@ -7,9 +9,19 @@ import { Component, OnInit } from '@angular/core';
 })
 export class BookSearchPageComponent implements OnInit {
 
-  constructor() { }
+  public books: ShortBookDTO[];
 
-  ngOnInit(): void {
+  public filter: string;
+
+  constructor(private api: ApiService) {
+    this.books = [];
+    this.filter = '';
+  }
+
+  public ngOnInit(): void {
+    this.api.books.getBooks(books => {
+      this.books = books.sort((b1, b2) => b1.name.localeCompare(b2.name));
+    })
   }
 
 }

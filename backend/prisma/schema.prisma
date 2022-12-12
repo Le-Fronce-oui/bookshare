@@ -7,20 +7,25 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  url      = env("BS_DATABASE_URL")
 }
 
-model users {
-  id         String     @id
-  email      String     @unique
-  username   String     @unique
-  password   String
-  salt       String
-  visibility Visibility @default(PRIVATE)
-  role       Role       @default(USER)
-  banned     Boolean    @default(false)
-  createdAt  DateTime   @default(now())
-  updatedAt  DateTime   @updatedAt @default(now())
+model Users {
+  id            String          @id @unique
+  email         String          @unique
+  username      String          @unique
+  password      String
+  salt          String
+  visibility    Visibility      @default(PRIVATE)
+  role          Role            @default(USER)
+  banned        Boolean         @default(false)
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @default(now()) @updatedAt
+  organisations Organisations[]
+  collections   Collections[]
+  members       Members[]
+  owner         Loans[]         @relation("owner")
+  borrower      Loans[]         @relation("borrower")
 }
 
 enum Visibility {
@@ -32,4 +37,68 @@ enum Visibility {
 enum Role {
   USER
   ADMIN
+}
+
+model Books {
+  id          String        @id @unique
+  name        String
+  desc        String?
+  type        String
+  iban        String?
+  author      String
+  cover       String?
+  Loans       Loans[]
+  collections Collections[]
+}
+
+model Organisations {
+  id         String     @id @unique
+  name       String
+  ownerId    String
+  owner      Users      @relation(fields: [ownerId], references: [id])
+  desc       String?
+  visibility Visibility @default(PRIVATE)
+  blocked    Boolean    @default(false)
+  loans      Loans[]
+  members    Members[]
+}
+
+model Loans {
+  id         String        @id @unique
+  ownerId    String
+  owner      Users         @relation("owner", fields: [ownerId], references: [id])
+  orgaId     String
+  orga       Organisations @relation(fields: [orgaId], references: [id])
+  bookId     String
+  book       Books         @relation(fields: [bookId], references: [id])
+  borrowerId String
+  borrower   Users         @relation("borrower", fields: [borrowerId], references: [id])
+  createdAt  DateTime      @default(now())
+  acceptedAt DateTime?
+  declinedAt DateTime?
+  borrowedAt DateTime?
+  returnedAt DateTime?
+}
+
+model Collections {
+  userId    String
+  user      Users  @relation(fields: [userId], references: [id])
+  bookId    String
+  book      Books  @relation(fields: [bookId], references: [id])
+  num_owned Int
+  num_lent  Int
+  num_shown Int
+
+  @@id([userId, bookId])
+}
+
+model Members {
+  userId String
+  user   Users         @relation(fields: [userId], references: [id])
+  orgaId String
+  orga   Organisations @relation(fields: [orgaId], references: [id])
+  role   String
+  banned Boolean       @default(false)
+
+  @@id([userId, orgaId])
 }
