@@ -1,0 +1,16 @@
+
+.canvas {
+	display: flex;
+	flex-flow: column nowrap;
+	align-items: center;
+}
+
+.p-inputgroup {
+	width: fit-content;
+	flex-grow: 0;
+	margin-bottom: var(--spacing-normal);
+}
+
+.p-inputgroup > input {
+	width: 350px;
+}
