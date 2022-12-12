@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
-import ShortOrganisationDTO from 'src/app/classes/dto/organisations/short';
+import ShortUserOrganisationDTO from 'src/app/classes/dto/organisations/short_user';
 import { UserService } from 'src/app/services/user.service';
 
 @Component({
@@ -16,7 +16,7 @@ export class HeaderFooterTemplateComponent implements OnInit, OnDestroy {
 
   public connected: boolean;
   public admin: boolean;
-  public organisations: ShortOrganisationDTO[];
+  public organisations: ShortUserOrganisationDTO[];
   public uuid: string;
   public username: string;
 

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Subscription } from 'rxjs';
 import ShortBookDTO from '../classes/dto/books/short';
-import ShortOrganisationDTO from '../classes/dto/organisations/short';
+import ShortUserOrganisationDTO from '../classes/dto/organisations/short_user';
 import { ApiService } from './api/api.service';
 
 @Injectable({
@@ -15,7 +15,7 @@ export class UserService {
   private admin: boolean;
   private username: string;
   private uuid: string;
-  private organisations: Map<String,ShortOrganisationDTO>;
+  private organisations: Map<String,ShortUserOrganisationDTO>;
   private books: Map<String,ShortBookDTO>;
 
   constructor(private api: ApiService) {
@@ -85,7 +85,7 @@ export class UserService {
     return this.organisations.size > 0;
   }
 
-  public getOrganisations(): ShortOrganisationDTO[] {
+  public getOrganisations(): ShortUserOrganisationDTO[] {
     return Array.from(this.organisations.values());
   }
 
