@@ -39,7 +39,7 @@ export class UsersApiService {
   }
 
   public getUserVisibility(user_id: string, callback: (response: UserVisibilityDTO) => void): void {
-    this.http.get<UserVisibilityDTO>("/api/user/" + user_id + "/visibility" , {observe: 'body'})
+    this.http.get<UserVisibilityDTO>("/api/user/" + user_id + "/visibility" , { observe: 'body' })
       .subscribe(callback);
   }
 
