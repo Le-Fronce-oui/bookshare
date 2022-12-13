@@ -38,8 +38,13 @@ export class UsersApiService {
       });
   }
 
+<<<<<<< HEAD
   public getDetailedUser(user_id: string, callback: (response: DetailedUserDTO) => void): void {
     this.http.get<DetailedUserDTO>("/api/user/" + user_id + "/detailed", { observe: 'body' })
+=======
+  public getUserVisibility(user_id: string, callback: (response: UserVisibilityDTO) => void): void {
+    this.http.get<UserVisibilityDTO>("/api/user/" + user_id + "/visibility" , { observe: 'body' })
+>>>>>>> dev-49
       .subscribe(callback);
   }
 

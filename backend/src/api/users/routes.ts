@@ -11,9 +11,13 @@ import ShortUserDTO from "src/dto/users/short";
 import { Consumer, Callable } from "src/types/functions";
 import UserDTO, { UserBookGenericDTO } from "src/dto/users/full";
 import { UserDatabaseBook } from "src/database/models/book";
+<<<<<<< HEAD
 import ShortUserBookDTO from "src/dto/books/short_user";
 import DetailedUserDTO from "src/dto/users/detailed";
 import FullUserBookDTO from "src/dto/books/full_user";
+=======
+import { getLoansForUser } from "src/database/queries/loans";
+>>>>>>> dev-49
 
 
 function fillUserData<T>(dto: UserBookGenericDTO<T>, req_user_id: string | null, bookMapper: (book: UserDatabaseBook) => T | null, 
@@ -193,6 +197,8 @@ router.get('/user/:userId/loans', authenticated(401), (req, res) => {
 	if (req.user?.uuid !== req.params.userId) {
 		res.sendStatus(403);
 	} else {
-		res.json('todo');
+		getLoansForUser(req.params.userId, loans => {
+			res.json(loans);
+		}, _ => res.sendStatus(500));
 	}
 });
