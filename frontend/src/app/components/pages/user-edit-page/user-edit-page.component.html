@@ -1,5 +1,39 @@
 
 <app-header-footer-template>
-	This page should allow us to edit user "{{user_id}}"
+	
+	<div class="canvas" id="profile-container">
+		<a [routerLink]="'/user/' + user_id"><i class="pi pi-user"></i></a>
+		<h1>
+			<i *ngIf="admin" class="pi pi-star-fill"></i>
+			{{username}}
+		</h1>
+		<div class="hbox">
+			<button pButton label="Delete account" icon="pi pi-times" class="p-button-danger" (click)="onSignout" [disabled]="!can_leave"></button>
+			<p-toggleButton onLabel="Public" offLabel="Restricted" onIcon="pi pi-eye" offIcon="pi pi-eye-slash" (onChange)="onVisibilityChanged($event)"></p-toggleButton>
+		</div>
+	</div>
+
+	<div class="canvas" id="orgs-container">
+		<p-table *ngIf="organisations.length > 0" [value]="organisations" [tableStyle]="{'width': '100%'}">
+			<ng-template pTemplate="header">
+				<tr style="position: sticky;">
+					<th>Organisation</th>
+					<th>Role</th>
+				</tr>
+			</ng-template>
+			<ng-template pTemplate="body" let-org>
+				<tr>
+					<td>
+						{{org.name}}
+						<a [routerLink]="'/organisation/' + org.id"><i class="pi pi-link"></i></a>
+					</td>
+					<td>
+						<i class="pi" [ngClass]="{'OWNER': 'pi-key', 'ADMIN': 'pi-star-fill', 'USER': 'pi-user'}[org.role]"></i>
+					</td>
+				</tr>
+			</ng-template>
+		</p-table>
+	</div>
+
 </app-header-footer-template>
 
