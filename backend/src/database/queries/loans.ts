@@ -16,7 +16,7 @@ export function getLoanById(loan_id: string, consumer: Consumer<DatabaseLoan | n
 }
 
 export function getLoansForUser(user_id: string, consumer: Consumer<DatabaseLoan[]>, onError?: ErrorHandler) {
-    pool.query('SELECT * FROM "Loans" WHERE "Loans"."borrower_id" = $1 UNION SELECT * FROM "Loans" WHERE "Loans"."owner_id" = $1 ', [user_id]).then(qres => {
+    pool.query('SELECT "id" FROM "Loans" WHERE "Loans"."borrower_id" = $1 UNION SELECT * FROM "Loans" WHERE "Loans"."owner_id" = $1 ', [user_id]).then(qres => {
         consumer(qres.rows);
     }).catch(e => manageError(e, onError));
 }
