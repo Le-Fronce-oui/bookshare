@@ -112,3 +112,16 @@ export function joinOrganisation(org_id: string, user_id: string, callback: Cons
         callback(qres.rowCount == 1);
     }).catch(e => manageError(e, onError));
 }
+
+export function leaveOrganisation(org_id: string, user_id: string, callback: Consumer<boolean>, onError: ErrorHandler) {
+    pool.query(`
+        DELETE FROM "Members" 
+        WHERE "userId" = $1 AND "orgaId" = $2
+            AND NOT banned
+            AND "userId" <> (
+                SELECT "ownerId" FROM "Organisations" WHERE id = $2
+            );`, [user_id, org_id]
+    ).then(qres => {
+        callback(qres.rowCount > 0);
+    }).catch(e => manageError(e, onError));
+}

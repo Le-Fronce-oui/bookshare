@@ -2,7 +2,6 @@ import { addBookToCollection, getAllUsers, getUserById, setUserSiteBan, setUserS
 import UserConnectedDTO from "../../dto/user_connected";
 import AuthenticatedUser from "../../types/internal/authenticated_user";
 import { setUserVisibility } from "../../database/queries/users";
-import UserVisibilityDTO from "../../dto/users/visibility";
 import router from "../../core/router";
 import { authenticated, isAdmin } from "../auth/middlewares";
 import Visibility from "../../database/models/visibility";
@@ -10,11 +9,15 @@ import { getBooksForUser } from "../../database/queries/books";
 import { getOrganisationsForUser } from "../../database/queries/organisations";
 import ShortUserDTO from "src/dto/users/short";
 import { Consumer, Callable } from "src/types/functions";
-import UserDTO from "src/dto/users/full";
+import UserDTO, { UserBookGenericDTO } from "src/dto/users/full";
 import { UserDatabaseBook } from "src/database/models/book";
+import ShortUserBookDTO from "src/dto/books/short_user";
+import DetailedUserDTO from "src/dto/users/detailed";
+import FullUserBookDTO from "src/dto/books/full_user";
 
 
-function fillUserData(dto: UserDTO, req_user_id: string | null, countMapper: (book: UserDatabaseBook) => number, callback: Consumer<UserDTO>, onError: Callable): void {
+function fillUserData<T>(dto: UserBookGenericDTO<T>, req_user_id: string | null, bookMapper: (book: UserDatabaseBook) => T | null, 
+		callback: Consumer<UserBookGenericDTO<T>>, onError: Callable): void {
 	getBooksForUser(dto.id, books => {
 		getOrganisationsForUser(dto.id, req_user_id, organisations => {
 			dto.organisations = organisations.map(o => ({
@@ -23,17 +26,21 @@ function fillUserData(dto: UserDTO, req_user_id: string | null, countMapper: (bo
 				role: o.role,
 				owned: o.ownerId == dto.id
 			}));
-			dto.books = books.map(b => ({
-				id: b.id,
-				name: b.name,
-				cover: b.cover,
-				count: b.num_owned
-			})).filter(b => b.count > 0);
+			dto.books = books.map(bookMapper).filter(b => b !== null) as T[];
 			callback(dto);
 		}, _ => onError());
 	}, _ => onError());
 }
 
+
+const CONNECTED_BOOK_MAPPER: (b: UserDatabaseBook) => ShortUserBookDTO = b => {
+	return {
+		id: b.id,
+		name: b.name,
+		cover: b.cover,
+		count: b.num_owned
+	}
+};
 
 router.get('/user/connected', authenticated(401), (req, res) => {
 	const user: AuthenticatedUser = req.user!;
@@ -44,7 +51,7 @@ router.get('/user/connected', authenticated(401), (req, res) => {
 		organisations: [],
 		books: []
 	}
-	fillUserData(body, user.uuid, b => b.num_owned, body => res.json(body), () => res.sendStatus(500));
+	fillUserData(body, user.uuid, CONNECTED_BOOK_MAPPER, body => res.json(body), () => res.sendStatus(500));
 });
 
 
@@ -60,6 +67,15 @@ router.get('/users/short', authenticated(401), isAdmin(403), (req, res) => {
 	}, _ => res.sendStatus(500));
 });
 
+
+const PUBLIC_BOOK_MAPPER: (b: UserDatabaseBook) => ShortUserBookDTO = b => {
+	return {
+		id: b.id,
+		name: b.name,
+		cover: b.cover,
+		count: b.num_shown
+	}
+};
 
 router.get('/user/:user_id', (req, res) => {
 	const user_id = req.params.user_id;
@@ -80,25 +96,47 @@ router.get('/user/:user_id', (req, res) => {
 			organisations: [],
 			books: []
 		};
-		let countMapper: (book: UserDatabaseBook) => number = (b => b.num_shown);
-		if(req_user_id === user_id) {
-			countMapper = (b => b.num_owned);
-		}
+		let countMapper = (req_user_id === user_id) ? CONNECTED_BOOK_MAPPER : PUBLIC_BOOK_MAPPER;
 		fillUserData(body, req_user_id, countMapper, body => res.json(body), () => res.sendStatus(500));
 	}, _ => res.sendStatus(500));
 });
 
 
-router.get('/user/:userId/visibility', authenticated(401), (req, res) => {
-	if (req.user?.uuid !== req.params.userId) {
+const FULL_BOOK_MAPPER: (b: UserDatabaseBook) => FullUserBookDTO = b => {
+	return {
+		id: b.id,
+		name: b.name,
+		cover: b.cover,
+		owned: b.num_owned,
+		shown: b.num_shown,
+		lent: b.num_lent
+	}
+};
+
+router.get('/user/:user_id/detailed', authenticated(401), (req, res) => {
+	const user_id = req.params.user_id;
+	const req_user_id = req.user?.uuid;
+	if(req_user_id !== user_id) {
 		res.sendStatus(403);
 		return;
 	}
-	const body: UserVisibilityDTO = {
-		visibility: req.user?.visibility!
-	};
-	res.json(body);
+	getUserById(user_id, db_user => {
+		if(db_user === null) {
+			res.sendStatus(404);
+			return;
+		}
+		let body: DetailedUserDTO = {
+			id: db_user.id,
+			username: db_user.username,
+			role: db_user.role,
+			visibility: db_user.visibility,
+			organisations: [],
+			books: []
+		};
+		fillUserData(body, req_user_id, FULL_BOOK_MAPPER, body => res.json(body), () => res.sendStatus(500));
+	}, _ => res.sendStatus(500));
 });
+
 
 router.post('/user/:userId/visibility', authenticated(401), (req, res) => {
 	if (req.user?.uuid !== req.params.userId) {
