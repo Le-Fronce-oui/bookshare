@@ -1,4 +1,4 @@
-import { getLoanById } from "../../database/queries/loans";
+import { getLoanById, setLoanToReturned } from "../../database/queries/loans";
 import { getUserById } from "../../database/queries/users";
 import { getBookById } from "../../database/queries/books";
 import { SuperShortUserDTO, FullLoanDTO } from "../../dto/loans/fullLoanDTO";
@@ -27,7 +27,7 @@ router.get('/loan/:loanId', authenticated(401), (req, res) => {
 			res.sendStatus(404);
 			return;
 		} else {
-			let loan_owner: SuperShortUserDTO  | undefined
+			let loan_owner: SuperShortUserDTO | undefined
 			getUserById(loan.owner_id, owner => {
 				if (owner != null) {
 					loan_owner = {
@@ -36,7 +36,7 @@ router.get('/loan/:loanId', authenticated(401), (req, res) => {
 					}
 				}
 			});
-			let loan_borrower: SuperShortUserDTO  | undefined
+			let loan_borrower: SuperShortUserDTO | undefined
 			getUserById(loan.borrower_id, borrower => {
 				if (borrower != null) {
 					loan_borrower = {
@@ -73,30 +73,50 @@ router.get('/loan/:loanId', authenticated(401), (req, res) => {
 
 
 
-router.post('/loan/:loanId/accept', (req, res) => {
+router.post('/loan/:loanId/accept', authenticated(401), (req, res) => {
 	// TODO
 	// Only for the owner of the book
 	// If not already denied
+
 	res.json('todo');
 });
 
-router.post('/loan/:loanId/deny', (req, res) => {
+router.post('/loan/:loanId/deny', authenticated(401), (req, res) => {
 	// TODO
 	// Only for the owner of the book
 	// If not already accepted
 	res.json('todo');
 });
 
-router.post('/loan/:loanId/borrow', (req, res) => {
+router.post('/loan/:loanId/borrow', authenticated(401), (req, res) => {
 	// TODO
 	// Only for the borrower
 	// Has to be accepted
 	res.json('todo');
 });
 
-router.post('/loan/:loanId/returned', (req, res) => {
+router.post('/loan/:loanId/returned', authenticated(401), (req, res) => {
 	// TODO
 	// Only for the owner of the book
 	// Has to be borrowed
-	res.json('todo');
+
+	getLoanById(req.params.loanId, loan => {
+		if (loan == null) {
+			res.sendStatus(404);
+			return;
+		}
+		if (loan.owner_id !== req.user?.uuid || loan.borrower_id !== req.user?.uuid) {
+			res.sendStatus(404);
+			return;
+		} if (loan.borrower_id === req.user?.uuid) {
+			res.sendStatus(403);
+			return;
+		} if (loan.borrowed_at === null) {
+			res.sendStatus(400);
+			return;
+		} else {
+			setLoanToReturned(req.params.loanId, new Date(), () => { })
+			res.sendStatus(200);
+		}
+	});
 });

@@ -21,3 +21,9 @@ export function getLoansForUser(user_id: string, consumer: Consumer<DatabaseLoan
     }).catch(e => manageError(e, onError));
 }
 
+export function setLoanToReturned(loan_id: string, now: Date, consumer: Consumer<DatabaseLoan | null>, onError?: ErrorHandler) {
+    pool.query('UPDATE "Loans" SET "returned_at" = $2 WHERE id = $1;', [loan_id, now]).then(qres => {
+        consumer(qres.rows.length > 0 ? qres.rows[0] : null);
+    }).catch(e => manageError(e, onError));
+}
+
