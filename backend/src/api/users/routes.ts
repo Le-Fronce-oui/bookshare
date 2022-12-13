@@ -12,6 +12,7 @@ import ShortUserDTO from "src/dto/users/short";
 import { Consumer, Callable } from "src/types/functions";
 import UserDTO from "src/dto/users/full";
 import { UserDatabaseBook } from "src/database/models/book";
+import { getLoansForUser } from "src/database/queries/loans";
 
 
 function fillUserData(dto: UserDTO, req_user_id: string | null, countMapper: (book: UserDatabaseBook) => number, callback: Consumer<UserDTO>, onError: Callable): void {
@@ -155,6 +156,8 @@ router.get('/user/:userId/loans', authenticated(401), (req, res) => {
 	if (req.user?.uuid !== req.params.userId) {
 		res.sendStatus(403);
 	} else {
-		res.json('todo');
+		getLoansForUser(req.params.userId, loans => {
+			res.json(loans);
+		}, _ => res.sendStatus(500));
 	}
 });
