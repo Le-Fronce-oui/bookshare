@@ -49,11 +49,13 @@ export class OrgListPageRowComponent implements OnInit, OnDestroy {
 
   public join(): void {
     this.join_clicked = true;
-    this.api.organisations.joinOrganisation(
-      this.organisation.id, this.userService.getUuid(),
-      () => { this.joined = true; this.user_count += 1; }, 
-      () => { this.joined = false; }
-    );
+    this.api.organisations.joinOrganisation(this.organisation.id, this.userService.getUuid(), ok => {
+      this.joined = true;
+      if(ok) {
+        this.user_count += 1;
+      }
+      this.userService.refreshLogin();
+    });
   }
 
   public ngOnDestroy(): void {

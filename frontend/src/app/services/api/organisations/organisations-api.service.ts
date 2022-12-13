@@ -16,11 +16,20 @@ export class OrganisationsApiService {
   }
 
 
-  public joinOrganisation(org_id: string, user_id: string, callback: () => void, onError: () => void) {
+  public joinOrganisation(org_id: string, user_id: string, callback: (ok: boolean) => void) {
     this.http.post("/api/organisation/" + org_id + "/join/" + user_id, null, { responseType: 'text' })
-      .subscribe(callback, error => {
+      .subscribe(_ => callback(true), error => {
         if(error.status === 400) {
-          onError();
+          callback(false);
+        } else { throw error; }
+      });
+  }
+
+  public leaveOrganisation(org_id: string, user_id: string, callback: (ok: boolean) => void) {
+    this.http.post("/api/organisation/" + org_id + "/leave/" + user_id, null, { responseType: 'text' })
+      .subscribe(_ => callback(true), error => {
+        if(error.status === 400) {
+          callback(false);
         } else { throw error; }
       });
   }
