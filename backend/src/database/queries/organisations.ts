@@ -36,9 +36,7 @@ export function getAllOrganisations(user_id: string | null, consumer: Consumer<D
         params.push(user_id);
     }
     pool.query(query, params).then(qres => {
-        let res = qres.rows;
-        res.forEach(row => row.user_count = parseInt(row.user_count));
-        consumer(res);
+        consumer(qres.rows);
     }).catch(e => manageError(e, onError));
 }
 
