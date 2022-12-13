@@ -1,8 +1,10 @@
 import { getLoanById } from "../../database/queries/loans";
 import { getUserById } from "../../database/queries/users";
-import FullLoanDTO from "../../dto/loans/fullLoanDTO";
+import { getBookById } from "../../database/queries/books";
+import { SuperShortUserDTO, FullLoanDTO } from "../../dto/loans/fullLoanDTO";
 import router from "../../core/router";
 import { authenticated } from "../auth/middlewares";
+import ShortBookDTO from "src/dto/books/short";
 
 
 router.put('/loan/', (req, res) => {
@@ -15,44 +17,56 @@ router.put('/loan/', (req, res) => {
 });
 
 router.get('/loan/:loanId', authenticated(401), (req, res) => {
-	let loandId = req.params.loanId
-
-	getLoanById(loandId, loan => {
+	let loan_id = req.params.loanId
+	getLoanById(loan_id, loan => {
 		if (loan == null) {
 			res.sendStatus(404);
 			return;
 		}
-		if (loan.borrower_id !== req.user?.uuid) {
+		if (loan.borrower_id !== req.user?.uuid || loan.owner_id !== req.user?.uuid) {
 			res.sendStatus(404);
 			return;
 		} else {
+			let loan_owner: SuperShortUserDTO  | undefined
 			getUserById(loan.owner_id, owner => {
-				if (owner !== null) {
-					let body: FullLoanDTO = {
-						id: loan.id,
-						owner: { 
-							id: loan.owner_id,
-							username: '' // loan.owner_username, (TODO make other requests)
-						},
-						borrower: {
-							id: loan.borrower_id,
-							username: '' // loan.borrower_username, (TODO make other requests)
-						},
-						book: {
-							id: loan.book_id,
-							name: '', // loan.book_name, (TODO make other requests)
-							cover: null // loan.book_cover || null,
-
-						},
-						created: loan.created_at,
-						accepted: loan.accepted_at,
-						declined: loan.declined_at,
-						borrowed: loan.borrowed_at,
-						returned: loan.returned_at,
-
+				if (owner != null) {
+					loan_owner = {
+						id: owner.id,
+						username: owner.username
 					}
 				}
 			});
+			let loan_borrower: SuperShortUserDTO  | undefined
+			getUserById(loan.borrower_id, borrower => {
+				if (borrower != null) {
+					loan_borrower = {
+						id: borrower.id,
+						username: borrower.username
+					}
+				}
+			});
+			let loan_book: ShortBookDTO | undefined
+			getBookById(loan.book_id, book => {
+				if (book != null) {
+					loan_book = {
+						id: book.id,
+						name: book.name,
+						cover: null,
+					}
+				}
+			});
+			let body: FullLoanDTO = {
+				id: loan.id,
+				owner: loan_owner,
+				borrower: loan_borrower,
+				book: loan_book,
+				accepted_at: loan.accepted_at,
+				borrowed_at: loan.borrowed_at,
+				returned_at: loan.returned_at,
+				created_at: loan.created_at,
+				declined_at: loan.declined_at,
+			}
+			res.json(body);
 		}
 	});
 });
