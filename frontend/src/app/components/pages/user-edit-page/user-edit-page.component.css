@@ -26,11 +26,24 @@ h1 > i {
 	font-size: 1.5rem;
 }
 
-.hbox > button {
+#change-password-form input {
+	width: 200px;
 	margin-right: var(--spacing-normal);
+}
+
+.hbox {
+	display: flex;
+	flex-flow: row nowrap;
+	gap: var(--spacing-normal);
 }
 
 
 #orgs-container, #books-container {
+	margin-top: var(--spacing-normal);
+}
+
+
+#books-container > .hbox {
+	justify-content: center;
 	margin-top: var(--spacing-normal);
 }

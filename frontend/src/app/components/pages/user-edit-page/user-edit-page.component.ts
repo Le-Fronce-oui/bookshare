@@ -4,8 +4,16 @@ import { Subscription } from 'rxjs';
 import FullUserBookDTO from 'src/app/classes/dto/books/full_user';
 import { Visibility } from 'src/app/classes/dto/enums';
 import ShortUserOrganisationDTO from 'src/app/classes/dto/organisations/short_user';
+import { ValidatedField } from 'src/app/classes/validated/validated-field';
+import { ValidationGroup } from 'src/app/classes/validated/validation-group';
 import { ApiService } from 'src/app/services/api/api.service';
+import { NotificationService } from 'src/app/services/notification.service';
 import { UserService } from 'src/app/services/user.service';
+
+interface ModifiableBook extends FullUserBookDTO {
+  modified: boolean,
+  deleted: boolean
+}
 
 @Component({
   selector: 'app-user-edit-page',
@@ -20,19 +28,34 @@ export class UserEditPageComponent implements OnInit, OnDestroy {
   public visibility: Visibility;
   public admin: boolean;
   public organisations: ShortUserOrganisationDTO[];
-  public books: FullUserBookDTO[];
+  public books: ModifiableBook[];
 
   public can_leave: boolean;
 
+  public passwordGroup: ValidationGroup<string>;
+  public old_password: ValidatedField<string>;
+  public new_password: ValidatedField<string>;
+  public confirm_password: ValidatedField<string>;
+
+  public books_changed: boolean;
+
   private userSubscription!: Subscription;
 
-  constructor(private route: ActivatedRoute, private router: Router, private api: ApiService, private userService: UserService) {
+  constructor(private route: ActivatedRoute, private router: Router, private notif: NotificationService, private api: ApiService, private userService: UserService) {
     this.username = '';
     this.visibility = 'PUBLIC';
     this.admin = false;
     this.organisations = [];
     this.books = [];
     this.can_leave = false;
+    this.passwordGroup = new ValidationGroup();
+    this.old_password = new ValidatedField<string>('', v => v.length > 0);
+    this.new_password = new ValidatedField<string>('', v => v.length >= 8);
+    this.confirm_password = new ValidatedField<string>('', v => v.length > 0 && v == this.new_password.value);
+    this.passwordGroup.addField(this.old_password);
+    this.passwordGroup.addField(this.new_password);
+    this.passwordGroup.addField(this.confirm_password);
+    this.books_changed = false;
   }
 
   public ngOnInit(): void {
@@ -58,14 +81,26 @@ export class UserEditPageComponent implements OnInit, OnDestroy {
       this.visibility = user.visibility;
       this.admin = user.role === 'ADMIN';
       this.organisations = user.organisations.sort((o1, o2) => o1.name.localeCompare(o2.name));
-      this.books = user.books.sort((b1, b2) => b1.name.localeCompare(b2.name));
+      this.books = user.books.sort((b1, b2) => b1.name.localeCompare(b2.name)).map(b => {
+        let res = b as ModifiableBook;
+        res.deleted = false;
+        res.modified = false;
+        return res;
+      });
       this.can_leave = this.organisations.every(o => !o.owned); // TODO or active loans
+      this.books_changed = false;
     });
   }
-  
+
+
+  // General profile settings
+
+  public onChangePassword(): void {
+    // TODO
+  }
 
   public onSignout(): void {
-
+    // TODO
   }
 
   public onVisibilityChanged(event: Event & { checked: boolean }): void {
@@ -73,6 +108,98 @@ export class UserEditPageComponent implements OnInit, OnDestroy {
     this.api.users.setUserVisibility(this.user_id, visibility, () => {});
   }
 
+
+  // Organisations
+
+  public onLeaveOrg(event: Event): void {
+    if(!(event.target instanceof Element) || !event.target.hasAttribute('data-index')) {
+      return;
+    }
+    const index = parseInt(event.target.getAttribute('data-index') as string);
+    const org = this.organisations[index];
+    this.api.organisations.leaveOrganisation(org.id, this.userService.getUuid(), ok => {
+      this.organisations = this.organisations.filter((_, i) => i !== index);
+      if(ok) {
+        this.notif.success("Left organisation");
+      } else {
+        this.notif.warning("Already left organisation");
+      }
+      this.userService.refreshLogin();
+    });
+  }
+
+
+  // Books
+
+  public onDeleteBook(event: Event): void {
+    if(!(event.target instanceof Element)) {
+      return;
+    }
+    let target = event.target.parentElement?.parentElement;
+    if(target?.nodeName === 'TD') {
+      target = target.parentElement;
+    }
+    if(target === undefined || target == null || !target.hasAttribute('data-index')) {
+      return;
+    }
+    const index = parseInt(target.getAttribute('data-index') as string);
+    this.books[index].deleted = true;
+    this.books_changed = true;
+    target.remove();
+  }
+
+  public onBookOwnedChanged(event: { originalEvent: Event, value: number }): void {
+    const index = this.getNumberInputIndex(event.originalEvent.target);
+    if(index === null) {
+      console.log(event.originalEvent.target)
+      return;
+    }
+    let book = this.books[index];
+    if(event.value <= 0) {
+      event.value = 1;
+      book.owned = 1;
+    }
+    if(book.shown > event.value || book.shown === book.owned) {
+      book.shown = event.value;
+    }
+    this.books_changed = true;
+    book.modified = true;
+  }
+
+  public onBookShownChanged(event: { originalEvent: Event, value: number }): void {
+    const index = this.getNumberInputIndex(event.originalEvent.target);
+    if(index === null) {
+      return;
+    }
+    let book = this.books[index];
+    if(event.value < 0) {
+      event.value = 0;
+      book.shown = 0;
+    }
+    if(event.value > book.owned) {
+      book.shown = book.owned;
+    }
+    this.books_changed = true;
+    book.modified = true;
+  }
+
+  private getNumberInputIndex(target: EventTarget | null): number | null {
+    if(!(target instanceof Element)) {
+      return null;
+    }
+    let row = target.closest('tr[data-index]');
+    if(row === null) {
+      return null;
+    }
+    return parseInt(row.getAttribute('data-index') as string);
+  }
+
+  public onSaveBooks(): void {
+    // TODO
+  }
+
+
+  // OnDestroy
 
   public ngOnDestroy(): void {
       this.userSubscription.unsubscribe();

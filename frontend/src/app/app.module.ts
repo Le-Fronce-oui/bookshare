@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 
 import { InputTextModule } from 'primeng/inputtext';
+import { InputNumberModule } from 'primeng/inputnumber';
 import { PasswordModule } from 'primeng/password';
 import { FieldsetModule } from 'primeng/fieldset';
 import { ToastModule } from 'primeng/toast';
@@ -12,6 +13,7 @@ import { DialogModule } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
 import { ToggleButtonModule } from 'primeng/togglebutton';
 import { TableModule } from 'primeng/table';
+import { DividerModule } from 'primeng/divider';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -32,9 +34,10 @@ import { SimpleDialogTemplateComponent } from './components/templates/simple-dia
 import { ErrorHandlingService } from './services/error-handling.service';
 import { BookCardComponent } from './components/generic/cards/book-card/book-card.component';
 import { BookFilterPipePipe } from './pipes/book-filter-pipe.pipe';
+import { FieldFilterPipe } from './pipes/field-filter.pipe';
 import { UserListPageRowComponent } from './components/pages/user-list-page/specific/user-list-page-row/user-list-page-row.component';
 import { OrgListPageRowComponent } from './components/pages/organisation-search-page/specific/org-list-page-row/org-list-page-row.component';
-import { FieldFilterPipe } from './pipes/field-filter.pipe';
+import { FieldBooleanPipe } from './pipes/field-boolean.pipe';
 
 @NgModule({
   declarations: [
@@ -54,9 +57,10 @@ import { FieldFilterPipe } from './pipes/field-filter.pipe';
     SimpleDialogTemplateComponent,
     BookCardComponent,
     BookFilterPipePipe,
+    FieldFilterPipe,
     UserListPageRowComponent,
     OrgListPageRowComponent,
-    FieldFilterPipe
+    FieldBooleanPipe
   ],
   imports: [
     BrowserModule,
@@ -65,13 +69,15 @@ import { FieldFilterPipe } from './pipes/field-filter.pipe';
     FormsModule,
     HttpClientModule,
     InputTextModule,
+    InputNumberModule,
     PasswordModule,
     FieldsetModule,
     ToastModule,
     DialogModule,
     ButtonModule,
     ToggleButtonModule,
-    TableModule
+    TableModule,
+    DividerModule
   ],
   providers: [
     MessageService,
