@@ -1,11 +1,12 @@
 import { getBookInOrganisation } from "../../database/queries/books";
-import { canSeeOrganisation, getAllOrganisations, getBooksInOrg, getOrganisationById, joinOrganisation, leaveOrganisation } from "../../database/queries/organisations";
+import { canSeeOrganisation, getAllOrganisations, getBooksInOrg, getOrganisationById, getUsersInOrganisation, joinOrganisation, leaveOrganisation } from "../../database/queries/organisations";
 import BookInOrgDTO from "../../dto/books/in_org";
 import router from "../../core/router";
 import ShortOrganisationDTO from "src/dto/organisations/short";
 import { authenticated } from "../auth/middlewares";
 import { getUserById } from "../../database/queries/users";
 import OrganisationDTO from "../../dto/organisations/full";
+import OrganisationMembersDTO from "src/dto/organisations/members";
 
 
 router.get('/organisations/short', (req, res) => {
@@ -84,9 +85,9 @@ router.post('/organisation/:org_id/leave/:user_id', authenticated(401), (req, re
 
 
 router.get('/organisation/:org_id/book/:book_id', (req, res) => {
-	let user_id = req.user !== undefined ? req.user.uuid : null;
-	let org_id = req.params.org_id;
-	let book_id = req.params.book_id;
+	const user_id = req.user !== undefined ? req.user.uuid : null;
+	const org_id = req.params.org_id;
+	const book_id = req.params.book_id;
 	canSeeOrganisation(org_id, user_id, canSee => {
 		if(!canSee) {
 			res.sendStatus(404);
@@ -102,6 +103,43 @@ router.get('/organisation/:org_id/book/:book_id', (req, res) => {
 			res.json(body);
 		}, _ => res.sendStatus(500))
 	}, _ => res.sendStatus(500));
-})
+});
+
+
+router.get('/organisation/:org_id/members', authenticated(401), (req, res) => {
+	const req_user_id = req.user?.uuid as string;
+	const org_id = req.params.org_id;
+	getUsersInOrganisation(org_id, req_user_id, users => {
+		if(users.length === 0) {
+			res.sendStatus(404);
+			return;
+		}
+		getOrganisationById(org_id, req_user_id, org => {
+			if(org === null) {
+				res.sendStatus(404);
+				return;
+			}
+			let body: OrganisationMembersDTO = {
+				owner: org.ownerId,
+				members: users.map(u => ({
+					id: u.id,
+					username: u.username,
+					admin: u.role === 'ADMIN',
+					banned: u.org_banned,
+					org_role: u.org_role
+				}))
+			};
+			res.json(body);
+		}, _ => res.sendStatus(500));
+	}, _ => res.sendStatus(500));
+});
+
+
+router.post('/organisation/:org_id/ban/:user_id', authenticated(401), (req, res) => {
+	const req_user_id = req.user?.uuid as string;
+	const org_id = req.params.org_id;
+	const user_id = req.params.user_id;
+	
+});
 
 	

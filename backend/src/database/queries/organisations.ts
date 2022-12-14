@@ -3,6 +3,8 @@ import { pool } from "../connect";
 import { manageError } from "../errors";
 import { DatabaseBookInOrg } from "../models/book";
 import { DatabaseOrganisation, DatabaseOrganisationWithCount, UserDatabaseOrganisation } from "../models/organisations";
+import Role from "../models/role";
+import { OrganisationUser } from "../models/user";
 
 
 export function getAllOrganisations(user_id: string | null, consumer: Consumer<DatabaseOrganisationWithCount[]>, onError: ErrorHandler) {
@@ -141,15 +143,42 @@ export function canSeeOrganisation(org_id: string, req_user_id: string | null, c
     } else {
         query = `
             SELECT Count(*) 
-            FROM "Organisations", "Members"
-            WHERE "Organisations".id = $1 AND "Members"."orgaId" = "Organisations".id
-                AND "Members"."userId" = $2;
-                AND "Members".banned = false;
+            FROM "Organisations"
+            WHERE "Organisations".id = $1
+                AND $2 NOT IN (
+                    SELECT "userId"
+                    FROM "Members"
+                    WHERE "Members"."orgaId" = $1
+                        AND "Members".banned
+                );
         `;
         params.push(req_user_id);
     }
     pool.query(query, params).then(qres => {
         consumer(qres.rows[0].count == 1);
+    }).catch(e => manageError(e, onError));
+}
+
+
+export function getUsersInOrganisation(org_id: string, req_user_id: string, consumer: Consumer<OrganisationUser[]>, onError: ErrorHandler) {
+    pool.query(`
+        SELECT "Users".*, "Members".banned AS "org_banned", "Members".role AS "org_role"
+        FROM "Members", "Users"
+        WHERE "Members"."userId" = "Users".id
+            AND "Members"."orgaId" = $1
+            AND (
+                EXISTS (
+                    SELECT * FROM "Users" WHERE id = $1 AND role = 'ADMIN'
+                )
+                OR EXISTS (
+                    SELECT * FROM "Members"
+                    WHERE "orgaId" = $1
+                        AND "userId" = $2
+                        AND NOT banned
+                )
+            );
+    `, [org_id, req_user_id]).then(qres => {
+        consumer(qres.rows);
     }).catch(e => manageError(e, onError));
 }
 

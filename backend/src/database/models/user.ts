@@ -12,4 +12,12 @@ export interface DatabaseUser {
     banned: boolean
 }
 
+export interface OrganisationUser {
+    id: string,
+    username: string,
+    role: Role,
+    org_banned: boolean,
+    org_role: Role
+}
+
 export default DatabaseUser;

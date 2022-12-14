@@ -9,8 +9,8 @@ export function getLoans(consumer: Consumer<DatabaseLoan[]>, onError?: ErrorHand
     }).catch(e => manageError(e, onError));
 }
 
-export function getLoanById(loan_id: string, consumer: Consumer<DatabaseLoan | null>, onError?: ErrorHandler) {
-    pool.query('SELECT * FROM "Loans" WHERE id = $1;', [loan_id]).then(qres => {
+export function getLoanById(loan_id: string, user_req_id: string, consumer: Consumer<DatabaseLoan | null>, onError?: ErrorHandler) {
+    pool.query('SELECT * FROM "Loans" WHERE id = $1 AND ("Loans"."borrower_id" = $2 OR "Loans"."owner_id" = $2);', [loan_id, user_req_id]).then(qres => {
         consumer(qres.rows.length > 0 ? qres.rows[0] : null);
     }).catch(e => manageError(e, onError));
 }
