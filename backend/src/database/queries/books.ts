@@ -28,32 +28,38 @@ export function getBooksForUser(user_id: string, consumer: Consumer<UserDatabase
 }
 
 
-export function getBookInOrganisation(org_id: string, book_id: string, loggedIn: boolean, 
+export function getBookInOrganisation(org_id: string, book_id: string, req_user_id: string | null, 
             consumer: Consumer<DatabaseUserBooksInOrg[]>, onError?: ErrorHandler) {
     let query: string;
-    if(loggedIn) {
+    let params = [org_id, book_id];
+    if(req_user_id === null) {
         query = `
-            SELECT "Users".id as user_id, "Users".name as username, "Collections".shown as owned, "Collections".lent
+            SELECT "Users".id AS user_id, "Users".username AS username, "Collections".num_shown AS owned, "Collections".num_lent AS lent
             FROM "Users", "Members", "Collections"
             WHERE "Members"."userId" = "Users".id
                 AND "Collections"."userId" = "Users".id 
                 AND "Users".visibility = 'PUBLIC'
                 AND "Members"."orgaId" = $1
                 AND "Collections"."bookId" = $2
-                AND "Collections".shown > 0
+                AND "Collections".num_shown > 0
         `;
     } else {
         query = `
-            SELECT "Users".id as user_id, "Users".name as username, "Collections".shown as owned, "Collections".lent
+            SELECT "Users".id AS user_id, "Users".username AS username, "Collections".num_shown AS owned, "Collections".num_lent AS lent
             FROM "Users", "Members", "Collections"
             WHERE "Members"."userId" = "Users".id
                 AND "Collections"."userId" = "Users".id
                 AND "Members"."orgaId" = $1
                 AND "Collections"."bookId" = $2
-                AND "Collections".shown > 0
+                AND "Collections".num_shown > 0
+                AND "Members"."orgaId" NOT IN (
+                    SELECT "orgaId" AS id FROM "Members" AS
+                    WHERE "Members"."userId" = $3 AND "Members".banned
+                )
         `;
+        params.push(req_user_id);
     }
-    pool.query(query, [org_id, book_id]).then(qres => {
+    pool.query(query, params).then(qres => {
         consumer(qres.rows);
     }).catch(e => manageError(e, onError));
 }
