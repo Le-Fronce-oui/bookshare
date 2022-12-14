@@ -1,0 +1,16 @@
+<td>
+	<i *ngIf="member.admin" class="pi pi-star-fill"></i>
+	{{member.username}}
+	<a [routerLink]="['/user', member.id]">
+		<i class="pi pi-link"></i>
+	</a>
+</td>
+<td *ngIf="as_owner">
+	<p-toggleButton onLabel="Admin" offLabel="Promote" onIcon="pi pi-star-fill" offIcon="pi pi-angle-double-up" [disabled]="!access || member.is_owner" [(ngModel)]="admin" (onChange)="onAdmin($event)"></p-toggleButton>
+</td>
+<td *ngIf="!as_owner">
+	<i class="pi" [ngClass]="{'OWNER': 'pi-key', 'ADMIN': 'pi-star-fill', 'USER': 'pi-user'}[org_role]"></i>
+</td>
+<td *ngIf="as_admin">
+	<p-toggleButton onLabel="Ban" offLabel="Unban" onIcon="pi pi-ban" offIcon="pi pi-times" [disabled]="admin || member.admin" [(ngModel)]="access" (onChange)="onAccess($event)"></p-toggleButton>
+</td>

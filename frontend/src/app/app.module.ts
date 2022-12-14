@@ -39,6 +39,7 @@ import { FieldFilterPipe } from './pipes/field-filter.pipe';
 import { UserListPageRowComponent } from './components/pages/user-list-page/specific/user-list-page-row/user-list-page-row.component';
 import { OrgListPageRowComponent } from './components/pages/organisation-search-page/specific/org-list-page-row/org-list-page-row.component';
 import { FieldBooleanPipe } from './pipes/field-boolean.pipe';
+import { OrgMembersPageRowComponent } from './components/pages/organisation-members-page/specific/org-members-page-row/org-members-page-row.component';
 
 @NgModule({
   declarations: [
@@ -61,7 +62,8 @@ import { FieldBooleanPipe } from './pipes/field-boolean.pipe';
     FieldFilterPipe,
     UserListPageRowComponent,
     OrgListPageRowComponent,
-    FieldBooleanPipe
+    FieldBooleanPipe,
+    OrgMembersPageRowComponent
   ],
   imports: [
     CommonModule,
