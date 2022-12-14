@@ -1,6 +1,6 @@
 
 <div class="canvas">
-	<a title="{{title}}" class="image-link" [routerLink]="[book_link]" [style.background-image]="cover_path">
+	<a title="{{title}}" class="image-link" [routerLink]="['/book', book_id]" [queryParams]="params" [style.background-image]="cover_path">
 		<div *ngIf="count > 0" class="book-count">{{count}}</div>
 	</a>
 	<p class="book-title">{{title}}</p>

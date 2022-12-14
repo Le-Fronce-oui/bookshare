@@ -1,0 +1,43 @@
+
+.canvas {
+	width: 900px;
+	margin-bottom: var(--spacing-normal);
+	position: relative;
+}
+
+.canvas > a {
+	position: absolute;
+	top: var(--spacing-large);
+	right: var(--spacing-large);
+}
+
+.canvas > a > i {
+	font-size: 1.5rem;
+}
+
+.canvas > button {
+	position: absolute;
+	right: var(--spacing-normal);
+	bottom: var(--spacing-normal);
+}
+
+#owner {
+	margin-bottom: 0px;
+	font-style: italic;
+}
+
+
+#books-grid {
+	display: grid;
+	grid-gap: var(--spacing-medium);
+	grid-template-columns: repeat(5,          160px);
+	grid-template-rows:    repeat(auto-fill , 240px);
+}
+
+#books-grid > app-book-card {
+	height: 240px;
+}
+
+.infobox {
+	text-align: center;
+}

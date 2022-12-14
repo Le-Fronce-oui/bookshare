@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import BookInOrgDTO from 'src/app/classes/dto/books/in_org';
 import ShortOrganisationDTO from 'src/app/classes/dto/organisations/short';
+import OrganisationDTO from 'src/app/classes/dto/organisations/full';
 
 @Injectable({
   providedIn: 'root'
@@ -13,6 +14,15 @@ export class OrganisationsApiService {
   public getOrganisations(callback: (response: ShortOrganisationDTO[]) => void) {
     this.http.get<ShortOrganisationDTO[]>('/api/organisations/short')
       .subscribe(callback);
+  }
+
+  public getOrganisation(org_id: string, callback: (response: OrganisationDTO | null) => void) {
+    this.http.get<OrganisationDTO>("/api/organisation/" + org_id)
+      .subscribe(callback, error => {
+        if(error.status === 404) {
+          callback(null);
+        } else { throw error; }
+      });
   }
 
 
