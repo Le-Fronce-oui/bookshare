@@ -40,7 +40,8 @@ export class OrganisationMembersPageComponent implements OnInit, OnDestroy {
         }
         this.org_id = uuid;
         if(!this.userService.isConnected()) {
-          this.router.navigate(['/organisation/', this.org_id]);
+          this.router.navigate(['/login'], { queryParams: {'next': "/organisation/" + this.org_id + "/members"} });
+          return;
         }
         this.admin = (this.userService.isAdmin() || this.userService.isOrgAdmin(this.org_id));
         if(!this.admin && !this.userService.inOrganisation(this.org_id)) {
@@ -56,6 +57,7 @@ export class OrganisationMembersPageComponent implements OnInit, OnDestroy {
   private updateFromApi(): void {
     this.api.organisations.getOrganisationMembers(this.org_id, members => {
       this.org_owner = members.owner;
+      members.members.sort((m1, m2) => m1.username.localeCompare(m2.username));
       this.members = members.members.map(u => ({
         id: u.id,
         username: u.username,

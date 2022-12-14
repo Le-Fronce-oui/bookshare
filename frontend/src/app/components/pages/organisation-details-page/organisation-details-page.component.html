@@ -2,7 +2,7 @@
 <app-header-footer-template>
 	
 	<div class="canvas">
-		<a [routerLink]="['/organisation/', org_id, '/members']" *ngIf="joined || is_admin"><i class="pi pi-users"></i></a>
+		<a [routerLink]="['/organisation/', org_id, 'members']" *ngIf="joined || is_admin"><i class="pi pi-users"></i></a>
 		<h1>{{name}}</h1>
 		<p *ngIf="description !== null">
 			{{description}}

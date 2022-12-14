@@ -12,6 +12,7 @@ import { Member } from '../member';
 export class OrgMembersPageRowComponent implements OnInit {
 
   @Input() public member!: Member;
+  @Input() public org_id!: string;
   @Input('admin') public as_admin: boolean;
   @Input('owner') public as_owner: boolean;
 
@@ -19,7 +20,7 @@ export class OrgMembersPageRowComponent implements OnInit {
 
   public admin: boolean;
   public access: boolean;
-  
+
   constructor(private api: ApiService, private notif: NotificationService) {
     this.admin = false;
     this.access = true;
@@ -31,7 +32,6 @@ export class OrgMembersPageRowComponent implements OnInit {
   public ngOnInit(): void { }
 
   public ngOnChanges(changes: SimpleChanges) {
-    console.log(changes);
     const user: Member = changes.member.currentValue;
     this.admin = user.org_role === 'ADMIN';
     this.access = !user.banned;
@@ -40,17 +40,27 @@ export class OrgMembersPageRowComponent implements OnInit {
 
   public onAdmin(event: Event & { checked: boolean }): void {
     if(event.checked) {
-      // this.api.users.grantUserSiteAdmin(this.user.id, () => {
-      //   this.notif.success("User " + this.username + " promoted to admin");
-      // })
+      this.api.organisations.setMemberAdmin(this.org_id,this.member.id, () => {
+        this.notif.success("User promoted to admin rank");
+      });
+    } else {
+      this.api.organisations.clearMemberAdmin(this.org_id,this.member.id, () => {
+        this.notif.success("Removed admin role from user");
+      });
     }
   }
 
   public onAccess(event: Event & { checked: boolean }): void {
     const ban: boolean = !event.checked;
-    // this.api.users.setUserSiteBan(this.user.id, ban, () => {
-    //   this.notif.success("User " + this.username + (ban ? " banned" : " unbanned"));
-    // })
+    if(ban) {
+      this.api.organisations.setMemberBan(this.org_id,this.member.id, () => {
+        this.notif.success("User banned");
+      });
+    } else {
+      this.api.organisations.clearMemberBan(this.org_id,this.member.id, () => {
+        this.notif.success("User unbanned");
+      });
+    }
   }
 
 }

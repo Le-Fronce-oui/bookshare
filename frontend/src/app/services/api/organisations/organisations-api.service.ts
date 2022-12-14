@@ -46,8 +46,30 @@ export class OrganisationsApiService {
   }
 
 
-  public getOrganisationMembers(org_id: string, callback: (members: OrganisationMembersDTO) => void) {
+  public getOrganisationMembers(org_id: string, callback: (members: OrganisationMembersDTO) => void): void {
     this.http.get<OrganisationMembersDTO>("/api/organisation/" + org_id  + "/members", { observe: 'body' })
+      .subscribe(callback);
+  }
+
+
+  public setMemberBan(org_id: string, user_id: string, callback: () => void): void {
+    this.http.post("/api/organisation/" + org_id  + "/ban/" + user_id, null, { responseType: 'text' })
+      .subscribe(callback);
+  }
+
+  public clearMemberBan(org_id: string, user_id: string, callback: () => void): void {
+    this.http.delete("/api/organisation/" + org_id  + "/ban/" + user_id, { responseType: 'text' })
+      .subscribe(callback);
+  }
+
+
+  public setMemberAdmin(org_id: string, user_id: string, callback: () => void): void {
+    this.http.post("/api/organisation/" + org_id  + "/admin/" + user_id, null, { responseType: 'text' })
+      .subscribe(callback);
+  }
+
+  public clearMemberAdmin(org_id: string, user_id: string, callback: () => void): void {
+    this.http.delete("/api/organisation/" + org_id  + "/admin/" + user_id, { responseType: 'text' })
       .subscribe(callback);
   }
 
