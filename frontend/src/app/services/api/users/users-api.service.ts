@@ -38,13 +38,8 @@ export class UsersApiService {
       });
   }
 
-<<<<<<< HEAD
   public getDetailedUser(user_id: string, callback: (response: DetailedUserDTO) => void): void {
     this.http.get<DetailedUserDTO>("/api/user/" + user_id + "/detailed", { observe: 'body' })
-=======
-  public getUserVisibility(user_id: string, callback: (response: UserVisibilityDTO) => void): void {
-    this.http.get<UserVisibilityDTO>("/api/user/" + user_id + "/visibility" , { observe: 'body' })
->>>>>>> dev-49
       .subscribe(callback);
   }
 
@@ -53,7 +48,6 @@ export class UsersApiService {
     this.http.post("/api/user/" + user_id + "/visibility?visibility=" + visibility, null, { responseType: 'text' })
       .subscribe(_ => callback());
   }
-
 
   public setUserSiteBan(user_id: string, banned: boolean, callback: () => void): void {
     this.http.post("/api/user/" + user_id + "/access?ban=" + banned, null, { responseType: 'text' })

@@ -1,6 +1,7 @@
 import { Consumer, ErrorHandler } from "src/types/functions";
 import { pool } from "../connect";
 import { manageError } from "../errors";
+import { DatabaseBookInOrg } from "../models/book";
 import { DatabaseOrganisation, DatabaseOrganisationWithCount, UserDatabaseOrganisation } from "../models/organisations";
 
 
@@ -40,9 +41,61 @@ export function getAllOrganisations(user_id: string | null, consumer: Consumer<D
     }).catch(e => manageError(e, onError));
 }
 
-export function getOrganisationById(organisation_id: string, consumer: Consumer<DatabaseOrganisation | null>, onError?: ErrorHandler) {
-    pool.query('SELECT * FROM "Organisations" WHERE id = $1;', [organisation_id]).then(qres => {
+export function getOrganisationById(org_id: string, req_user_id: string | null, consumer: Consumer<DatabaseOrganisation | null>, onError: ErrorHandler) {
+    let query: string;
+    let params = [org_id];
+    if(req_user_id === null) {
+        query = 'SELECT * FROM "Organisations" WHERE id = $1 AND visibility = \'PUBLIC\';'
+    } else {
+        query = `
+            SELECT * FROM "Organisations" AS "Orgs"
+            WHERE id = $1
+            AND NOT EXISTS (
+                SELECT "Organisations".id
+                FROM "Organisations", "Members"
+                WHERE "Organisations".id = $1
+                    AND "Members"."orgaId" = "Organisations".id
+                    AND "Members"."userId" = $2
+                    AND "Members".banned
+            );
+        `;
+        params.push(req_user_id);
+    }
+    pool.query(query, params).then(qres => {
         consumer(qres.rows.length > 0 ? qres.rows[0] : null);
+    }).catch(e => manageError(e, onError));
+}
+
+
+export function getBooksInOrg(org_id: string, connected: boolean, consumer: Consumer<DatabaseBookInOrg[]>, onError: ErrorHandler) {
+    let query: string;
+    let params = [org_id];
+    if(connected) {
+        query = `
+            SELECT "Books".*, SUM("Collections".num_shown) AS count
+            FROM "Members", "Users", "Collections", "Books"
+            WHERE "Members"."orgaId" = $1
+                AND "Members"."userId" = "Users".id
+                AND "Collections"."userId" = "Users".id
+                AND "Collections"."bookId" = "Books".id
+                AND "Users".visibility = 'PUBLIC'
+                AND "Collections".num_shown > 0
+            GROUP BY "Books".id;
+            `;
+    } else {
+        query = `
+            SELECT "Books".*, SUM("Collections".num_shown) AS count
+            FROM "Members", "Users", "Collections", "Books"
+            WHERE "Members"."orgaId" = $1
+                AND "Members"."userId" = "Users".id
+                AND "Collections"."userId" = "Users".id
+                AND "Collections"."bookId" = "Books".id
+                AND "Collections".num_shown > 0
+            GROUP BY "Books".id;
+        `;
+    }
+    pool.query(query, params).then(qres => {
+        consumer(qres.rows);
     }).catch(e => manageError(e, onError));
 }
 

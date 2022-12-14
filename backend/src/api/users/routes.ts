@@ -7,14 +7,14 @@ import { authenticated, isAdmin } from "../auth/middlewares";
 import Visibility from "../../database/models/visibility";
 import { getBooksForUser } from "../../database/queries/books";
 import { getOrganisationsForUser } from "../../database/queries/organisations";
-import ShortUserDTO from "src/dto/users/short";
-import { Consumer, Callable } from "src/types/functions";
-import UserDTO, { UserBookGenericDTO } from "src/dto/users/full";
-import { UserDatabaseBook } from "src/database/models/book";
-import ShortUserBookDTO from "src/dto/books/short_user";
-import DetailedUserDTO from "src/dto/users/detailed";
-import FullUserBookDTO from "src/dto/books/full_user";
-import { getLoansForUser } from "src/database/queries/loans";
+import ShortUserDTO from "../../dto/users/short";
+import { Consumer, Callable } from "../../types/functions";
+import UserDTO, { UserBookGenericDTO } from "../../dto/users/full";
+import { UserDatabaseBook } from "../../database/models/book";
+import ShortUserBookDTO from "../../dto/books/short_user";
+import DetailedUserDTO from "../../dto/users/detailed";
+import FullUserBookDTO from "../../dto/books/full_user";
+import { getLoansForUser } from "../../database/queries/loans";
 
 
 function fillUserData<T>(dto: UserBookGenericDTO<T>, req_user_id: string | null, bookMapper: (book: UserDatabaseBook) => T | null, 
