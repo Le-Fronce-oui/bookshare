@@ -80,10 +80,10 @@ export function getBooksInOrg(org_id: string, connected: boolean, consumer: Cons
                 AND "Members"."userId" = "Users".id
                 AND "Collections"."userId" = "Users".id
                 AND "Collections"."bookId" = "Books".id
-                AND "Users".visibility = 'PUBLIC'
                 AND "Collections".num_shown > 0
+                AND NOT "Members".banned
             GROUP BY "Books".id;
-            `;
+        `;
     } else {
         query = `
             SELECT "Books".*, SUM("Collections".num_shown) AS count
@@ -92,6 +92,7 @@ export function getBooksInOrg(org_id: string, connected: boolean, consumer: Cons
                 AND "Members"."userId" = "Users".id
                 AND "Collections"."userId" = "Users".id
                 AND "Collections"."bookId" = "Books".id
+                AND "Users".visibility = 'PUBLIC'
                 AND "Collections".num_shown > 0
             GROUP BY "Books".id;
         `;
@@ -200,7 +201,55 @@ export function leaveOrganisation(org_id: string, user_id: string, callback: Con
             AND NOT banned
             AND "userId" <> (
                 SELECT "ownerId" FROM "Organisations" WHERE id = $2
-            );`, [user_id, org_id]
+            );
+        `, [user_id, org_id]
+    ).then(qres => {
+        callback(qres.rowCount > 0);
+    }).catch(e => manageError(e, onError));
+}
+
+
+export function isAdminInOrg(org_id: string, user_id: string, callback: Consumer<boolean | null>, onError: ErrorHandler): void {
+    pool.query(`
+            SELECT id, (
+                EXISTS (
+                    SELECT *
+                    FROM "Members"
+                    WHERE "userId" = $1
+                        AND "orgaId" = $2
+                        AND role = 'ADMIN'
+                )
+                OR EXISTS (
+                    SELECT * FROM "Users" WHERE id = $1 AND role = 'ADMIN'
+                )
+            ) AS ok
+            FROM "Organisations"
+            WHERE id = $2;
+        `, [user_id, org_id]
+    ).then(qres => {
+        callback(qres.rows.length > 0 ? qres.rows[0].ok : null);
+    }).catch(e => manageError(e, onError));
+}
+
+export function setUserOrgRole(org_id: string, user_id: string, role: Role, callback: Consumer<boolean>, onError: ErrorHandler) {
+    pool.query(`
+            UPDATE "Members"
+            SET role = $3::"Role"
+            WHERE "userId" = $1 AND "orgaId" = $2;
+        `, [user_id, org_id, role]
+    ).then(qres => {
+        callback(qres.rowCount > 0);
+    }).catch(e => manageError(e, onError));
+}
+
+export function setUserOrgBan(org_id: string, user_id: string, ban: boolean, callback: Consumer<boolean>, onError: ErrorHandler) {
+    const query = `
+        UPDATE "Members"
+        SET banned = $3
+        WHERE "userId" = $1 AND "orgaId" = $2 AND role <> 'ADMIN';
+    `;
+    console.log(query);
+    pool.query(query, [user_id, org_id, ban]
     ).then(qres => {
         callback(qres.rowCount > 0);
     }).catch(e => manageError(e, onError));
