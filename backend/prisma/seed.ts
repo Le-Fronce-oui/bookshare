@@ -5,22 +5,40 @@ const prisma = new PrismaClient();
 
 async function run() {
     const uuids = [uuidv4()];
-    const hobbit = await prisma.books.upsert({
+
+
+    const orgatest = await prisma.organisations.upsert({
+        where: { id: "4" },
+        update: {},
+        create: {
+            id: "4",
+            name: "Test",
+            ownerId: "ef470bab-38ce-4f77-8331-3da919a98be2",
+            desc: "Test",
+            visibility: "PUBLIC",
+            blocked: false,
+
+        }
+    })
+    const test = await prisma.loans.upsert({
         where: { id: uuids[0] },
         update: {},
         create: {
-
             id: uuids[0],
-            name: 'The Hobbit',
-            desc: 'A book about a hobbit',
-            type: 'BOOK',
-            iban: '1234567890',
-            author: 'J.R.R. Tolkien',
-            cover: 'hobbit.jpg',
-        },
+            bookId: "1",
+            borrowerId: "f0be19f2-c65e-4458-94f2-091f7f94277c",
+            ownerId: "ef470bab-38ce-4f77-8331-3da919a98be2",
+            orgaId: "4",
+            createdAt: new Date(),
+            acceptedAt: null,
+            borrowedAt: null,
+            returnedAt: null,
+            declinedAt: null,
+        }
     })
-    console.log({ hobbit })
+    console.log({ test })
 }
+
 run()
     .catch(e => {
         throw e
@@ -29,4 +47,5 @@ run()
         await prisma.$disconnect()
     }
     )
+
 
