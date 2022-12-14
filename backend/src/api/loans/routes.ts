@@ -23,51 +23,49 @@ router.get('/loan/:loanId', authenticated(401), (req, res) => {
 			res.sendStatus(404);
 			return;
 		}
-		if (loan.borrower_id !== req.user?.uuid || loan.owner_id !== req.user?.uuid) {
-			res.sendStatus(404);
-			return;
-		} else {
-			let loan_owner: SuperShortUserDTO | undefined
-			getUserById(loan.owner_id, owner => {
-				if (owner != null) {
-					loan_owner = {
-						id: owner.id,
-						username: owner.username
-					}
-				}
-			});
-			let loan_borrower: SuperShortUserDTO | undefined
+		getUserById(loan.owner_id, owner => {
+			if (owner === null) {
+				res.sendStatus(500);
+				return;
+			}
+			let loan_owner = {
+				id: owner.id,
+				username: owner.username
+			}
 			getUserById(loan.borrower_id, borrower => {
-				if (borrower != null) {
-					loan_borrower = {
-						id: borrower.id,
-						username: borrower.username
-					}
+				if (borrower === null) {
+					res.sendStatus(500);
+					return;
 				}
-			});
-			let loan_book: ShortBookDTO | undefined
-			getBookById(loan.book_id, book => {
-				if (book != null) {
-					loan_book = {
+				let loan_borrower = {
+					id: borrower.id,
+					username: borrower.username
+				}
+				getBookById(loan.book_id, book => {
+					if (book === null) {
+						res.sendStatus(500);
+						return;
+					}
+					let loan_book = {
 						id: book.id,
 						name: book.name,
 						cover: null,
 					}
-				}
+					let body: FullLoanDTO = {
+						id: loan.id,
+						owner: loan_owner,
+						borrower: loan_borrower,
+						book: loan_book,
+						accepted_at: loan.accepted_at,
+						borrowed_at: loan.borrowed_at,
+						returned_at: loan.returned_at,
+						created_at: loan.created_at,
+						declined_at: loan.declined_at,
+					}
+					res.json(body);
+				});
 			});
-			let body: FullLoanDTO = {
-				id: loan.id,
-				owner: loan_owner,
-				borrower: loan_borrower,
-				book: loan_book,
-				accepted_at: loan.accepted_at,
-				borrowed_at: loan.borrowed_at,
-				returned_at: loan.returned_at,
-				created_at: loan.created_at,
-				declined_at: loan.declined_at,
-			}
-			res.json(body);
-		}
+		});
 	});
 });
 

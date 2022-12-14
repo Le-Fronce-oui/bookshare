@@ -92,7 +92,7 @@ router.get('/organisation/:org_id/book/:book_id', (req, res) => {
 			res.sendStatus(404);
 			return;
 		}
-		getBookInOrganisation(org_id, book_id, user_id !== null, booksInOrg => {
+		getBookInOrganisation(org_id, book_id, user_id, booksInOrg => {
 			let body: BookInOrgDTO[] = booksInOrg.map(b => ({
 				user_id: b.user_id,
 				username: b.username,
