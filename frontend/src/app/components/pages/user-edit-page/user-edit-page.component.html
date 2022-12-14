@@ -2,7 +2,7 @@
 <app-header-footer-template>
 	
 	<div class="canvas" id="profile-container">
-		<a [routerLink]="'/user/' + user_id"><i class="pi pi-user"></i></a>
+		<a [routerLink]="['/user/', user_id]"><i class="pi pi-user"></i></a>
 		<h1>
 			<i *ngIf="admin" class="pi pi-star-fill"></i>
 			{{username}}
@@ -50,7 +50,7 @@
 				<tr>
 					<td>
 						{{org.name}}
-						<a [routerLink]="'/organisation/' + org.id"><i class="pi pi-link"></i></a>
+						<a [routerLink]="['/organisation/', org.id]"><i class="pi pi-link"></i></a>
 					</td>
 					<td>
 						<button pButton label="Leave" icon="pi pi-sign-out" iconPos="right" (click)="onLeaveOrg($event)" [attr.data-index]="i" [disabled]="org.owned"></button>
@@ -75,7 +75,7 @@
 				<tr [attr.data-index]="i">
 					<td>
 						{{book.name}}
-						<a [routerLink]="'/book/' + book.id"><i class="pi pi-link"></i></a>
+						<a [routerLink]="['/book/', book.id]"><i class="pi pi-link"></i></a>
 					</td>
 					<td>
 						<p-inputNumber [(ngModel)]="book.owned" (onInput)="onBookOwnedChanged($event)" mode="decimal" [inputStyle]="{'width': '60px'}" [allowEmpty]="false" [showButtons]="true" [min]="1"></p-inputNumber>

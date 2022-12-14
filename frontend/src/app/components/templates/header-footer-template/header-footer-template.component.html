@@ -8,13 +8,13 @@
 			<div class="submenu" *ngIf="organisations.length > 0">
 				<div class="submenu-arrow"></div>
 				<div class="canvas">
-					<a *ngFor="let org of organisations" [routerLink]="['/organisation/'+org.id]">{{org.name}}</a>
+					<a *ngFor="let org of organisations" [routerLink]="['/organisation/', org.id]">{{org.name}}</a>
 				</div>
 			</div>
 		</span>
 		<ng-template [ngIf]="connected" [ngIfElse]="elseBlock">
 			<a class="menuitem" *ngIf="admin" [routerLink]="['/users']">All users</a>
-			<a class="menuitem" [routerLink]="['/user/'+uuid]">My profile ({{username}})</a>
+			<a class="menuitem" [routerLink]="['/user/', uuid]">My profile ({{username}})</a>
 			<span class="menuitem" (click)=logout()>Log out</span>
 		</ng-template>
 		<ng-template #elseBlock>
