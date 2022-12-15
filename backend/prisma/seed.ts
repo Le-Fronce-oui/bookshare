@@ -28,6 +28,7 @@ async function run() {
             bookId: "1",
             borrowerId: "f0be19f2-c65e-4458-94f2-091f7f94277c",
             ownerId: "ef470bab-38ce-4f77-8331-3da919a98be2",
+            
             orgaId: "4",
             createdAt: new Date(),
             acceptedAt: null,
