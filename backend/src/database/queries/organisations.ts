@@ -52,14 +52,14 @@ export function getOrganisationById(org_id: string, req_user_id: string | null, 
         query = `
             SELECT * FROM "Organisations" AS "Orgs"
             WHERE id = $1
-            AND NOT EXISTS (
-                SELECT "Organisations".id
-                FROM "Organisations", "Members"
-                WHERE "Organisations".id = $1
-                    AND "Members"."orgaId" = "Organisations".id
-                    AND "Members"."userId" = $2
-                    AND "Members".banned
-            );
+                AND NOT EXISTS (
+                    SELECT "Organisations".id
+                    FROM "Organisations", "Members"
+                    WHERE "Organisations".id = $1
+                        AND "Members"."orgaId" = "Organisations".id
+                        AND "Members"."userId" = $2
+                        AND "Members".banned
+                );
         `;
         params.push(req_user_id);
     }
@@ -94,6 +94,7 @@ export function getBooksInOrg(org_id: string, connected: boolean, consumer: Cons
                 AND "Collections"."bookId" = "Books".id
                 AND "Users".visibility = 'PUBLIC'
                 AND "Collections".num_shown > 0
+                AND NOT "Members".banned
             GROUP BY "Books".id;
         `;
     }
@@ -248,7 +249,6 @@ export function setUserOrgBan(org_id: string, user_id: string, ban: boolean, cal
         SET banned = $3
         WHERE "userId" = $1 AND "orgaId" = $2 AND role <> 'ADMIN';
     `;
-    console.log(query);
     pool.query(query, [user_id, org_id, ban]
     ).then(qres => {
         callback(qres.rowCount > 0);

@@ -42,6 +42,7 @@ export function getBookInOrganisation(org_id: string, book_id: string, req_user_
                 AND "Members"."orgaId" = $1
                 AND "Collections"."bookId" = $2
                 AND "Collections".num_shown > 0
+                AND NOT "Members".banned;
         `;
     } else {
         query = `
@@ -52,8 +53,9 @@ export function getBookInOrganisation(org_id: string, book_id: string, req_user_
                 AND "Members"."orgaId" = $1
                 AND "Collections"."bookId" = $2
                 AND "Collections".num_shown > 0
+                AND NOT "Members".banned
                 AND "Members"."orgaId" NOT IN (
-                    SELECT "orgaId" AS id FROM "Members" AS
+                    SELECT "orgaId" AS id FROM "Members"
                     WHERE "Members"."userId" = $3 AND "Members".banned
                 )
         `;
