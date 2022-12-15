@@ -74,10 +74,10 @@ model Loans {
   borrowerId String
   borrower   Users         @relation("borrower", fields: [borrowerId], references: [id])
   createdAt  DateTime      @default(now())
-  acceptedAt DateTime?
-  declinedAt DateTime?
-  borrowedAt DateTime?
-  returnedAt DateTime?
+  acceptedAt DateTime?     @default(null)
+  declinedAt DateTime?     @default(null)
+  borrowedAt DateTime?     @default(null)
+  returnedAt DateTime?     @default(null)
 }
 
 model Collections {
