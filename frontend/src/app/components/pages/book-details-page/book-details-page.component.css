@@ -42,3 +42,9 @@ h2 {
 	margin-bottom: 0px;
 	color: var(--col-text-light);
 }
+
+
+h3 {
+	margin-top: 40px;
+	font-size: 20px;
+}

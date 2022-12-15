@@ -15,7 +15,22 @@
 				<ng-template pTemplate="header">Summary</ng-template>
 				{{this.book.desc}}
 			</p-fieldset>
-			<p *ngIf="org_id !== null && org_users.length > 0">TODO : get info for org {{org_id}}</p>
+
+			<ng-container *ngIf="org_id !== null && org_users.length > 0">
+				<h3>In the organisation</h3>
+				<p-table [value]="org_users" [tableStyle]="{'width': '100%'}">
+					<ng-template pTemplate="header">
+						<tr>
+							<th>User</th>
+							<th>Available</th>
+							<th *ngIf="logged_in"></th>
+						</tr>
+					</ng-template>
+					<ng-template pTemplate="body" let-user>
+						<tr book-details-page-org-row [user]="user" [book_id]="book_id" [org_id]="org_id" [with_borrows]="logged_in"></tr>
+					</ng-template>
+				</p-table>
+			</ng-container>
 		</div>
 	</div>
 </app-header-footer-template>

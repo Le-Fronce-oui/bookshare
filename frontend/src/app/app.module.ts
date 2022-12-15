@@ -40,6 +40,7 @@ import { UserListPageRowComponent } from './components/pages/user-list-page/spec
 import { OrgListPageRowComponent } from './components/pages/organisation-search-page/specific/org-list-page-row/org-list-page-row.component';
 import { FieldBooleanPipe } from './pipes/field-boolean.pipe';
 import { OrgMembersPageRowComponent } from './components/pages/organisation-members-page/specific/org-members-page-row/org-members-page-row.component';
+import { BookDetailsPageOrgRowComponent } from './components/pages/book-details-page/specific/book-details-page-org-row/book-details-page-org-row.component';
 
 @NgModule({
   declarations: [
@@ -63,7 +64,8 @@ import { OrgMembersPageRowComponent } from './components/pages/organisation-memb
     UserListPageRowComponent,
     OrgListPageRowComponent,
     FieldBooleanPipe,
-    OrgMembersPageRowComponent
+    OrgMembersPageRowComponent,
+    BookDetailsPageOrgRowComponent
   ],
   imports: [
     CommonModule,
