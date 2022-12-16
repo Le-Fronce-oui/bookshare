@@ -47,3 +47,8 @@ h1 > i {
 	justify-content: center;
 	margin-top: var(--spacing-normal);
 }
+
+
+p-dialog .hbox {
+	margin-top: var(--spacing-large);
+}

@@ -1,4 +1,21 @@
 
+<p-dialog header="Caution: this cannot be undone !" [modal]="true" [(visible)]="signout_dialog" [closeOnEscape]="true" [dismissableMask]="true" [draggable]="false">
+    <p>
+		If you really want to delete your account, please enter your password and confirm.
+	</p>
+	
+	<form class="hbox">
+		<span class="p-input-icon-left p-float-label">
+			<i class="pi pi-lock"></i>
+			<input pInputText autofocus id="signout-password-input" type="password" name="signout-password" class="p-inputtext-sm" [(ngModel)]="signout_password.value" (ngModelChange)="signout_password.peek()" (focusout)="signout_password.check()" [ngClass]="{'ng-invalid ng-dirty': signout_password.dirty}">
+			<label for="signout-password-input">Password</label>
+		</span>
+	
+		<button pButton label="Yes, delete my account" icon="pi pi-exclamation-triangle" class="p-button-sm p-button-danger" [disabled]="!signout_password.ok" (click)="onSignoutConfirm()"></button>
+	</form>
+</p-dialog>
+
+
 <app-header-footer-template>
 	
 	<div class="canvas" id="profile-container">
@@ -27,7 +44,7 @@
 				<label for="confirm-password-input">Confirm password</label>
 			</span>
 			
-			<button pButton label="Change password" class="p-button-sm" [disabled]="!passwordGroup.ok" (onClick)="onChangePassword()"></button>
+			<button pButton label="Change password" class="p-button-sm" [disabled]="!passwordGroup.ok" (click)="onChangePassword()"></button>
 		</form>
 
 		<p-divider></p-divider>

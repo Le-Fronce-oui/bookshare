@@ -31,11 +31,14 @@ export class UserEditPageComponent implements OnInit, OnDestroy {
   public books: ModifiableBook[];
 
   public can_leave: boolean;
+  public signout_dialog: boolean;
 
   public passwordGroup: ValidationGroup<string>;
   public old_password: ValidatedField<string>;
   public new_password: ValidatedField<string>;
   public confirm_password: ValidatedField<string>;
+
+  public signout_password: ValidatedField<string>;
 
   public books_changed: boolean;
 
@@ -48,6 +51,7 @@ export class UserEditPageComponent implements OnInit, OnDestroy {
     this.organisations = [];
     this.books = [];
     this.can_leave = false;
+    this.signout_dialog = false;
     this.passwordGroup = new ValidationGroup();
     this.old_password = new ValidatedField<string>('', v => v.length > 0);
     this.new_password = new ValidatedField<string>('', v => v.length >= 8);
@@ -55,6 +59,7 @@ export class UserEditPageComponent implements OnInit, OnDestroy {
     this.passwordGroup.addField(this.old_password);
     this.passwordGroup.addField(this.new_password);
     this.passwordGroup.addField(this.confirm_password);
+    this.signout_password = new ValidatedField<string>('', v => v.length > 0);
     this.books_changed = false;
   }
 
@@ -62,6 +67,7 @@ export class UserEditPageComponent implements OnInit, OnDestroy {
     const uuid = this.route.snapshot.paramMap.get('uuid');
 
     this.userSubscription = this.userService.whenInitialised(() => {
+      console.log(this.userService.isConnected());
       if(!this.userService.isConnected()) {
         this.router.navigate(['/user/' + uuid]);
         return;
@@ -96,16 +102,34 @@ export class UserEditPageComponent implements OnInit, OnDestroy {
   // General profile settings
 
   public onChangePassword(): void {
-    // TODO
+    console.log("password chnage");
+    this.api.auth.changePassword(this.old_password.value, this.new_password.value, () => {
+      this.notif.success("Password changed");
+      this.passwordGroup.reset();
+    }, () => {
+      this.notif.error("Wrong password");
+    });
   }
 
   public onSignout(): void {
-    // TODO
+    this.signout_dialog = true;
   }
 
   public onVisibilityChanged(event: Event & { checked: boolean }): void {
     const visibility: Visibility = event.checked ? 'PUBLIC' : 'RESTRICTED';
     this.api.users.setUserVisibility(this.user_id, visibility, () => {});
+  }
+
+
+  // Signout dialog
+
+  public onSignoutConfirm(): void {
+    this.api.auth.signout(this.signout_password.value, () => {
+      this.notif.success("Account deleted");
+      this.userService.refreshLogin();
+    }, () => {
+      this.notif.error("Wrong password");
+    })
   }
 
 

@@ -15,6 +15,7 @@ import { ButtonModule } from 'primeng/button';
 import { ToggleButtonModule } from 'primeng/togglebutton';
 import { TableModule } from 'primeng/table';
 import { DividerModule } from 'primeng/divider';
+import { TooltipModule } from 'primeng/tooltip';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -83,7 +84,8 @@ import { BookDetailsPageOrgRowComponent } from './components/pages/book-details-
     ButtonModule,
     ToggleButtonModule,
     TableModule,
-    DividerModule
+    DividerModule,
+    TooltipModule
   ],
   providers: [
     MessageService,
