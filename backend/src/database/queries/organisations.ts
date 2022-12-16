@@ -7,7 +7,7 @@ import Role from "../models/role";
 import { OrganisationUser } from "../models/user";
 
 
-export function getAllOrganisations(user_id: string | null, consumer: Consumer<DatabaseOrganisationWithCount[]>, onError: ErrorHandler) {
+export function getAllOrganisations(user_id: string | null, consumer: Consumer<DatabaseOrganisationWithCount[]>, onError: ErrorHandler): void {
     let params = [];
     let query: string;
     if(user_id == null) {
@@ -43,7 +43,7 @@ export function getAllOrganisations(user_id: string | null, consumer: Consumer<D
     }).catch(e => manageError(e, onError));
 }
 
-export function getOrganisationById(org_id: string, req_user_id: string | null, consumer: Consumer<DatabaseOrganisation | null>, onError: ErrorHandler) {
+export function getOrganisationById(org_id: string, req_user_id: string | null, consumer: Consumer<DatabaseOrganisation | null>, onError: ErrorHandler): void {
     let query: string;
     let params = [org_id];
     if(req_user_id === null) {
@@ -69,7 +69,7 @@ export function getOrganisationById(org_id: string, req_user_id: string | null, 
 }
 
 
-export function getBooksInOrg(org_id: string, connected: boolean, consumer: Consumer<DatabaseBookInOrg[]>, onError: ErrorHandler) {
+export function getBooksInOrg(org_id: string, connected: boolean, consumer: Consumer<DatabaseBookInOrg[]>, onError: ErrorHandler): void {
     let query: string;
     let params = [org_id];
     if(connected) {
@@ -104,7 +104,7 @@ export function getBooksInOrg(org_id: string, connected: boolean, consumer: Cons
 }
 
 
-export function getOrganisationsForUser(user_id: string, req_user_id: string | null, consumer: Consumer<UserDatabaseOrganisation[]>, onError?: ErrorHandler) {
+export function getOrganisationsForUser(user_id: string, req_user_id: string | null, consumer: Consumer<UserDatabaseOrganisation[]>, onError: ErrorHandler): void {
     let query: string;
     let params = [user_id];
     if (req_user_id === null) {
@@ -133,7 +133,7 @@ export function getOrganisationsForUser(user_id: string, req_user_id: string | n
     }).catch(e => manageError(e, onError));
 }
 
-export function canSeeOrganisation(org_id: string, req_user_id: string | null, consumer: Consumer<boolean>, onError?: ErrorHandler) {
+export function canSeeOrganisation(org_id: string, req_user_id: string | null, consumer: Consumer<boolean>, onError: ErrorHandler): void {
     let query: string;
     let params = [org_id];
     if(req_user_id === null) {
@@ -162,7 +162,7 @@ export function canSeeOrganisation(org_id: string, req_user_id: string | null, c
 }
 
 
-export function getUsersInOrganisation(org_id: string, req_user_id: string, consumer: Consumer<OrganisationUser[]>, onError: ErrorHandler) {
+export function getUsersInOrganisation(org_id: string, req_user_id: string, consumer: Consumer<OrganisationUser[]>, onError: ErrorHandler): void {
     pool.query(`
         SELECT "Users".*, "Members".banned AS "org_banned", "Members".role AS "org_role"
         FROM "Members", "Users"
@@ -185,7 +185,7 @@ export function getUsersInOrganisation(org_id: string, req_user_id: string, cons
 }
 
 
-export function joinOrganisation(org_id: string, user_id: string, callback: Consumer<boolean>, onError: ErrorHandler) {
+export function joinOrganisation(org_id: string, user_id: string, callback: Consumer<boolean>, onError: ErrorHandler): void {
     pool.query(`
         INSERT INTO "Members" 
         VALUES ($1, $2, 'USER', false)
@@ -195,7 +195,7 @@ export function joinOrganisation(org_id: string, user_id: string, callback: Cons
     }).catch(e => manageError(e, onError));
 }
 
-export function leaveOrganisation(org_id: string, user_id: string, callback: Consumer<boolean>, onError: ErrorHandler) {
+export function leaveOrganisation(org_id: string, user_id: string, callback: Consumer<boolean>, onError: ErrorHandler): void {
     pool.query(`
         DELETE FROM "Members" 
         WHERE "userId" = $1 AND "orgaId" = $2
@@ -232,7 +232,7 @@ export function isAdminInOrg(org_id: string, user_id: string, callback: Consumer
     }).catch(e => manageError(e, onError));
 }
 
-export function setUserOrgRole(org_id: string, user_id: string, role: Role, callback: Consumer<boolean>, onError: ErrorHandler) {
+export function setUserOrgRole(org_id: string, user_id: string, role: Role, callback: Consumer<boolean>, onError: ErrorHandler): void {
     pool.query(`
             UPDATE "Members"
             SET role = $3::"Role"
@@ -243,7 +243,7 @@ export function setUserOrgRole(org_id: string, user_id: string, role: Role, call
     }).catch(e => manageError(e, onError));
 }
 
-export function setUserOrgBan(org_id: string, user_id: string, ban: boolean, callback: Consumer<boolean>, onError: ErrorHandler) {
+export function setUserOrgBan(org_id: string, user_id: string, ban: boolean, callback: Consumer<boolean>, onError: ErrorHandler): void {
     const query = `
         UPDATE "Members"
         SET banned = $3

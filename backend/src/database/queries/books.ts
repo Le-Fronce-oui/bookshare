@@ -4,20 +4,20 @@ import { manageError } from "../errors";
 import { DatabaseBook, UserDatabaseBook, DatabaseUserBooksInOrg } from "../models/book";
 
 
-export function getBooks(consumer: Consumer<DatabaseBook[]>, onError?: ErrorHandler) {
+export function getBooks(consumer: Consumer<DatabaseBook[]>, onError: ErrorHandler): void {
     pool.query('SELECT * FROM "Books";').then(qres => {
         consumer(qres.rows);
     }).catch(e => manageError(e, onError));
 }
 
-export function getBookById(book_id: string, consumer: Consumer<DatabaseBook | null>, onError?: ErrorHandler) {
+export function getBookById(book_id: string, consumer: Consumer<DatabaseBook | null>, onError: ErrorHandler): void {
     pool.query('SELECT * FROM "Books" WHERE id = $1;', [book_id]).then(qres => {
         consumer(qres.rows.length > 0 ? qres.rows[0] : null);
     }).catch(e => manageError(e, onError));
 }
 
 
-export function getBooksForUser(user_id: string, consumer: Consumer<UserDatabaseBook[]>, onError?: ErrorHandler) {
+export function getBooksForUser(user_id: string, consumer: Consumer<UserDatabaseBook[]>, onError: ErrorHandler): void {
     pool.query(`
         SELECT "Books".*, num_owned, num_lent, num_shown 
         FROM "Books", "Collections" 
@@ -29,7 +29,7 @@ export function getBooksForUser(user_id: string, consumer: Consumer<UserDatabase
 
 
 export function getBookInOrganisation(org_id: string, book_id: string, req_user_id: string | null, 
-            consumer: Consumer<DatabaseUserBooksInOrg[]>, onError?: ErrorHandler) {
+            consumer: Consumer<DatabaseUserBooksInOrg[]>, onError: ErrorHandler): void {
     let query: string;
     let params = [org_id, book_id];
     if(req_user_id === null) {

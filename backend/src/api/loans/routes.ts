@@ -75,11 +75,11 @@ router.get('/loan/:loanId', authenticated(401), (req, res) => {
 							declinedAt: loan.declinedAt,
 						}
 						res.json(body);
-					});
-				});
-			});
-		});
-	});
+					}, _ => res.sendStatus(500));
+				}, _ => res.sendStatus(500));
+			}, _ => res.sendStatus(500));
+		}, _ => res.sendStatus(500));
+	}, _ => res.sendStatus(500));
 });
 
 
@@ -101,9 +101,9 @@ router.post('/loan/:loanId/accept', authenticated(401), (req, res) => {
 		} else if (loan.ownerId === req.user?.uuid) {
 			setLoanToAccepted(req.params.loanId, new Date(), () => {
 				res.sendStatus(200);
-			});
+			}, _ => res.sendStatus(500));
 		}
-	});
+	}, _ => res.sendStatus(500));
 });
 
 
@@ -125,9 +125,9 @@ router.post('/loan/:loanId/deny', authenticated(401), (req, res) => {
 		} else if (loan.ownerId === req.user?.uuid) {
 			setLoanToDeclined(req.params.loanId, new Date(), () => {
 				res.sendStatus(200);
-			});
+			}, _ => res.sendStatus(500));
 		}
-	});
+	}, _ => res.sendStatus(500));
 });
 
 
@@ -149,9 +149,9 @@ router.post('/loan/:loanId/borrow', authenticated(401), (req, res) => {
 		} else if (loan.ownerId === req.user?.uuid) {
 			setLoanToBorrowed(req.params.loanId, new Date(), () => {
 				res.sendStatus(200);
-			});
+			}, _ => res.sendStatus(500));
 		}
-	});
+	}, _ => res.sendStatus(500));
 });
 
 
@@ -171,8 +171,9 @@ router.post('/loan/:loanId/returned', authenticated(401), (req, res) => {
 			res.sendStatus(400);
 			return;
 		} else if (loan.ownerId === req.user?.uuid) {
-			setLoanToReturned(req.params.loanId, new Date(), () => { })
-			res.sendStatus(200);
+			setLoanToReturned(req.params.loanId, new Date(), () => {
+				res.sendStatus(200);
+			}, _ => res.sendStatus(500))
 		}
-	});
+	}, _ => res.sendStatus(500));
 });
