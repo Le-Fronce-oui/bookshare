@@ -54,9 +54,28 @@ export function createUser(email: string, username: string, hash: string, salt: 
     }).catch(e => manageError(e, onError));
 }
 
+// It's almost christmas, so here is a christmas tree
+// FYI, Postgresq does *not* allow several prepared statements at once
 export function deleteUser(user_id: string, callback: Callable, onError: ErrorHandler): void {
-    pool.query('DELETE FROM "Users" WHERE id = $1;', [user_id]).then(_ => {
-        callback();
+    pool.query('UPDATE "Loans" SET "declinedAt" = CURRENT_TIMESTAMP WHERE "ownerId" = $1 AND ("declinedAt" = NULL OR "acceptedAt" = NULL);', [user_id]).then(_ => {
+        pool.query(`
+            DELETE FROM "Loans" WHERE 
+                ("ownerId" = $1 AND "borrowerId" = NULL) 
+                OR ("ownerId" = NULL AND "borrowerId" = $1)
+                OR ("borrowerId" = $1 AND ("declinedAt" = NULL OR "acceptedAt" = NULL));
+        `, [user_id]).then(_ => {
+            pool.query('UPDATE "Loans" SET "ownerId" = NULL WHERE "ownerId" = $1;', [user_id]).then(_ => {
+                pool.query('UPDATE "Loans" SET "borrowerId" = NULL WHERE "borrowerId" = $1;', [user_id]).then(_ => {
+                    pool.query('DELETE FROM "Members" WHERE "userId" = $1;', [user_id]).then(_ => {
+                        pool.query('DELETE FROM "Collections" WHERE "userId" = $1;', [user_id]).then(_ => {
+                            pool.query('DELETE FROM "Users" WHERE id = $1;', [user_id]).then(_ => {
+                                callback();
+                            }).catch(e => manageError(e, onError));
+                        }).catch(e => manageError(e, onError));
+                    }).catch(e => manageError(e, onError));
+                }).catch(e => manageError(e, onError));
+            }).catch(e => manageError(e, onError));
+        }).catch(e => manageError(e, onError));
     }).catch(e => manageError(e, onError));
 }
 
