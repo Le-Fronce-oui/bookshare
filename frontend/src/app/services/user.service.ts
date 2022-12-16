@@ -9,6 +9,8 @@ import { ApiService } from './api/api.service';
 })
 export class UserService {
 
+  private static readonly PREVIOUS_LOGIN_PROP = '__bs_logged_in';
+
   private connected: BehaviorSubject<boolean>;
   private initialised: BehaviorSubject<boolean>;
 
@@ -26,7 +28,10 @@ export class UserService {
     this.uuid = '';
     this.organisations = new Map();
     this.books = new Map();
-    this.refreshLogin();
+    let previous_login = window.localStorage.getItem(UserService.PREVIOUS_LOGIN_PROP);
+    if(previous_login === 'true' || previous_login === undefined) {
+      this.refreshLogin();
+    }
   }
 
   public refreshLogin() {
@@ -37,6 +42,7 @@ export class UserService {
         this.username = res.username;
         this.organisations = new Map(res.organisations.map(o => [o.id, o]));
         this.books = new Map(res.books.map(b => [b.id, b]));
+        window.localStorage.setItem(UserService.PREVIOUS_LOGIN_PROP, 'true');
         this.connected.next(true);
         if(!this.initialised.value) {
           this.initialised.next(true);
@@ -123,6 +129,7 @@ export class UserService {
   }
 
   private clearData(): void {
+    window.localStorage.setItem(UserService.PREVIOUS_LOGIN_PROP, 'false');
     this.connected.next(false);
     this.admin = false;
     this.username = '';
