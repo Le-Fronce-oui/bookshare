@@ -3,11 +3,13 @@ import { validateEmail } from "../../globals";
 import { deleteToken, AUTH_COOKIE, deleteAllTokens } from "../../core/auth/authentication";
 import UserCreationDTO from "../../dto/user_creation_request";
 import UserLoginDTO from "../../dto/user_login";
-import { checkUserUniqueness, createUser, deleteUser, getUserByEmail, updateUserPassword } from "../../database/queries/users";
+import { checkUserUniqueness, createUser, deleteUser, getUserByEmail, getUserById, updateUserPassword } from "../../database/queries/users";
 import UserCreationErrorDTO from "../../dto/user_creation_error";
 import { checkHash, newHash } from "./hashing";
 import { setAuthCookie, clearAuthCookie } from "./cookies";
-import ChangePasswordDTO from "src/dto/change_password";
+import ChangePasswordDTO from "src/dto/auth/change_password";
+import { authenticated } from "./middlewares";
+import PasswordDTO from "src/dto/auth/password";
 
 // Waits for a random delay when a bad request occurs to avoid spamming
 function delay(): Promise<void> {
@@ -80,9 +82,10 @@ router.post('/logout', (req, res) => {
 /**
  * Change password route
  */
-router.post('/password', (req, res) => {
+router.post('/password', authenticated(401), (req, res) => {
+	const req_user_id = req.user?.uuid as string;
 	const dto: ChangePasswordDTO = req.body;
-	getUserByEmail(dto.email, async db_user => {
+	getUserById(req_user_id, async db_user => {
 		if(db_user !== null && checkHash(dto.old_password, db_user.password, db_user.salt)) {
 			const [hash, salt] = newHash(dto.new_password);
 			updateUserPassword(db_user.id, hash, salt,
@@ -101,9 +104,10 @@ router.post('/password', (req, res) => {
 /**
  * Delete user route
  */
-router.post('/signout', (req, res) => {
-	const dto: UserLoginDTO = req.body;
-	getUserByEmail(dto.email, async db_user => {
+router.post('/signout', authenticated(401), (req, res) => {
+	const req_user_id = req.user?.uuid as string;
+	const dto: PasswordDTO = req.body;
+	getUserById(req_user_id, async db_user => {
 		if(db_user !== null && checkHash(dto.password, db_user.password, db_user.salt)) {
 			deleteAllTokens(db_user.id);
 			deleteUser(db_user.id,

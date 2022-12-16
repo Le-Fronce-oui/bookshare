@@ -4,6 +4,8 @@ import UserCreationErrorDTO from 'src/app/classes/dto/user_creation_error';
 import UserCreationDTO from 'src/app/classes/dto/user_creation_request';
 import UserIdResponseDTO from 'src/app/classes/dto/user_id_response';
 import UserLoginDTO from 'src/app/classes/dto/user_login';
+import ChangePasswordDTO from 'src/app/classes/dto/auth/change_password';
+import PasswordDTO from 'src/app/classes/dto/auth/password';
 import { NotificationService } from '../../notification.service';
 
 @Injectable({
@@ -42,9 +44,36 @@ export class AuthApiService {
   }
 
 
+  public changePassword(old_pass: string, new_pass: string, callback: () => void, onError: () => void) {
+    let body: ChangePasswordDTO = {
+      old_password: old_pass,
+      new_password: new_pass
+    }
+    this.http.post('/api/password', body, { responseType: 'text' })
+      .subscribe(callback, (error: HttpErrorResponse) => {
+        if(error.status === 400) {
+          onError();
+        } else { throw error; }
+      });
+  }
+
+
   public logout(callback: () => void): void {
-    this.http.post<UserIdResponseDTO>('/api/logout', {observe: 'body'})
-      .subscribe(_ => callback());
+    this.http.post('/api/logout', null, { responseType: 'text' })
+      .subscribe(callback);
+  }
+
+
+  public signout(password: string, callback: () => void, onError: () => void) {
+    let body: PasswordDTO = {
+      password: password
+    }
+    this.http.post('/api/signout', body, { responseType: 'text' })
+      .subscribe(callback, (error: HttpErrorResponse) => {
+        if(error.status === 400) {
+          onError();
+        } else { throw error; }
+      });
   }
   
 }
