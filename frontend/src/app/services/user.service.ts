@@ -29,7 +29,9 @@ export class UserService {
     this.organisations = new Map();
     this.books = new Map();
     let previous_login = window.localStorage.getItem(UserService.PREVIOUS_LOGIN_PROP);
-    if(previous_login === 'true' || previous_login === undefined) {
+    if(previous_login === 'false') {
+      this.initialised.next(true);
+    } else {
       this.refreshLogin();
     }
   }
