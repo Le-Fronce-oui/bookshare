@@ -13,13 +13,11 @@ export class UserListPageRowComponent implements OnInit, OnChanges {
   @Input() public user!: ShortUserDTO;
 
   public username: string;
-  public user_link: string;
   public admin: boolean;
   public access: boolean;
 
   constructor(private api: ApiService, private notif: NotificationService) {
     this.username = '';
-    this.user_link = '';
     this.admin = false;
     this.access = true;
   }
@@ -29,7 +27,6 @@ export class UserListPageRowComponent implements OnInit, OnChanges {
   public ngOnChanges(changes: SimpleChanges) {
     const user: ShortUserDTO = changes.user.currentValue;
     this.username = user.username;
-    this.user_link = "/user/" + user.id;
     this.admin = user.admin;
     this.access = !user.banned;
   }
