@@ -14,10 +14,6 @@
 	font-size: 1.5rem;
 }
 
-.canvas {
-	width: 900px;
-}
-
 
 i.pi-key, i.pi-star-fill {
 	color: var(--col-golden);
@@ -41,4 +37,11 @@ h1 > i {
 
 .infobox {
 	text-align: center;
+}
+
+
+@media (max-width: 840px) {
+	#books-grid {
+		grid-template-columns: repeat(4, 160px);
+	}
 }

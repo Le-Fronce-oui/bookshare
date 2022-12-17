@@ -5,6 +5,7 @@
 	align-items: center;
 }
 
+
 .p-inputgroup {
 	width: fit-content;
 	flex-grow: 0;
@@ -13,4 +14,9 @@
 
 .p-inputgroup > input {
 	width: 350px;
+}
+
+
+p-table {
+	width: 100%;
 }

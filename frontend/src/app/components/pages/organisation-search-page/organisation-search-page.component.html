@@ -1,12 +1,12 @@
 
 <app-header-footer-template>
-	<div class="canvas">
+	<div class="canvas content-width">
 		<div class="p-inputgroup">
             <span class="p-inputgroup-addon"><i class="pi pi-users"></i></span>
             <input type="text" pInputText placeholder="Organisation" [(ngModel)]="filter">         
         </div>
 
-		<p-table [value]="organisations | fieldFilter:filter:'name'" [tableStyle]="{'min-width': '900px'}">
+		<p-table [value]="organisations | fieldFilter:filter:'name'" [tableStyle]="{'width': '100%'}">
 			<ng-template pTemplate="header">
 				<tr style="position: sticky;">
 					<th>Organisation</th>

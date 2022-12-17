@@ -1,6 +1,5 @@
 
 .canvas {
-	width: 900px;
 	margin-bottom: var(--spacing-normal);
 	position: relative;
 }
@@ -40,4 +39,11 @@
 
 .infobox {
 	text-align: center;
+}
+
+
+@media (max-width: 840px) {
+	#books-grid {
+		grid-template-columns: repeat(4, 160px);
+	}
 }

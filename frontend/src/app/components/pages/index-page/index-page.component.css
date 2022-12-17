@@ -14,3 +14,14 @@ video {
 	margin-top: var(--spacing-medium);
 	border: var(--col-border) solid 1px;
 }
+
+
+@media (max-width: 805px) {
+	.canvas {
+		width: 700px;
+	}
+
+	video {
+		width: 650px;
+	}
+}
