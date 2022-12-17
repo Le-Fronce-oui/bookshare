@@ -127,6 +127,10 @@ export function addBookToCollection(user_id: string, book_id: string, owned: num
 }
 
 export function removeBooksFromCollection(user_id: string, books: string[], callback: Consumer<boolean>, onError: ErrorHandler): void {
+    if(books.length === 0) {
+        callback(true);
+        return;
+    }
     pool.query('DELETE FROM "Collections" WHERE "userId" = $1 AND "bookId" = ANY($2::text[]);', [user_id, books])
         .then(qres => {
             callback(books.length === qres.rowCount);
@@ -147,19 +151,11 @@ SET num_owned = a.count, num_shown = a.shown
 FROM a
 WHERE "Collections"."userId" = $1 AND "Collections"."bookId" = a.id;
 */
-
-/*
-UPDATE "Collections"
-SET num_owned = a.count, num_shown = a.shown
-FROM UNNEST(
-    ARRAY['6ca1b1fe-2be5-463f-91fb-e273ede0f54b', '74528d9a-6732-43d0-82a2-2fe0e008b4da', '4a543bfe-60c8-4563-81c6-cdfd5aea3d30']::text[],
-    ARRAY[2, 1, 3]::int[],
-    ARRAY[1, 1, 0]::int[]
-) AS a(id, count, shown)
-WHERE "Collections"."userId" = 'cece3da2-c440-43a2-a443-2a87aec8b737' AND "Collections"."bookId" = a.id;
-*/
-
 export function updateBooksInCollection(user_id: string, books: BookUpdateCountDTO[], callback: Consumer<boolean>, onError: ErrorHandler): void {
+    if(books.length === 0) {
+        callback(true);
+        return;
+    }
     const book_ids = books.map(b => b.book_id);
     const book_counts = books.map(b => b.count);
     const book_showns = books.map(b => b.shown);
