@@ -2,6 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import FullUserBookDTO from 'src/app/classes/dto/books/full_user';
+import BookUpdatesDTO from 'src/app/classes/dto/books/updates';
 import { Visibility } from 'src/app/classes/dto/enums';
 import ShortUserOrganisationDTO from 'src/app/classes/dto/organisations/short_user';
 import { ValidatedField } from 'src/app/classes/validated/validated-field';
@@ -102,7 +103,6 @@ export class UserEditPageComponent implements OnInit, OnDestroy {
   // General profile settings
 
   public onChangePassword(): void {
-    console.log("password chnage");
     this.api.auth.changePassword(this.old_password.value, this.new_password.value, () => {
       this.notif.success("Password changed");
       this.passwordGroup.reset();
@@ -126,7 +126,7 @@ export class UserEditPageComponent implements OnInit, OnDestroy {
   public onSignoutConfirm(): void {
     this.api.auth.signout(this.signout_password.value, () => {
       this.notif.success("Account deleted");
-      this.userService.refreshLogin();
+      window.location.reload();
     }, () => {
       this.notif.error("Wrong password");
     })
@@ -219,7 +219,25 @@ export class UserEditPageComponent implements OnInit, OnDestroy {
   }
 
   public onSaveBooks(): void {
-    // TODO
+    const changes: BookUpdatesDTO = {
+      delete: [],
+      edit: []
+    };
+    for(let book of this.books) {
+      if(book.deleted) {
+        changes.delete.push(book.id);
+      } else if(book.modified) {
+        changes.edit.push({
+          book_id: book.id,
+          count: book.owned,
+          shown: book.shown
+        });
+      }
+    }
+    this.api.users.updateCollection(this.user_id, changes, () => {
+      this.userService.refreshLogin();
+      this.updateFromApi();
+    });
   }
 
 
