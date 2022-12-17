@@ -27,6 +27,7 @@ export class UserEditPageComponent implements OnInit, OnDestroy {
 
   public username: string;
   public visibility: Visibility;
+  public visible: boolean;
   public admin: boolean;
   public organisations: ShortUserOrganisationDTO[];
   public books: ModifiableBook[];
@@ -48,6 +49,7 @@ export class UserEditPageComponent implements OnInit, OnDestroy {
   constructor(private route: ActivatedRoute, private router: Router, private notif: NotificationService, private api: ApiService, private userService: UserService) {
     this.username = '';
     this.visibility = 'PUBLIC';
+    this.visible = true;
     this.admin = false;
     this.organisations = [];
     this.books = [];
@@ -86,6 +88,7 @@ export class UserEditPageComponent implements OnInit, OnDestroy {
     this.api.users.getDetailedUser(this.user_id, user => {
       this.username = user.username;
       this.visibility = user.visibility;
+      this.visible = this.visibility === 'PUBLIC';
       this.admin = user.role === 'ADMIN';
       this.organisations = user.organisations.sort((o1, o2) => o1.name.localeCompare(o2.name));
       this.books = user.books.sort((b1, b2) => b1.name.localeCompare(b2.name)).map(b => {

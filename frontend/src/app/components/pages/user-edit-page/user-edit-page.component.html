@@ -50,7 +50,7 @@
 		<p-divider></p-divider>
 
 		<div class="hbox">
-			<p-toggleButton onLabel="Public" offLabel="Restricted" onIcon="pi pi-eye" offIcon="pi pi-eye-slash" (onChange)="onVisibilityChanged($event)"></p-toggleButton>
+			<p-toggleButton onLabel="Public" offLabel="Restricted" onIcon="pi pi-eye" offIcon="pi pi-eye-slash" [(ngModel)]="visible" (onChange)="onVisibilityChanged($event)"></p-toggleButton>
 			<button pButton label="Delete account" icon="pi pi-times" class="p-button-danger" (click)="onSignout()" [disabled]="!can_leave"></button>
 		</div>
 	</div>
