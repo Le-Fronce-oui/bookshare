@@ -36,6 +36,7 @@ export class BookDetailsPageOrgRowComponent implements OnInit {
   public borrow(): void {
     this.api.loans.createLoan(this.org_id, this.book_id, this.user.user_id, () => {
       this.notif.success("Borrow request sent");
+      this.userService.refreshLogin();
       this.can_borrow = false;
     });
   }
