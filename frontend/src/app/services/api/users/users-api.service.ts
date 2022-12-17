@@ -2,6 +2,7 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import UserConnectedDTO from '../../../classes/dto/user_connected';
 import DetailedUserDTO from '../../../classes/dto/users/detailed';
+import BookUpdatesDTO from '../../../classes/dto/books/updates';
 import { Visibility } from '../../../classes/dto/enums';
 import ShortUserDTO from 'src/app/classes/dto/users/short';
 import UserDTO from 'src/app/classes/dto/users/full';
@@ -62,6 +63,11 @@ export class UsersApiService {
   
   public addBookToCollection(user_id: string, book_id: string, callback: () => void): void {
     this.http.put("/api/user/" + user_id + "/book/" + book_id, null, { responseType: 'text' })
+      .subscribe(_ => callback());
+  }
+
+  public updateCollection(user_id: string, updates: BookUpdatesDTO, callback: () => void): void {
+    this.http.post("/api/user/" + user_id + "/books", updates, { responseType: 'text' })
       .subscribe(_ => callback());
   }
 

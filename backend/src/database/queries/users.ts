@@ -1,10 +1,11 @@
 import { pool } from "../connect";
-import { Callable, Consumer, ErrorHandler } from 'src/types/functions';
+import { Callable, Consumer, ErrorHandler } from '../../types/functions';
 import DatabaseUser from '../models/user';
 import { v4 as uuidv4 } from 'uuid';
 import { manageError } from "../errors";
 import { Role } from "@prisma/client";
 import Visibility from "../models/visibility";
+import { BookUpdateCountDTO } from "../../dto/books/updates";
 
 let no_Users: boolean = false;
 
@@ -123,4 +124,55 @@ export function addBookToCollection(user_id: string, book_id: string, owned: num
     pool.query('INSERT INTO "Collections" VALUES($1, $2, $3, 0, $4);', [user_id, book_id, owned, shown])
         .then(callback)
         .catch(e => manageError(e, onError));
+}
+
+export function removeBooksFromCollection(user_id: string, books: string[], callback: Consumer<boolean>, onError: ErrorHandler): void {
+    pool.query('DELETE FROM "Collections" WHERE "userId" = $1 AND "bookId" = ANY($2::text[]);', [user_id, books])
+        .then(qres => {
+            callback(books.length === qres.rowCount);
+        }).catch(e => manageError(e, onError));
+}
+
+/*
+Alternative using JSON string input:
+
+WITH a AS (
+    SELECT (tmp->>'id')::text AS id, (tmp->>'count')::int AS count, (tmp->>'shown')::int AS shown FROM (
+        SELECT json_array_elements($2::json)
+        AS tmp
+    ) AS a
+)
+UPDATE "Collections"
+SET num_owned = a.count, num_shown = a.shown
+FROM a
+WHERE "Collections"."userId" = $1 AND "Collections"."bookId" = a.id;
+*/
+
+/*
+UPDATE "Collections"
+SET num_owned = a.count, num_shown = a.shown
+FROM UNNEST(
+    ARRAY['6ca1b1fe-2be5-463f-91fb-e273ede0f54b', '74528d9a-6732-43d0-82a2-2fe0e008b4da', '4a543bfe-60c8-4563-81c6-cdfd5aea3d30']::text[],
+    ARRAY[2, 1, 3]::int[],
+    ARRAY[1, 1, 0]::int[]
+) AS a(id, count, shown)
+WHERE "Collections"."userId" = 'cece3da2-c440-43a2-a443-2a87aec8b737' AND "Collections"."bookId" = a.id;
+*/
+
+export function updateBooksInCollection(user_id: string, books: BookUpdateCountDTO[], callback: Consumer<boolean>, onError: ErrorHandler): void {
+    const book_ids = books.map(b => b.book_id);
+    const book_counts = books.map(b => b.count);
+    const book_showns = books.map(b => b.shown);
+    pool.query(`
+        UPDATE "Collections"
+        SET num_owned = a.count, num_shown = a.shown
+        FROM UNNEST(
+            $2::text[],
+            $3::int[],
+            $4::int[]
+        ) AS a(id, count, shown)
+        WHERE "Collections"."userId" = $1 AND "Collections"."bookId" = a.id;
+    `, [user_id, book_ids, book_counts, book_showns]).then(qres => {
+            callback(books.length === qres.rowCount);
+        }).catch(e => manageError(e, onError));
 }

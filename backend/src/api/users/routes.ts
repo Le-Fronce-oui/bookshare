@@ -1,4 +1,4 @@
-import { addBookToCollection, getAllUsers, getUserById, setUserSiteBan, setUserSiteRole } from "../../database/queries/users";
+import { addBookToCollection, getAllUsers, getUserById, removeBooksFromCollection, setUserSiteBan, setUserSiteRole, updateBooksInCollection } from "../../database/queries/users";
 import UserConnectedDTO from "../../dto/user_connected";
 import AuthenticatedUser from "../../types/internal/authenticated_user";
 import { setUserVisibility } from "../../database/queries/users";
@@ -15,6 +15,7 @@ import ShortUserBookDTO from "../../dto/books/short_user";
 import DetailedUserDTO from "../../dto/users/detailed";
 import FullUserBookDTO from "../../dto/books/full_user";
 import { getLoansForUser } from "../../database/queries/loans";
+import BookUpdatesDTO from "../../dto/books/updates";
 
 
 function fillUserData<T>(dto: UserBookGenericDTO<T>, req_user_id: string | null, bookMapper: (book: UserDatabaseBook) => T | null, 
@@ -69,8 +70,8 @@ router.get('/users/short', authenticated(401), isAdmin(403), (req, res) => {
 });
 
 
-const PUBLIC_BOOK_MAPPER: (b: UserDatabaseBook) => ShortUserBookDTO = b => {
-	return {
+const PUBLIC_BOOK_MAPPER: (b: UserDatabaseBook) => ShortUserBookDTO | null= b => {
+	return b.num_shown === 0 ? null : {
 		id: b.id,
 		name: b.name,
 		cover: b.cover,
@@ -187,6 +188,20 @@ router.put('/user/:user_id/book/:book_id', authenticated(401), (req, res) => {
 		() => res.sendStatus(200), 
 		_ => res.sendStatus(500)
 	);
+});
+
+router.post('/user/:user_id/books', authenticated(401), (req, res) => {
+	const user_id = req.user?.uuid as string;
+	if (req.user?.uuid !== req.params.user_id) {
+		res.sendStatus(403);
+		return;
+	}
+	const body: BookUpdatesDTO = req.body;
+	updateBooksInCollection(user_id, body.edit, _ => {
+		removeBooksFromCollection(user_id, body.delete, _ => {
+			res.sendStatus(200);
+		}, _ => res.sendStatus(500));
+	}, _ => res.sendStatus(500));
 });
 
 
