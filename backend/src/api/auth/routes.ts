@@ -9,10 +9,10 @@ import { checkHash, newHash } from "./hashing";
 import { setAuthCookie, clearAuthCookie } from "./cookies";
 import ChangePasswordDTO from "src/dto/auth/change_password";
 import { authenticated } from "./middlewares";
-import PasswordDTO from "src/dto/auth/password";
-import { getLoansForUser } from "src/database/queries/loans";
-import { Consumer, ErrorHandler } from "src/types/functions";
-import { getOrganisationsForUser } from "src/database/queries/organisations";
+import PasswordDTO from "../../dto/auth/password";
+import { getLoansForUser } from "../../database/queries/loans";
+import { Consumer, ErrorHandler } from "../../types/functions";
+import { getOrganisationsForUser } from "../../database/queries/organisations";
 
 // Waits for a random delay when a bad request occurs to avoid spamming
 function delay(): Promise<void> {

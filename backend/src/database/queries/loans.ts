@@ -32,13 +32,13 @@ export function getLoans(consumer: Consumer<DatabaseLoan[]>, onError: ErrorHandl
 }
 
 export function getLoanById(loan_id: string, user_req_id: string, consumer: Consumer<DatabaseLoan | null>, onError: ErrorHandler): void {
-    pool.query('SELECT * FROM "Loans" WHERE id = $1 AND ("Loans"."borrower_id" = $2 OR "Loans"."owner_id" = $2);', [loan_id, user_req_id]).then(qres => {
+    pool.query('SELECT * FROM "Loans" WHERE id = $1 AND ("Loans"."borrowerId" = $2 OR "Loans"."ownerId" = $2);', [loan_id, user_req_id]).then(qres => {
         consumer(qres.rows.length > 0 ? qres.rows[0] : null);
     }).catch(e => manageError(e, onError));
 }
 
 export function getLoansForUser(user_id: string, consumer: Consumer<DatabaseLoan[]>, onError: ErrorHandler): void {
-    pool.query('SELECT "id" FROM "Loans" WHERE "Loans"."borrower_id" = $1 OR "Loans"."owner_id" = $1;', [user_id]).then(qres => {
+    pool.query('SELECT "id" FROM "Loans" WHERE "Loans"."borrowerId" = $1 OR "Loans"."ownerId" = $1;', [user_id]).then(qres => {
         consumer(qres.rows);
     }).catch(e => manageError(e, onError));
 }
