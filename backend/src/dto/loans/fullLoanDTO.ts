@@ -10,11 +10,11 @@ interface FullLoanDTO {
     owner: SuperShortUserDTO | null,
     borrower: SuperShortUserDTO | null,
     book: ShortBookDTO,
-    createdAt: Date,
-    acceptedAt: Date | null,
-    declinedAt: Date | null,
-    borrowedAt: Date | null,
-    returnedAt: Date | null,
+    createdAt: number,
+    acceptedAt: number | null,
+    declinedAt: number | null,
+    borrowedAt: number | null,
+    returnedAt: number | null,
 }
 
 export { FullLoanDTO, SuperShortUserDTO }

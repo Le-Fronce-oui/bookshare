@@ -10,7 +10,7 @@ export function createLoan(book_id: string, org_id: string, owner_id: string, bo
     const uuid = uuidv4();
     pool.query(`
         INSERT INTO "Loans"
-        SELECT $1, $2, $3, $4, $5
+        SELECT $1, $2, $3, $4, $5, $6
         WHERE EXISTS (
             SELECT 1 FROM "Books" WHERE id = $3
         ) AND 2 = (
@@ -20,7 +20,7 @@ export function createLoan(book_id: string, org_id: string, owner_id: string, bo
                 AND ("userId" = $4 OR "userId" = $5)
                 AND NOT banned
         );
-    `, [uuid, org_id, book_id, owner_id, borrower_id]).then(qres => {
+    `, [uuid, org_id, book_id, owner_id, borrower_id, new Date()]).then(qres => {
         consumer(qres.rowCount === 1);
     }).catch(e => manageError(e, onError));
 }
@@ -38,7 +38,7 @@ export function getLoanById(loan_id: string, user_req_id: string, consumer: Cons
 }
 
 export function getLoansForUser(user_id: string, consumer: Consumer<DatabaseLoan[]>, onError: ErrorHandler): void {
-    pool.query('SELECT "id" FROM "Loans" WHERE "Loans"."borrowerId" = $1 OR "Loans"."ownerId" = $1;', [user_id]).then(qres => {
+    pool.query('SELECT * FROM "Loans" WHERE "Loans"."borrowerId" = $1 OR "Loans"."ownerId" = $1;', [user_id]).then(qres => {
         consumer(qres.rows);
     }).catch(e => manageError(e, onError));
 }

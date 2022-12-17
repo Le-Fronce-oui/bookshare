@@ -42,11 +42,11 @@ router.get('/loan/:loanId', authenticated(401), (req, res) => {
 					name: book.name,
 					cover: book.cover,
 				},
-				acceptedAt: loan.acceptedAt,
-				borrowedAt: loan.borrowedAt,
-				returnedAt: loan.returnedAt,
-				createdAt: loan.createdAt,
-				declinedAt: loan.declinedAt,
+				createdAt: loan.createdAt.getTime(),
+				acceptedAt: loan.acceptedAt == null ? null : loan.acceptedAt.getTime(),
+				borrowedAt: loan.borrowedAt == null ? null : loan.borrowedAt.getTime(),
+				returnedAt: loan.returnedAt == null ? null : loan.returnedAt.getTime(),
+				declinedAt: loan.declinedAt == null ? null : loan.declinedAt.getTime(),
 			}
 			// This bit is messy but the asynchronous way of doing things forces it
 			if(loan.ownerId !== null) {
@@ -65,7 +65,7 @@ router.get('/loan/:loanId', authenticated(401), (req, res) => {
 								res.sendStatus(500);
 								return;
 							}
-							body.owner = {
+							body.borrower = {
 								id: user.id,
 								username: user.username
 							}
@@ -101,10 +101,7 @@ router.post('/loan/:loanId/accept', authenticated(401), (req, res) => {
 			res.sendStatus(404);
 			return;
 		}
-		if (loan.ownerId !== req.user?.uuid || loan.borrowerId !== req.user?.uuid) {
-			res.sendStatus(404);
-			return;
-		} if (loan.borrowerId === req.user?.uuid) {
+		if (loan.borrowerId === req.user?.uuid) {
 			res.sendStatus(403);
 			return;
 		} if (loan.acceptedAt !== null || loan.declinedAt !== null) {
@@ -119,16 +116,13 @@ router.post('/loan/:loanId/accept', authenticated(401), (req, res) => {
 });
 
 
-router.post('/loan/:loanId/deny', authenticated(401), (req, res) => {
+router.post('/loan/:loanId/decline', authenticated(401), (req, res) => {
 	getLoanById(req.params.loanId, req.user?.uuid as string, loan => {
 		if (loan == null) {
 			res.sendStatus(404);
 			return;
 		}
-		if (loan.ownerId !== req.user?.uuid || loan.borrowerId !== req.user?.uuid) {
-			res.sendStatus(404);
-			return;
-		} if (loan.borrowerId === req.user?.uuid) {
+		if (loan.borrowerId === req.user?.uuid) {
 			res.sendStatus(403);
 			return;
 		} if (loan.acceptedAt !== null || loan.declinedAt !== null) {
@@ -143,16 +137,13 @@ router.post('/loan/:loanId/deny', authenticated(401), (req, res) => {
 });
 
 
-router.post('/loan/:loanId/borrow', authenticated(401), (req, res) => {
+router.post('/loan/:loanId/borrowed', authenticated(401), (req, res) => {
 	getLoanById(req.params.loanId, req.user?.uuid as string, loan => {
 		if (loan == null) {
 			res.sendStatus(404);
 			return;
 		}
-		if (loan.ownerId !== req.user?.uuid || loan.borrowerId !== req.user?.uuid) {
-			res.sendStatus(404);
-			return;
-		} if (loan.borrowerId === req.user?.uuid) {
+		if (loan.borrowerId === req.user?.uuid) {
 			res.sendStatus(403);
 			return;
 		} if (loan.borrowedAt !== null || loan.acceptedAt === null || loan.declinedAt !== null) {
@@ -173,10 +164,7 @@ router.post('/loan/:loanId/returned', authenticated(401), (req, res) => {
 			res.sendStatus(404);
 			return;
 		}
-		if (loan.ownerId !== req.user?.uuid || loan.borrowerId !== req.user?.uuid) {
-			res.sendStatus(404);
-			return;
-		} if (loan.borrowerId === req.user?.uuid) {
+		if (loan.borrowerId === req.user?.uuid) {
 			res.sendStatus(403);
 			return;
 		} if (loan.borrowedAt === null) {
