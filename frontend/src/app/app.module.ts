@@ -16,6 +16,7 @@ import { ToggleButtonModule } from 'primeng/togglebutton';
 import { TableModule } from 'primeng/table';
 import { DividerModule } from 'primeng/divider';
 import { TooltipModule } from 'primeng/tooltip';
+import { TimelineModule } from 'primeng/timeline';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -42,6 +43,7 @@ import { OrgListPageRowComponent } from './components/pages/organisation-search-
 import { FieldBooleanPipe } from './pipes/field-boolean.pipe';
 import { OrgMembersPageRowComponent } from './components/pages/organisation-members-page/specific/org-members-page-row/org-members-page-row.component';
 import { BookDetailsPageOrgRowComponent } from './components/pages/book-details-page/specific/book-details-page-org-row/book-details-page-org-row.component';
+import { LoanDialogComponent } from './components/templates/header-footer-template/loan-dialog/loan-dialog.component';
 
 @NgModule({
   declarations: [
@@ -66,7 +68,8 @@ import { BookDetailsPageOrgRowComponent } from './components/pages/book-details-
     OrgListPageRowComponent,
     FieldBooleanPipe,
     OrgMembersPageRowComponent,
-    BookDetailsPageOrgRowComponent
+    BookDetailsPageOrgRowComponent,
+    LoanDialogComponent
   ],
   imports: [
     CommonModule,
@@ -85,7 +88,8 @@ import { BookDetailsPageOrgRowComponent } from './components/pages/book-details-
     ToggleButtonModule,
     TableModule,
     DividerModule,
-    TooltipModule
+    TooltipModule,
+    TimelineModule
   ],
   providers: [
     MessageService,
