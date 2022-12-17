@@ -28,58 +28,70 @@ router.get('/loan/:loanId', authenticated(401), (req, res) => {
 			res.sendStatus(404);
 			return;
 		}
-		getUserById(loan.ownerId, owner => {
-			if (owner === null) {
+		getBookById(loan.bookId, book => {
+			if (book === null) {
 				res.sendStatus(500);
 				return;
-
 			}
-
-			getUserById(loan.ownerId, owner => {
-				if (owner === null) {
-					res.sendStatus(500);
-					return;
-				}
-				let loan_owner = {
-					id: owner.id,
-					username: owner.username
-				}
-				getUserById(loan.borrowerId, borrower => {
-					if (borrower === null) {
+			let body: FullLoanDTO = {
+				id: loan.id,
+				owner: null,
+				borrower: null,
+				book: {
+					id: book.id,
+					name: book.name,
+					cover: book.cover,
+				},
+				acceptedAt: loan.acceptedAt,
+				borrowedAt: loan.borrowedAt,
+				returnedAt: loan.returnedAt,
+				createdAt: loan.createdAt,
+				declinedAt: loan.declinedAt,
+			}
+			// This bit is messy but the asynchronous way of doing things forces it
+			if(loan.ownerId !== null) {
+				getUserById(loan.ownerId, user => {
+					if(user === null) {
 						res.sendStatus(500);
 						return;
 					}
-					let loan_borrower = {
-						id: borrower.id,
-						username: borrower.username
+					body.owner = {
+						id: user.id,
+						username: user.username
 					}
-					getBookById(loan.bookId, book => {
-						if (book === null) {
-							res.sendStatus(500);
-							return;
-						}
-						let loan_book = {
-							id: book.id,
-							name: book.name,
-							cover: book.cover,
-						}
-						let body: FullLoanDTO = {
-							id: loan.id,
-							owner: loan_owner,
-							borrower: loan_borrower,
-							book: loan_book,
-							acceptedAt: loan.acceptedAt,
-							borrowedAt: loan.borrowedAt,
-							returnedAt: loan.returnedAt,
-							createdAt: loan.createdAt,
-							declinedAt: loan.declinedAt,
-						}
+					if(loan.borrowerId !== null) {
+						getUserById(loan.borrowerId, user => {
+							if(user === null) {
+								res.sendStatus(500);
+								return;
+							}
+							body.owner = {
+								id: user.id,
+								username: user.username
+							}
+							res.json(body);
+						}, _ => res.sendStatus(500));
+					} else {
 						res.json(body);
-					}, _ => res.sendStatus(500));
-				}, _ => res.sendStatus(500));
-			}, _ => res.sendStatus(500));
-		}, _ => res.sendStatus(500));
+					}
+				}, _ => res.sendStatus(500))
+			} else if(loan.borrowerId !== null) {
+				getUserById(loan.borrowerId, user => {
+					if(user === null) {
+						res.sendStatus(500);
+						return;
+					}
+					body.borrower = {
+						id: user.id,
+						username: user.username
+					}
+					res.json(body);
+				}, _ => res.sendStatus(500))
+			} else {
+				res.json(body);
+			}
 	}, _ => res.sendStatus(500));
+}, _ => res.sendStatus(500));
 });
 
 
