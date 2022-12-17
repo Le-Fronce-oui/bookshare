@@ -10,6 +10,9 @@ import { setAuthCookie, clearAuthCookie } from "./cookies";
 import ChangePasswordDTO from "src/dto/auth/change_password";
 import { authenticated } from "./middlewares";
 import PasswordDTO from "src/dto/auth/password";
+import { getLoansForUser } from "src/database/queries/loans";
+import { Consumer, ErrorHandler } from "src/types/functions";
+import { getOrganisationsForUser } from "src/database/queries/organisations";
 
 // Waits for a random delay when a bad request occurs to avoid spamming
 function delay(): Promise<void> {
@@ -107,17 +110,32 @@ router.post('/password', authenticated(401), (req, res) => {
 router.post('/signout', authenticated(401), (req, res) => {
 	const req_user_id = req.user?.uuid as string;
 	const dto: PasswordDTO = req.body;
-	getUserById(req_user_id, async db_user => {
-		if(db_user !== null && checkHash(dto.password, db_user.password, db_user.salt)) {
-			deleteAllTokens(db_user.id);
-			deleteUser(db_user.id,
-				() => res.send(), 
-				_  => res.sendStatus(500)
-			);
+	canDeleteUser(req_user_id, can_delete => {
+		if(!can_delete) {
+			res.sendStatus(400);
 			return;
 		}
-		await delay();
-		res.sendStatus(400);
-		return;
+		getUserById(req_user_id, async db_user => {
+			if(db_user !== null && checkHash(dto.password, db_user.password, db_user.salt)) {
+				deleteAllTokens(db_user.id);
+				deleteUser(db_user.id,
+					() => res.send(), 
+					_  => res.sendStatus(500)
+				);
+				return;
+			}
+			await delay();
+			res.sendStatus(400);
+		}, _ => res.sendStatus(500));
 	}, _ => res.sendStatus(500));
 });
+
+function canDeleteUser(user_id: string, callback: Consumer<boolean>, onError: ErrorHandler) {
+	getLoansForUser(user_id, loans => {
+		getOrganisationsForUser(user_id, user_id, orgs => {
+			const active_loans = loans.some(loan => loan.acceptedAt !== null && loan.returnedAt === null);
+			const owns_orgs = orgs.some(o => o.ownerId === user_id);
+			callback(active_loans || owns_orgs);
+		}, onError);
+	}, onError);
+}
