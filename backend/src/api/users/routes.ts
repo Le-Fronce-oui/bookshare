@@ -16,6 +16,8 @@ import DetailedUserDTO from "../../dto/users/detailed";
 import FullUserBookDTO from "../../dto/books/full_user";
 import { getLoansForUser } from "../../database/queries/loans";
 import BookUpdatesDTO from "../../dto/books/updates";
+import DatabaseLoan from "src/database/models/loan";
+import { loanPriority } from "../loans/priority";
 
 
 function fillUserData<T>(dto: UserBookGenericDTO<T>, req_user_id: string | null, bookMapper: (book: UserDatabaseBook) => T | null, 
@@ -51,9 +53,16 @@ router.get('/user/connected', authenticated(401), (req, res) => {
 		username: user.username,
 		role: user.role,
 		organisations: [],
-		books: []
-	}
-	fillUserData(body, user.uuid, CONNECTED_BOOK_MAPPER, body => res.json(body), () => res.sendStatus(500));
+		books: [],
+		loans: []
+	};
+	getLoansForUser(user.uuid, loans => {
+		body.loans = loans.map<[number, DatabaseLoan]>(l => [loanPriority(l), l])
+						.sort((t1, t2) => (t1[0] !== t2[0]) ? t1[0] - t2[0] : t2[1].createdAt.getTime() - t1[1].createdAt.getTime())
+						.map(t => t[1].id);
+		fillUserData(body, user.uuid, CONNECTED_BOOK_MAPPER, body => res.json(body), () => res.sendStatus(500));
+	}, _ => res.sendStatus(500));
+	
 });
 
 
@@ -122,7 +131,7 @@ router.get('/user/:user_id/detailed', authenticated(401), (req, res) => {
 		res.sendStatus(403);
 		return;
 	}
-	getUserById(user_id, db_user => {
+	getUserById(req_user_id, db_user => {
 		if(db_user === null) {
 			res.sendStatus(404);
 			return;
@@ -133,9 +142,13 @@ router.get('/user/:user_id/detailed', authenticated(401), (req, res) => {
 			role: db_user.role,
 			visibility: db_user.visibility,
 			organisations: [],
-			books: []
+			books: [],
+			active_loans: false
 		};
-		fillUserData(body, req_user_id, FULL_BOOK_MAPPER, body => res.json(body), () => res.sendStatus(500));
+		getLoansForUser(req_user_id, loans => {
+			body.active_loans = loans.some(loan => loan.acceptedAt !== null && loan.returnedAt === null);
+			fillUserData(body, req_user_id, FULL_BOOK_MAPPER, body => res.json(body), () => res.sendStatus(500));
+		}, _ => res.sendStatus(500));
 	}, _ => res.sendStatus(500));
 });
 
