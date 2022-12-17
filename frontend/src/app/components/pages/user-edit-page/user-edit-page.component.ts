@@ -94,7 +94,7 @@ export class UserEditPageComponent implements OnInit, OnDestroy {
         res.modified = false;
         return res;
       });
-      this.can_leave = this.organisations.every(o => !o.owned); // TODO or active loans
+      this.can_leave = !user.active_loans && this.organisations.every(o => !o.owned);
       this.books_changed = false;
     });
   }

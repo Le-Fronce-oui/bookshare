@@ -19,6 +19,7 @@ export class UserService {
   private uuid: string;
   private organisations: Map<String,ShortUserOrganisationDTO>;
   private books: Map<String,ShortBookDTO>;
+  private loans: string[];
 
   constructor(private api: ApiService) {
     this.connected = new BehaviorSubject<boolean>(false);
@@ -28,6 +29,7 @@ export class UserService {
     this.uuid = '';
     this.organisations = new Map();
     this.books = new Map();
+    this.loans = [];
     let previous_login = window.localStorage.getItem(UserService.PREVIOUS_LOGIN_PROP);
     if(previous_login === 'false') {
       this.initialised.next(true);
@@ -44,16 +46,14 @@ export class UserService {
         this.username = res.username;
         this.organisations = new Map(res.organisations.map(o => [o.id, o]));
         this.books = new Map(res.books.map(b => [b.id, b]));
+        this.loans = res.loans;
         window.localStorage.setItem(UserService.PREVIOUS_LOGIN_PROP, 'true');
         this.connected.next(true);
-        if(!this.initialised.value) {
-          this.initialised.next(true);
-        }
       } else {
         this.clearData();
-        if(!this.initialised.value) {
-          this.initialised.next(true);
-        }
+      }
+      if(!this.initialised.value) {
+        this.initialised.next(true);
       }
     })
   }
@@ -138,6 +138,7 @@ export class UserService {
     this.uuid = '';
     this.organisations.clear();
     this.books.clear();
+    this.loans = [];
   }
   
 }
