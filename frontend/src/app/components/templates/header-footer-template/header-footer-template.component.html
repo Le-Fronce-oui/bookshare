@@ -14,6 +14,7 @@
 		</span>
 		<ng-template [ngIf]="connected" [ngIfElse]="elseBlock">
 			<a class="menuitem" *ngIf="admin" [routerLink]="['/users']">All users</a>
+			<span class="menuitem" *ngIf="has_loans" (click)=openLoans()>My loans</span>
 			<a class="menuitem" [routerLink]="['/user/', uuid]">My profile ({{username}})</a>
 			<span class="menuitem" (click)=logout()>Log out</span>
 		</ng-template>

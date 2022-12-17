@@ -121,6 +121,16 @@ export class UserService {
     return this.books.has(book_id);
   }
 
+  // Loans
+
+  public getLoans(): string[] {
+    return this.loans;
+  }
+
+  public hasLoans(): boolean {
+    return this.loans.length > 0;
+  }
+
   // Log out
 
   public logout(): void {

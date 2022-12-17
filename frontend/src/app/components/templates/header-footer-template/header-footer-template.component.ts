@@ -19,6 +19,7 @@ export class HeaderFooterTemplateComponent implements OnInit, OnDestroy {
   public organisations: ShortUserOrganisationDTO[];
   public uuid: string;
   public username: string;
+  public has_loans: boolean;
 
   private userSubscription!: Subscription;
 
@@ -28,6 +29,7 @@ export class HeaderFooterTemplateComponent implements OnInit, OnDestroy {
     this.connected = false;
     this.admin = false;
     this.organisations = [];
+    this.has_loans = false;
   }
 
   public logout(): void {
@@ -41,8 +43,15 @@ export class HeaderFooterTemplateComponent implements OnInit, OnDestroy {
       this.organisations = this.connected ? this.userService.getOrganisations() : [];
       this.uuid = this.userService.getUuid();
       this.username = this.userService.getUsername();
+      this.has_loans = this.userService.hasLoans();
     });
   }
+
+
+  public openLoans(): void {
+
+  }
+
 
   public ngOnDestroy(): void {
     this.userSubscription.unsubscribe();
