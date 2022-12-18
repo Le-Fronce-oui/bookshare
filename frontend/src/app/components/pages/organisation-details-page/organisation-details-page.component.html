@@ -1,4 +1,29 @@
 
 <app-header-footer-template>
-	This page should allow us to see the details for organisation "{{org_id}}"
+	
+	<div class="canvas content-width">
+		<a [routerLink]="['/organisation/', org_id, 'members']" *ngIf="joined || is_admin"><i class="pi pi-users"></i></a>
+		<h1>{{name}}</h1>
+		<p *ngIf="description !== null">
+			{{description}}
+		</p>
+		<p *ngIf="owner !== null" id="owner">
+			Owner: {{owner.username}}
+			<a [routerLink]="['/user', owner.id]"><i class="pi pi-link"></i></a>
+		</p>
+		<button pButton label="Join" icon="pi pi-sign-in" [disabled]="!logged_in" (click)="join()" *ngIf="!joined"></button>
+	</div>
+
+	<div id="books-grid" *ngIf="books.length > 0; else booksElse">
+		<ng-container *ngFor="let book of books">
+			<app-book-card [book_id]="book.id" [title]="book.name" [cover]="book.cover" [count]="book.count" [org_id]="org_id"></app-book-card>
+		</ng-container>
+	</div>
+
+	<ng-template #booksElse>
+		<div class="canvas infobox">
+			Users in this organisation have not started sharing books yet.
+		</div>
+	</ng-template>
+
 </app-header-footer-template>

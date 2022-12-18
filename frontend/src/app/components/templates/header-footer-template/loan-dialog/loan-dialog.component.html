@@ -1,0 +1,37 @@
+
+<div class="hbox-apart">
+	<p>
+		{{this.is_owner ? 'By' : 'From'}} {{other_user}} 
+		<a *ngIf="other_user_id !== null" [routerLink]="['/user/', other_user_id]">
+			<i class="pi pi-link"></i>
+		</a>
+	</p>
+
+	<div id="loan-buttons" class="p-inputgroup">
+		<button pButton icon="pi pi-chevron-left"  (click)="onLeft()"  [disabled]="!left"  class="p-button-sm"></button>
+		<button pButton icon="pi pi-chevron-right" (click)="onRight()" [disabled]="!right" class="p-button-sm"></button>
+	</div>
+</div>
+
+<p-timeline [value]="events">
+	<ng-template pTemplate="content" let-event>
+		<small class="p-text-secondary">{{event.date}}</small>
+	</ng-template>
+	<ng-template pTemplate="opposite" let-event>
+		{{event.status}}
+	</ng-template>
+</p-timeline>
+
+
+<div *ngIf="is_owner && status === 'created'" class="hbox">
+	<button pButton icon="pi pi-check" label="Accept" (click)="onAccept()" class="p-button-sm p-button-success"></button>
+	<button pButton icon="pi pi-times" label="Decline" (click)="onDecline()" class="p-button-sm p-button-danger"></button>
+</div>
+
+<div *ngIf="is_owner && status === 'accepted'" class="hbox">
+	<button pButton icon="pi pi-upload" label="Borrowed" (click)="onBorrowed()" class="p-button-sm"></button>
+</div>
+
+<div *ngIf="is_owner && status === 'borrowed'" class="hbox">
+	<button pButton icon="pi pi-download" label="Returned" (click)="onReturned()" class="p-button-sm"></button>
+</div>

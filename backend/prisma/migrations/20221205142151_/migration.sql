@@ -53,13 +53,13 @@ CREATE TABLE "Loans" (
     "id" TEXT NOT NULL,
     "orgaId" TEXT NOT NULL,
     "bookId" TEXT NOT NULL,
-    "ownerId" TEXT NOT NULL,
-    "borrowerId" TEXT NOT NULL,
+    "ownerId" TEXT,
+    "borrowerId" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "acceptedAt" TIMESTAMP(3),
-    "declinedAt" TIMESTAMP(3),
-    "borrowedAt" TIMESTAMP(3),
-    "returnedAt" TIMESTAMP(3),
+    "acceptedAt" TIMESTAMP(3) DEFAULT NULL,
+    "declinedAt" TIMESTAMP(3) DEFAULT NULL,
+    "borrowedAt" TIMESTAMP(3) DEFAULT NULL,
+    "returnedAt" TIMESTAMP(3) DEFAULT NULL,
 
     CONSTRAINT "Loans_pkey" PRIMARY KEY ("id")
 );

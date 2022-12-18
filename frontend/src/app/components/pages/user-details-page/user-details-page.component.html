@@ -1,7 +1,7 @@
 
 <app-header-footer-template>
-	<div class="canvas" id="orgs-container">
-		<a [routerLink]="'/user/' + user_id + '/edit'"><i *ngIf="logged_in" class="pi pi-user-edit"></i></a>
+	<div class="canvas content-width" id="orgs-container">
+		<a [routerLink]="['/user/', user_id, 'edit']"><i *ngIf="logged_in" class="pi pi-user-edit"></i></a>
 		<h1>
 			<i *ngIf="admin" class="pi pi-star-fill"></i>
 			{{username}}
@@ -17,7 +17,7 @@
 				<tr>
 					<td>
 						{{org.name}}
-						<a [routerLink]="'/organisation/' + org.id"><i class="pi pi-link"></i></a>
+						<a [routerLink]="['/organisation/', org.id]"><i class="pi pi-link"></i></a>
 					</td>
 					<td>
 						<i class="pi" [ngClass]="{'OWNER': 'pi-key', 'ADMIN': 'pi-star-fill', 'USER': 'pi-user'}[org.role]"></i>

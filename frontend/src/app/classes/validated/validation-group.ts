@@ -19,4 +19,11 @@ export class ValidationGroup<T> {
 		this.ok = this.fields.every(f => f.ok);
 	}
 
+	public reset(): void {
+		for(let field of this.fields) {
+			field.reset();
+		}
+		this.ok = false;
+	}
+
 }

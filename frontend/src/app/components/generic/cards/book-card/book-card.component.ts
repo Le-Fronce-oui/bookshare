@@ -12,22 +12,27 @@ export class BookCardComponent implements OnInit, OnChanges {
   @Input() public book_id!: string;
   @Input() public cover:    string | null;
   @Input() public count:    number;
+  @Input() public org_id:   string | null;
 
-  public book_link:  string;
   public cover_path: string;
+  public params: {[param: string]: string};
 
   constructor() {
     this.cover = null;
-    this.book_link = '/books';
     this.cover_path = AppComponent.DEFAULT_COVER_GRADIENT;
     this.count = 0;
+    this.org_id = null;
+    this.params = {};
   }
 
   public ngOnInit(): void { }
 
   public ngOnChanges(changes: SimpleChanges): void {
-    const book_id = changes.book_id.currentValue;
-    this.book_link = "/book/" + book_id;
+    if(this.org_id === null) {
+      this.params = {}
+    } else {
+      this.params = { 'from_org': this.org_id };
+    }
     const cover = changes.cover.currentValue;
     if(cover === null) {
       this.cover_path = AppComponent.DEFAULT_COVER_GRADIENT;

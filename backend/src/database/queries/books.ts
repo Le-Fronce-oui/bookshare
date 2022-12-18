@@ -4,20 +4,20 @@ import { manageError } from "../errors";
 import { DatabaseBook, UserDatabaseBook, DatabaseUserBooksInOrg } from "../models/book";
 
 
-export function getBooks(consumer: Consumer<DatabaseBook[]>, onError?: ErrorHandler) {
+export function getBooks(consumer: Consumer<DatabaseBook[]>, onError: ErrorHandler): void {
     pool.query('SELECT * FROM "Books";').then(qres => {
         consumer(qres.rows);
     }).catch(e => manageError(e, onError));
 }
 
-export function getBookById(book_id: string, consumer: Consumer<DatabaseBook | null>, onError?: ErrorHandler) {
+export function getBookById(book_id: string, consumer: Consumer<DatabaseBook | null>, onError: ErrorHandler): void {
     pool.query('SELECT * FROM "Books" WHERE id = $1;', [book_id]).then(qres => {
         consumer(qres.rows.length > 0 ? qres.rows[0] : null);
     }).catch(e => manageError(e, onError));
 }
 
 
-export function getBooksForUser(user_id: string, consumer: Consumer<UserDatabaseBook[]>, onError?: ErrorHandler) {
+export function getBooksForUser(user_id: string, consumer: Consumer<UserDatabaseBook[]>, onError: ErrorHandler): void {
     pool.query(`
         SELECT "Books".*, num_owned, num_lent, num_shown 
         FROM "Books", "Collections" 
@@ -28,32 +28,40 @@ export function getBooksForUser(user_id: string, consumer: Consumer<UserDatabase
 }
 
 
-export function getBookInOrganisation(org_id: string, book_id: string, loggedIn: boolean, 
-            consumer: Consumer<DatabaseUserBooksInOrg[]>, onError?: ErrorHandler) {
+export function getBookInOrganisation(org_id: string, book_id: string, req_user_id: string | null, 
+            consumer: Consumer<DatabaseUserBooksInOrg[]>, onError: ErrorHandler): void {
     let query: string;
-    if(loggedIn) {
+    let params = [org_id, book_id];
+    if(req_user_id === null) {
         query = `
-            SELECT "Users".id as user_id, "Users".name as username, "Collections".shown as owned, "Collections".lent
+            SELECT "Users".id AS user_id, "Users".username AS username, "Collections".num_shown AS owned, "Collections".num_lent AS lent
             FROM "Users", "Members", "Collections"
             WHERE "Members"."userId" = "Users".id
                 AND "Collections"."userId" = "Users".id 
                 AND "Users".visibility = 'PUBLIC'
                 AND "Members"."orgaId" = $1
                 AND "Collections"."bookId" = $2
-                AND "Collections".shown > 0
+                AND "Collections".num_shown > 0
+                AND NOT "Members".banned;
         `;
     } else {
         query = `
-            SELECT "Users".id as user_id, "Users".name as username, "Collections".shown as owned, "Collections".lent
+            SELECT "Users".id AS user_id, "Users".username AS username, "Collections".num_shown AS owned, "Collections".num_lent AS lent
             FROM "Users", "Members", "Collections"
             WHERE "Members"."userId" = "Users".id
                 AND "Collections"."userId" = "Users".id
                 AND "Members"."orgaId" = $1
                 AND "Collections"."bookId" = $2
-                AND "Collections".shown > 0
+                AND "Collections".num_shown > 0
+                AND NOT "Members".banned
+                AND "Members"."orgaId" NOT IN (
+                    SELECT "orgaId" AS id FROM "Members"
+                    WHERE "Members"."userId" = $3 AND "Members".banned
+                )
         `;
+        params.push(req_user_id);
     }
-    pool.query(query, [org_id, book_id]).then(qres => {
+    pool.query(query, params).then(qres => {
         consumer(qres.rows);
     }).catch(e => manageError(e, onError));
 }

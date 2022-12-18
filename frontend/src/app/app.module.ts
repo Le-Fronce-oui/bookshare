@@ -1,10 +1,12 @@
 import { ErrorHandler, NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 
 import { InputTextModule } from 'primeng/inputtext';
+import { InputNumberModule } from 'primeng/inputnumber';
 import { PasswordModule } from 'primeng/password';
 import { FieldsetModule } from 'primeng/fieldset';
 import { ToastModule } from 'primeng/toast';
@@ -12,6 +14,9 @@ import { DialogModule } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
 import { ToggleButtonModule } from 'primeng/togglebutton';
 import { TableModule } from 'primeng/table';
+import { DividerModule } from 'primeng/divider';
+import { TooltipModule } from 'primeng/tooltip';
+import { TimelineModule } from 'primeng/timeline';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -32,7 +37,13 @@ import { SimpleDialogTemplateComponent } from './components/templates/simple-dia
 import { ErrorHandlingService } from './services/error-handling.service';
 import { BookCardComponent } from './components/generic/cards/book-card/book-card.component';
 import { BookFilterPipePipe } from './pipes/book-filter-pipe.pipe';
+import { FieldFilterPipe } from './pipes/field-filter.pipe';
 import { UserListPageRowComponent } from './components/pages/user-list-page/specific/user-list-page-row/user-list-page-row.component';
+import { OrgListPageRowComponent } from './components/pages/organisation-search-page/specific/org-list-page-row/org-list-page-row.component';
+import { FieldBooleanPipe } from './pipes/field-boolean.pipe';
+import { OrgMembersPageRowComponent } from './components/pages/organisation-members-page/specific/org-members-page-row/org-members-page-row.component';
+import { BookDetailsPageOrgRowComponent } from './components/pages/book-details-page/specific/book-details-page-org-row/book-details-page-org-row.component';
+import { LoanDialogComponent } from './components/templates/header-footer-template/loan-dialog/loan-dialog.component';
 
 @NgModule({
   declarations: [
@@ -52,22 +63,33 @@ import { UserListPageRowComponent } from './components/pages/user-list-page/spec
     SimpleDialogTemplateComponent,
     BookCardComponent,
     BookFilterPipePipe,
-    UserListPageRowComponent
+    FieldFilterPipe,
+    UserListPageRowComponent,
+    OrgListPageRowComponent,
+    FieldBooleanPipe,
+    OrgMembersPageRowComponent,
+    BookDetailsPageOrgRowComponent,
+    LoanDialogComponent
   ],
   imports: [
+    CommonModule,
     BrowserModule,
     BrowserAnimationsModule,
     AppRoutingModule,
     FormsModule,
     HttpClientModule,
     InputTextModule,
+    InputNumberModule,
     PasswordModule,
     FieldsetModule,
     ToastModule,
     DialogModule,
     ButtonModule,
     ToggleButtonModule,
-    TableModule
+    TableModule,
+    DividerModule,
+    TooltipModule,
+    TimelineModule
   ],
   providers: [
     MessageService,

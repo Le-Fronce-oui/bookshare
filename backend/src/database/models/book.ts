@@ -15,6 +15,10 @@ export interface UserDatabaseBook extends DatabaseBook {
     num_shown: number
 }
 
+export interface DatabaseBookInOrg extends DatabaseBook {
+    count: number
+}
+
 export interface DatabaseUserBooksInOrg {
     user_id: string,
     username: string,

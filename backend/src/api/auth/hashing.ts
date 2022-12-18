@@ -1,4 +1,4 @@
-import bcrypt from "bcrypt";
+import bcrypt from "../../types/bcrypt";
 
 export function newHash(cleartext: string): [string, string] {
 	const salt = bcrypt.genSaltSync(10);

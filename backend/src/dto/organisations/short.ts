@@ -1,10 +1,8 @@
-import { Role } from "../enums";
 
 interface ShortOrganisationDTO {
 	id: string,
 	name: string,
-	role: Role,
-	owned: boolean
+	user_count: number
 }
 
 export default ShortOrganisationDTO;

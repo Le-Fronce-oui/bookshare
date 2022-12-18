@@ -36,9 +36,10 @@ export class BookDetailsPageComponent implements OnInit, OnDestroy {
     this.saved = false;
   }
 
+  // TODO https://stackoverflow.com/questions/40699229/subscribe-to-both-route-params-and-queryparams-in-angular-2
   public ngOnInit(): void {
-    // Check UUID in route
-    const uuid = this.route.snapshot.paramMap.get('uuid');
+    // Check UUID in route 
+    const uuid = this.route.snapshot.paramMap.get('uuid'); // TODO actual subscription
     if(uuid == null) {
       this.router.navigate(['/books']);
       return;
@@ -65,7 +66,7 @@ export class BookDetailsPageComponent implements OnInit, OnDestroy {
     });
 
     // Potentially get organisation from URL parameters
-    this.route.queryParams.subscribe(params => {
+    this.route.queryParams.subscribe(params => { // TODO subscription
       this.org_id = ('from_org' in params) ? params.from_org : null
       if(this.org_id !== null) {
         this.api.organisations.getBookInOrg(this.book_id, this.org_id, 
@@ -78,6 +79,8 @@ export class BookDetailsPageComponent implements OnInit, OnDestroy {
             })
           }
         );
+      } else {
+        this.org_users = [];
       }
     });
   }

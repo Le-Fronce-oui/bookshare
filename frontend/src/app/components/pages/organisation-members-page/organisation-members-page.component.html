@@ -1,4 +1,17 @@
 
 <app-header-footer-template>
-	This page should allow us to see users in organisation "{{org_id}}"
+	<div class="canvas">
+		<p-table [value]="members" [tableStyle]="{'min-width': '900px'}">
+			<ng-template pTemplate="header">
+				<tr style="position: sticky;">
+					<th>Username</th>
+					<th>Role</th>
+					<th *ngIf="admin">Access</th>
+				</tr>
+			</ng-template>
+			<ng-template pTemplate="body" let-member>
+				<tr org-members-page-row [member]="member" [org_id]="org_id" [admin]="admin" [owner]="owner"></tr>
+			</ng-template>
+		</p-table>
+	</div>
 </app-header-footer-template>

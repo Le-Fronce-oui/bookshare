@@ -3,11 +3,16 @@ import { validateEmail } from "../../globals";
 import { deleteToken, AUTH_COOKIE, deleteAllTokens } from "../../core/auth/authentication";
 import UserCreationDTO from "../../dto/user_creation_request";
 import UserLoginDTO from "../../dto/user_login";
-import { checkUserUniqueness, createUser, deleteUser, getUserByEmail, updateUserPassword } from "../../database/queries/users";
+import { checkUserUniqueness, createUser, deleteUser, getUserByEmail, getUserById, updateUserPassword } from "../../database/queries/users";
 import UserCreationErrorDTO from "../../dto/user_creation_error";
 import { checkHash, newHash } from "./hashing";
 import { setAuthCookie, clearAuthCookie } from "./cookies";
-import ChangePasswordDTO from "src/dto/change_password";
+import ChangePasswordDTO from "src/dto/auth/change_password";
+import { authenticated } from "./middlewares";
+import PasswordDTO from "../../dto/auth/password";
+import { getLoansForUser } from "../../database/queries/loans";
+import { Consumer, ErrorHandler } from "../../types/functions";
+import { getOrganisationsForUser } from "../../database/queries/organisations";
 
 // Waits for a random delay when a bad request occurs to avoid spamming
 function delay(): Promise<void> {
@@ -80,9 +85,10 @@ router.post('/logout', (req, res) => {
 /**
  * Change password route
  */
-router.post('/password', (req, res) => {
+router.post('/password', authenticated(401), (req, res) => {
+	const req_user_id = req.user?.uuid as string;
 	const dto: ChangePasswordDTO = req.body;
-	getUserByEmail(dto.email, async db_user => {
+	getUserById(req_user_id, async db_user => {
 		if(db_user !== null && checkHash(dto.old_password, db_user.password, db_user.salt)) {
 			const [hash, salt] = newHash(dto.new_password);
 			updateUserPassword(db_user.id, hash, salt,
@@ -101,19 +107,35 @@ router.post('/password', (req, res) => {
 /**
  * Delete user route
  */
-router.post('/signout', (req, res) => {
-	const dto: UserLoginDTO = req.body;
-	getUserByEmail(dto.email, async db_user => {
-		if(db_user !== null && checkHash(dto.password, db_user.password, db_user.salt)) {
-			deleteAllTokens(db_user.id);
-			deleteUser(db_user.id,
-				() => res.send(), 
-				_  => res.sendStatus(500)
-			);
+router.post('/signout', authenticated(401), (req, res) => {
+	const req_user_id = req.user?.uuid as string;
+	const dto: PasswordDTO = req.body;
+	canDeleteUser(req_user_id, can_delete => {
+		if(!can_delete) {
+			res.sendStatus(400);
 			return;
 		}
-		await delay();
-		res.sendStatus(400);
-		return;
+		getUserById(req_user_id, async db_user => {
+			if(db_user !== null && checkHash(dto.password, db_user.password, db_user.salt)) {
+				deleteAllTokens(db_user.id);
+				deleteUser(db_user.id,
+					() => res.send(), 
+					_  => res.sendStatus(500)
+				);
+				return;
+			}
+			await delay();
+			res.sendStatus(400);
+		}, _ => res.sendStatus(500));
 	}, _ => res.sendStatus(500));
 });
+
+function canDeleteUser(user_id: string, callback: Consumer<boolean>, onError: ErrorHandler) {
+	getLoansForUser(user_id, loans => {
+		getOrganisationsForUser(user_id, user_id, orgs => {
+			const active_loans = loans.some(loan => loan.acceptedAt !== null && loan.returnedAt === null);
+			const owns_orgs = orgs.some(o => o.ownerId === user_id);
+			callback(active_loans || owns_orgs);
+		}, onError);
+	}, onError);
+}

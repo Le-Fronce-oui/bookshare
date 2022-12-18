@@ -1,0 +1,46 @@
+version: "3.9"
+services:
+  proxy:
+    image: nginx:alpine
+    container_name: bs-rproxy
+    depends_on:
+      - "front"
+      - "back"
+    ports:
+      - "8069:80"
+    volumes:
+      - "docker/nginx/reverse-proxy.conf:/etc/nginx/nginx.conf"
+      - "docker/nginx/conf/proxy.conf:/etc/nginx/proxy.conf"
+  front:
+    image: lfo/bs-front:latest
+    container_name: bs-front
+    volumes:
+      - "frontend/src/assets/covers:/front/assets/covers"
+      - "frontend/src/assets/tutorial:/front/assets/tutorial"
+  back:
+    image: lfo/bs-back:latest
+    container_name: bs-back
+    depends_on:
+      - "database"
+    environment:
+      BS_JWT_KEY: <JWT KEY HERE>
+      BS_DATABASE_HOST: bs-db
+      # BS_DATABASE_USER: bookshare
+      # BS_DATABASE_NAME: bookshare
+      BS_DATABASE_PASS: <DATABASE PASSWORD HERE>
+      # BS_DATABASE_PORT: 5432
+  database:
+    image: postgres:alpine
+    container_name: bs-db
+    volumes:
+      - path/to/data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      start_period: 15s
+      interval: 30s
+      timeout: 30s
+      retries: 3
+    environment:
+      - POSTGRES_DB=bookshare
+      - POSTGRES_USER=bookshare
+      - POSTGRES_PASSWORD=<DATABASE PASSWORD HERE>

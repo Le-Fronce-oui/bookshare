@@ -14,3 +14,16 @@
 #books > app-book-card {
 	height: 280px;
 }
+
+
+@media (max-width: 990px) {
+	#books {
+		grid-template-columns: repeat(4, 190px);
+	}
+}
+
+@media (max-width: 790px) {
+	#books {
+		grid-template-columns: repeat(3, 190px);
+	}
+}

@@ -1,0 +1,17 @@
+
+<td>
+	{{name}}
+	<a [routerLink]="org_link">
+		<i class="pi pi-link"></i>
+	</a>
+</td>
+<td>
+	{{user_count}}
+</td>
+
+<td *ngIf="join_button">
+	<button pButton *ngIf="joined; else joinedElse" label="Joined" icon="pi pi-check" disabled="true"></button>
+	<ng-template #joinedElse>
+		<button pButton label="Join" icon="pi pi-sign-in" [disabled]="join_clicked" (click)="join()"></button>
+	</ng-template>
+</td>

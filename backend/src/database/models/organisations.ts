@@ -9,6 +9,10 @@ export interface DatabaseOrganisation {
     visibility: string,
 }
 
+export interface DatabaseOrganisationWithCount extends DatabaseOrganisation {
+    user_count: number
+}
+
 export interface UserDatabaseOrganisation extends DatabaseOrganisation {
     role: Role,
     banned: boolean

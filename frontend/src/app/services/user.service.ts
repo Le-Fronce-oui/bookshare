@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Subscription } from 'rxjs';
 import ShortBookDTO from '../classes/dto/books/short';
-import ShortOrganisationDTO from '../classes/dto/organisations/short';
+import ShortUserOrganisationDTO from '../classes/dto/organisations/short_user';
 import { ApiService } from './api/api.service';
 
 @Injectable({
@@ -9,14 +9,17 @@ import { ApiService } from './api/api.service';
 })
 export class UserService {
 
+  private static readonly PREVIOUS_LOGIN_PROP = '__bs_logged_in';
+
   private connected: BehaviorSubject<boolean>;
   private initialised: BehaviorSubject<boolean>;
 
   private admin: boolean;
   private username: string;
   private uuid: string;
-  private organisations: Map<String,ShortOrganisationDTO>;
+  private organisations: Map<String,ShortUserOrganisationDTO>;
   private books: Map<String,ShortBookDTO>;
+  private loans: string[];
 
   constructor(private api: ApiService) {
     this.connected = new BehaviorSubject<boolean>(false);
@@ -26,7 +29,13 @@ export class UserService {
     this.uuid = '';
     this.organisations = new Map();
     this.books = new Map();
-    this.refreshLogin();
+    this.loans = [];
+    let previous_login = window.localStorage.getItem(UserService.PREVIOUS_LOGIN_PROP);
+    if(previous_login === 'false') {
+      this.initialised.next(true);
+    } else {
+      this.refreshLogin();
+    }
   }
 
   public refreshLogin() {
@@ -37,15 +46,14 @@ export class UserService {
         this.username = res.username;
         this.organisations = new Map(res.organisations.map(o => [o.id, o]));
         this.books = new Map(res.books.map(b => [b.id, b]));
+        this.loans = res.loans;
+        window.localStorage.setItem(UserService.PREVIOUS_LOGIN_PROP, 'true');
         this.connected.next(true);
-        if(!this.initialised.value) {
-          this.initialised.next(true);
-        }
       } else {
         this.clearData();
-        if(!this.initialised.value) {
-          this.initialised.next(true);
-        }
+      }
+      if(!this.initialised.value) {
+        this.initialised.next(true);
       }
     })
   }
@@ -85,7 +93,7 @@ export class UserService {
     return this.organisations.size > 0;
   }
 
-  public getOrganisations(): ShortOrganisationDTO[] {
+  public getOrganisations(): ShortUserOrganisationDTO[] {
     return Array.from(this.organisations.values());
   }
 
@@ -113,6 +121,16 @@ export class UserService {
     return this.books.has(book_id);
   }
 
+  // Loans
+
+  public getLoans(): string[] {
+    return this.loans;
+  }
+
+  public hasLoans(): boolean {
+    return this.loans.length > 0;
+  }
+
   // Log out
 
   public logout(): void {
@@ -123,12 +141,14 @@ export class UserService {
   }
 
   private clearData(): void {
+    window.localStorage.setItem(UserService.PREVIOUS_LOGIN_PROP, 'false');
     this.connected.next(false);
     this.admin = false;
     this.username = '';
     this.uuid = '';
     this.organisations.clear();
     this.books.clear();
+    this.loans = [];
   }
   
 }

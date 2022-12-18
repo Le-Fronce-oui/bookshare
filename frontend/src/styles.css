@@ -67,3 +67,15 @@ p {
 	border: var(--col-border) solid 1px;
 	border-radius: 3px;
 }
+
+
+
+.content-width {
+	width: 900px;
+}
+
+@media (max-width: 905px) {
+	.content-width {
+		width: 700px;
+	}
+}

@@ -1,5 +1,119 @@
 
+<p-dialog header="Caution: this cannot be undone !" [modal]="true" [(visible)]="signout_dialog" [closeOnEscape]="true" [dismissableMask]="true" [draggable]="false">
+    <p>
+		If you really want to delete your account, please enter your password and confirm.
+	</p>
+	
+	<form class="hbox">
+		<span class="p-input-icon-left p-float-label">
+			<i class="pi pi-lock"></i>
+			<input pInputText autofocus id="signout-password-input" type="password" name="signout-password" class="p-inputtext-sm" [(ngModel)]="signout_password.value" (ngModelChange)="signout_password.peek()" (focusout)="signout_password.check()" [ngClass]="{'ng-invalid ng-dirty': signout_password.dirty}">
+			<label for="signout-password-input">Password</label>
+		</span>
+	
+		<button pButton label="Yes, delete my account" icon="pi pi-exclamation-triangle" class="p-button-sm p-button-danger" [disabled]="!signout_password.ok" (click)="onSignoutConfirm()"></button>
+	</form>
+</p-dialog>
+
+
 <app-header-footer-template>
-	This page should allow us to edit user "{{user_id}}"
+	
+	<div class="canvas" id="profile-container">
+		<a [routerLink]="['/user/', user_id]"><i class="pi pi-user"></i></a>
+		<h1>
+			<i *ngIf="admin" class="pi pi-star-fill"></i>
+			{{username}}
+		</h1>
+
+		<form id="change-password-form">
+			<span class="p-input-icon-left p-float-label">
+				<i class="pi pi-lock"></i>
+				<input pInputText id="old-password-input" type="password" name="old-password" class="p-inputtext-sm" [(ngModel)]="old_password.value" (ngModelChange)="old_password.peek()" (focusout)="old_password.check()" [ngClass]="{'ng-invalid ng-dirty': old_password.dirty}">
+				<label for="old-password-input">Old password</label>
+			</span>
+
+			<span class="p-input-icon-left p-float-label">
+				<i class="pi" [ngClass]="new_password.ok ? 'pi-lock' : 'pi-unlock'"></i>
+				<input pInputText id="new-password-input" type="password" name="new-password" class="p-inputtext-sm" [(ngModel)]="new_password.value" (ngModelChange)="new_password.peek()" (focusout)="new_password.check()" [ngClass]="{'ng-invalid ng-dirty': new_password.dirty}">
+				<label for="new-password-input">New password</label>
+			</span>
+
+			<span class="p-input-icon-left p-float-label">
+				<i class="pi pi-lock" [ngClass]="confirm_password.value === '' ? 'pi-ellipsis-h' : confirm_password.ok ? 'pi-check' : 'pi-times'"></i>
+				<input pInputText id="confirm-password-input" type="password" name="confirm-password" class="p-inputtext-sm" [(ngModel)]="confirm_password.value" (ngModelChange)="confirm_password.peek()" (focusout)="confirm_password.check()" [ngClass]="{'ng-invalid ng-dirty': confirm_password.dirty}">
+				<label for="confirm-password-input">Confirm password</label>
+			</span>
+			
+			<button pButton label="Change password" class="p-button-sm" [disabled]="!passwordGroup.ok" (click)="onChangePassword()"></button>
+		</form>
+
+		<p-divider></p-divider>
+
+		<div class="hbox">
+			<p-toggleButton onLabel="Public" offLabel="Restricted" onIcon="pi pi-eye" offIcon="pi pi-eye-slash" [(ngModel)]="visible" (onChange)="onVisibilityChanged($event)"></p-toggleButton>
+			<button pButton label="Delete account" icon="pi pi-times" class="p-button-danger" (click)="onSignout()" [disabled]="!can_leave"></button>
+		</div>
+	</div>
+
+	<div class="canvas" id="orgs-container" *ngIf="organisations.length > 0">
+		<p-table [value]="organisations" [tableStyle]="{'width': '100%'}">
+			<ng-template pTemplate="header">
+				<tr>
+					<th>Organisation</th>
+					<th></th>
+				</tr>
+			</ng-template>
+			<ng-template pTemplate="body" let-org let-i="rowIndex">
+				<tr>
+					<td>
+						{{org.name}}
+						<a [routerLink]="['/organisation/', org.id]"><i class="pi pi-link"></i></a>
+					</td>
+					<td>
+						<button pButton label="Leave" icon="pi pi-sign-out" iconPos="right" (click)="onLeaveOrg($event)" [attr.data-index]="i" [disabled]="org.owned"></button>
+					</td>
+				</tr>
+			</ng-template>
+		</p-table>
+	</div>
+
+	<div class="canvas" id="books-container" *ngIf="books.length > 0">
+		<p-table [value]="books" [tableStyle]="{'width': '100%'}">
+			<ng-template pTemplate="header">
+				<tr>
+					<th>Book</th>
+					<th>Count</th>
+					<th>Shown</th>
+					<th>Lent</th>
+					<th>Delete</th>
+				</tr>
+			</ng-template>
+			<ng-template pTemplate="body" let-book let-i="rowIndex">
+				<tr [attr.data-index]="i">
+					<td>
+						{{book.name}}
+						<a [routerLink]="['/book/', book.id]"><i class="pi pi-link"></i></a>
+					</td>
+					<td>
+						<p-inputNumber [(ngModel)]="book.owned" (onInput)="onBookOwnedChanged($event)" mode="decimal" [inputStyle]="{'width': '60px'}" [allowEmpty]="false" [showButtons]="true" [min]="1"></p-inputNumber>
+					</td>
+					<td>
+						<p-inputNumber [(ngModel)]="book.shown" (onInput)="onBookShownChanged($event)" mode="decimal" [inputStyle]="{'width': '60px'}" [allowEmpty]="false" [showButtons]="true" [min]="0" [max]="book.owned"></p-inputNumber>
+					</td>
+					<td>
+						{{book.lent}}
+					</td>
+					<td>
+						<button pButton icon="pi pi-trash" class="p-button-danger" (click)="onDeleteBook($event)" [disabled]="book.lent > 0"></button>
+					</td>
+				</tr>
+			</ng-template>
+		</p-table>
+		<div class="hbox">
+			<button pButton label="Apply changes"(click)="onSaveBooks()" [disabled]="!books_changed"></button>
+			<button pButton label="Reset" icon="pi pi-refresh" class="p-button-secondary" (click)="updateFromApi()" [disabled]="!books_changed"></button>
+		</div>
+	</div>
+
 </app-header-footer-template>
 

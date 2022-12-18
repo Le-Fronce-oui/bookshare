@@ -2,12 +2,9 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import ShortUserBookDTO from 'src/app/classes/dto/books/short_user';
-import { Role } from 'src/app/classes/dto/enums';
-import ShortOrganisationDTO from 'src/app/classes/dto/organisations/short';
+import OrgRole from 'src/app/classes/enums/org_role';
 import { ApiService } from 'src/app/services/api/api.service';
 import { UserService } from 'src/app/services/user.service';
-
-type OrgRole = Role | 'OWNER';
 
 interface Org {
   id: string,

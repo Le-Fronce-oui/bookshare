@@ -1,4 +1,4 @@
-import BookDTO from "../books/short";
+import ShortBookDTO from "../books/short";
 
 interface SuperShortUserDTO {
     id: string,
@@ -7,14 +7,14 @@ interface SuperShortUserDTO {
 
 interface FullLoanDTO {
     id: string,
-    owner: SuperShortUserDTO,
-    borrower: SuperShortUserDTO,
-    book: BookDTO,
-    created: Date,
-    accepted: Date | null,
-    declined: Date | null,
-    borrowed: Date | null,
-    returned: Date | null,
+    owner: SuperShortUserDTO | null,
+    borrower: SuperShortUserDTO | null,
+    book: ShortBookDTO,
+    createdAt: number,
+    acceptedAt: number | null,
+    declinedAt: number | null,
+    borrowedAt: number | null,
+    returnedAt: number | null,
 }
 
-export default FullLoanDTO;
+export { FullLoanDTO, SuperShortUserDTO }

@@ -1,0 +1,13 @@
+
+<td>
+	{{user.username}}
+	<a [routerLink]="['/user/', user.user_id]">
+		<i class="pi pi-link"></i>
+	</a>
+</td>
+<td>
+	{{user.available}}/{{user.owned}}
+</td>
+<td *ngIf="with_borrows">
+	<button pButton icon="pi pi-book" label="Request" (click)="borrow()" [disabled]="!can_borrow"></button>
+</td>

@@ -1,6 +1,7 @@
 
 export class ValidatedField<T> {
 
+	private default: T;
 	public value: T;
 	public ok: boolean;
 	public dirty: boolean;
@@ -9,6 +10,7 @@ export class ValidatedField<T> {
 	private postCheck: (ok: boolean, peek: boolean) => void;
 
 	public constructor(init: T, protected readonly validator: (val: T) => boolean) {
+		this.default = init;
 		this.value = init;
 		this.ok = false;
 		this.dirty = false;
@@ -50,9 +52,15 @@ export class ValidatedField<T> {
 		}
 	}
 
-	public makeDirty() {
+	public makeDirty(): void {
 		this.dirty = true;
 		this.ok = false;
+	}
+
+	public reset(): void {
+		this.value = this.default;
+		this.ok = false;
+		this.dirty = false;
 	}
 
 }
