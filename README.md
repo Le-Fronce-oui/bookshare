@@ -4,11 +4,15 @@ BookShare is a project created for a course of dynamic web programming. Its purp
 
 ## Deployment
 
-### Docker (recommanded)
+### Docker (recommended)
 
 **Requirements: docker**
 
+First, you have to build the containers. The easiest way is to use `make all` at the root of the repository.
+
 You can either deploy the backend and the frontend in one single container or have them as two containers behind a reverse proxy. Examples for both of these configurations can be found in [`docker/compose`](docker/compose).
+
+*Note: even if you don't want to use the split configuration you have to build all the images because they are necessary to build the full image*
 
 ### Manual
 
