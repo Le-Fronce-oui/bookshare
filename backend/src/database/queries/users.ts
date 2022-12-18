@@ -3,9 +3,9 @@ import { Callable, Consumer, ErrorHandler } from '../../types/functions';
 import DatabaseUser from '../models/user';
 import { v4 as uuidv4 } from 'uuid';
 import { manageError } from "../errors";
-import { Role } from "@prisma/client";
 import Visibility from "../models/visibility";
 import { BookUpdateCountDTO } from "../../dto/books/updates";
+import Role from "../models/role";
 
 let no_Users: boolean = false;
 
