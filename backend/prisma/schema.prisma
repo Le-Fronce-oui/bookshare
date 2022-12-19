@@ -66,18 +66,18 @@ model Organisations {
 model Loans {
   id         String        @id @unique
   ownerId    String?
-  owner      Users         @relation("owner", fields: [ownerId], references: [id])
+  owner      Users?        @relation("owner", fields: [ownerId], references: [id])
   orgaId     String
   orga       Organisations @relation(fields: [orgaId], references: [id])
   bookId     String
   book       Books         @relation(fields: [bookId], references: [id])
   borrowerId String?
-  borrower   Users         @relation("borrower", fields: [borrowerId], references: [id])
+  borrower   Users?        @relation("borrower", fields: [borrowerId], references: [id])
   createdAt  DateTime      @default(now())
-  acceptedAt DateTime?     @default(null)
-  declinedAt DateTime?     @default(null)
-  borrowedAt DateTime?     @default(null)
-  returnedAt DateTime?     @default(null)
+  acceptedAt DateTime?
+  declinedAt DateTime?
+  borrowedAt DateTime?
+  returnedAt DateTime?
 }
 
 model Collections {

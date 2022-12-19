@@ -87,6 +87,15 @@ CREATE TABLE "Members" (
     CONSTRAINT "Members_pkey" PRIMARY KEY ("userId", "orgaId")
 );
 
+-- CreateTable
+CREATE TABLE "Covers" (
+    "id" TEXT NOT NULL,
+    "image" BYTEA NOT NULL,
+
+    CONSTRAINT "Covers_pkey" PRIMARY KEY ("id")
+);
+
+
 -- CreateIndex
 CREATE UNIQUE INDEX "Users_id_key" ON "Users"("id");
 
@@ -104,6 +113,9 @@ CREATE UNIQUE INDEX "Organisations_id_key" ON "Organisations"("id");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Loans_id_key" ON "Loans"("id");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Covers_id_key" ON "Covers"("id");
 
 -- AddForeignKey
 ALTER TABLE "Organisations" ADD CONSTRAINT "Organisations_ownerId_fkey" FOREIGN KEY ("ownerId") REFERENCES "Users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
