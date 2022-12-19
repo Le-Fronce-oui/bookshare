@@ -45,7 +45,19 @@ export function getLoansForUser(user_id: string, consumer: Consumer<DatabaseLoan
 
 export function setLoanToReturned(loan_id: string, now: Date, consumer: Consumer<boolean>, onError: ErrorHandler): void {
     pool.query('UPDATE "Loans" SET "returnedAt" = $2 WHERE id = $1;', [loan_id, now]).then(qres => {
-        consumer(qres.rows.length > 0);
+        if(qres.rows.length > 0) {
+            pool.query(`
+                UPDATE "Collections" 
+                SET num_lent = num_lent - 1 
+                WHERE id = (
+                    SELECT "bookId" FROM "Loans" WHERE id = $1
+                );
+            `, [loan_id]).then(qres => {
+                consumer(qres.rows.length > 0);
+            }).catch(e => manageError(e, onError));
+        } else {
+            consumer(false);
+        }
     }).catch(e => manageError(e, onError));
 }
 export function setLoanToDeclined(loan_id: string, now: Date, consumer: Consumer<boolean>, onError: ErrorHandler): void {
@@ -55,7 +67,19 @@ export function setLoanToDeclined(loan_id: string, now: Date, consumer: Consumer
 }
 export function setLoanToAccepted(loan_id: string, now: Date, consumer: Consumer<boolean>, onError: ErrorHandler): void {
     pool.query('UPDATE "Loans" SET "acceptedAt" = $2 WHERE id = $1;', [loan_id, now]).then(qres => {
-        consumer(qres.rows.length > 0);
+        if(qres.rows.length > 0) {
+            pool.query(`
+                UPDATE "Collections" 
+                SET num_lent = num_lent + 1 
+                WHERE id = (
+                    SELECT "bookId" FROM "Loans" WHERE id = $1
+                );
+            `, [loan_id]).then(qres => {
+                consumer(qres.rows.length > 0);
+            }).catch(e => manageError(e, onError));
+        } else {
+            consumer(false);
+        }
     }).catch(e => manageError(e, onError));
 }
 
