@@ -82,7 +82,7 @@ CREATE TABLE "Members" (
     "orgaId" TEXT NOT NULL,
     "role" TEXT NOT NULL,
     "banned" BOOLEAN NOT NULL DEFAULT false,
-    CHECK (NOT banned OR "role" <> 'ADMIN')
+    CHECK (NOT banned OR "role" <> 'ADMIN'),
 
     CONSTRAINT "Members_pkey" PRIMARY KEY ("userId", "orgaId")
 );
