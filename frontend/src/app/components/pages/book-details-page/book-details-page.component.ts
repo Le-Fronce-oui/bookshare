@@ -58,7 +58,7 @@ export class BookDetailsPageComponent implements OnInit, OnDestroy {
     this.api.books.getBook(uuid, book => {
       this.book = book;
       if(this.book.cover !== null) {
-        this.cover_path = "url(\"/assets/covers/" + this.book.cover + "\")";
+        this.cover_path = "url(\"/api/book/cover/" + this.book.cover + "\")";
       }
     }, () => {
       this.notificationService.error('Book not found', this.book_id);
