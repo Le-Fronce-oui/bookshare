@@ -44,24 +44,48 @@ export function getLoansForUser(user_id: string, consumer: Consumer<DatabaseLoan
 }
 
 export function setLoanToReturned(loan_id: string, now: Date, consumer: Consumer<boolean>, onError: ErrorHandler): void {
-    pool.query('UPDATE "Loans" SET "returnedAt" = $2 WHERE id = $1;', [loan_id, now]).then(qres => {
-        consumer(qres.rows.length > 0);
+    pool.query('UPDATE "Loans" SET "returnedAt" = $2 WHERE id = $1;', [loan_id, now]).then(qres0 => {
+        pool.query(`
+            UPDATE "Collections" 
+            SET num_lent = num_lent - 1 
+            WHERE "bookId" = (
+                SELECT "bookId" FROM "Loans" WHERE id = $1
+            );
+        `, [loan_id]).then(qres => {
+            console.log(qres0);
+            console.log(qres);
+            console.log("");
+            consumer(qres0.rowCount > 0 && qres.rowCount > 0);
+        }).catch(e => manageError(e, onError));
     }).catch(e => manageError(e, onError));
 }
+
 export function setLoanToDeclined(loan_id: string, now: Date, consumer: Consumer<boolean>, onError: ErrorHandler): void {
     pool.query('UPDATE "Loans" SET "declinedAt" = $2 WHERE id = $1;', [loan_id, now]).then(qres => {
-        consumer(qres.rows.length > 0);
+        consumer(qres.rowCount > 0);
     }).catch(e => manageError(e, onError));
 }
+
 export function setLoanToAccepted(loan_id: string, now: Date, consumer: Consumer<boolean>, onError: ErrorHandler): void {
-    pool.query('UPDATE "Loans" SET "acceptedAt" = $2 WHERE id = $1;', [loan_id, now]).then(qres => {
-        consumer(qres.rows.length > 0);
+    pool.query('UPDATE "Loans" SET "acceptedAt" = $2 WHERE id = $1;', [loan_id, now]).then(qres0 => {
+        pool.query(`
+            UPDATE "Collections" 
+            SET num_lent = num_lent + 1 
+            WHERE "bookId" = (
+                SELECT "bookId" FROM "Loans" WHERE id = $1
+            );
+        `, [loan_id]).then(qres => {
+            console.log(qres0);
+            console.log(qres);
+            console.log("");
+            consumer(qres0.rowCount > 0 && qres.rowCount > 0);
+        }).catch(e => manageError(e, onError));
     }).catch(e => manageError(e, onError));
 }
 
 export function setLoanToBorrowed(loan_id: string, now: Date, consumer: Consumer<boolean>, onError: ErrorHandler): void {
     pool.query('UPDATE "Loans" SET "borrowedAt" = $2 WHERE id = $1;', [loan_id, now]).then(qres => {
-        consumer(qres.rows.length > 0);
+        consumer(qres.rowCount > 0);
     }).catch(e => manageError(e, onError));
 }
 
