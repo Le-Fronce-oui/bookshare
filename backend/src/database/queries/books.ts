@@ -65,3 +65,10 @@ export function getBookInOrganisation(org_id: string, book_id: string, req_user_
         consumer(qres.rows);
     }).catch(e => manageError(e, onError));
 }
+
+
+export function getBookCover(name: string, consumer: Consumer<Buffer | null>, onError: ErrorHandler): void {
+    pool.query('SELECT image FROM "Covers" where id = $1;', [name]).then(qres => {
+        consumer(qres.rows.length > 0 ? qres.rows[0].image : null);
+    }).catch(e => manageError(e, onError));
+}
