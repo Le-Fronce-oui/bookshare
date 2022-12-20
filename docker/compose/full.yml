@@ -11,11 +11,11 @@ services:
     ports:
       - "8069:80"
     environment:
-      BS_JWT_KEY: <JWT KEY HERE>
+      BS_JWT_KEY: <key>
       BS_DATABASE_HOST: bs-db
       # BS_DATABASE_USER: bookshare
       # BS_DATABASE_NAME: bookshare
-      BS_DATABASE_PASS: <DATABASE PASSWORD HERE>
+      BS_DATABASE_PASS: <password>
       # BS_DATABASE_PORT: 5432
   database:
     image: postgres:alpine
@@ -29,6 +29,6 @@ services:
       timeout: 30s
       retries: 3
     environment:
-      - POSTGRES_DB=bookshare
-      - POSTGRES_USER=bookshare
-      - POSTGRES_PASSWORD=<DATABASE PASSWORD HERE>
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
