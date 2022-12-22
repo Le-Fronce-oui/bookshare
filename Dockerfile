@@ -1,4 +1,4 @@
-FROM lfo/bs-front-build:latest
+FROM lfo/bs-front:latest
 
 FROM lfo/bs-back:latest
 
@@ -10,7 +10,7 @@ COPY docker/nginx/conf/proxy.conf /etc/nginx/proxy.conf
 RUN mkdir /front
 WORKDIR /front
 
-COPY --from=0 /build/dist/frontend .
+COPY --from=0 /front .
 
 WORKDIR /back
 
