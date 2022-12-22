@@ -9,7 +9,7 @@ back:
 	cd backend && docker build . -t $(org)/bs-$@
 
 front-build:
-	cd frontend && docker build . -f Dockerfile-build -t $(org)/bs-$@
+	docker build . -f Dockerfile-build -t $(org)/bs-$@
 
 front:
 	cd frontend && docker build . -t $(org)/bs-$@

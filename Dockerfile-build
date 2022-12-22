@@ -5,7 +5,9 @@ RUN npm install -g @angular/cli@14.2
 RUN mkdir /build
 WORKDIR /build
 
-COPY . .
+COPY frontend .
+COPY backend/src/globals.ts src/app/globals.ts
+COPY backend/src/dto src/app/classes/dto
 RUN npm i
 RUN ng build
 
